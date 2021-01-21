@@ -25,6 +25,24 @@
 /processorParam:TextureFormat=Color
 /build:beam.png
 
+#begin Boom.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Boom.mp3
+
+#begin Bottom.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Bottom.png
+
 #begin Classic button.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -99,6 +117,18 @@
 /processorParam:TextureFormat=Color
 /build:half plus.png
 
+#begin hoverBrick.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:hoverBrick.png
+
 #begin L left.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -123,6 +153,12 @@
 /processorParam:TextureFormat=Color
 /build:L right.png
 
+#begin Landing.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Landing.mp3
+
 #begin List.spritefont
 /importer:FontDescriptionImporter
 /processor:FontDescriptionProcessor
@@ -141,6 +177,30 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Menu Button.png
+
+#begin MenuMusic.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:MenuMusic.mp3
+
+#begin Nexts.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Nexts.png
+
+#begin Original Tetris theme (Tetris Soundtrack)-[AudioTrimmer.com].mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Original Tetris theme (Tetris Soundtrack)-[AudioTrimmer.com].mp3
 
 #begin Pause symbol alt.png
 /importer:TextureImporter
@@ -202,6 +262,18 @@
 /processorParam:TextureFormat=Color
 /build:Resume Button.png
 
+#begin Rick Astley - Never Gonna Give You Up [HQ].mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Rick Astley - Never Gonna Give You Up [HQ].mp3
+
+#begin Rotate.mp3
+/importer:Mp3Importer
+/processor:SongProcessor
+/processorParam:Quality=Best
+/build:Rotate.mp3
+
 #begin square.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -225,6 +297,18 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:tile.png
+
+#begin UnlimitedIntro.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:UnlimitedIntro.mp3
+
+#begin UnlimitedMusic.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:UnlimitedMusic.mp3
 
 #begin zigzag left.png
 /importer:TextureImporter

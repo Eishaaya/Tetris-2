@@ -30,16 +30,28 @@ namespace Tetris
         List<int> spawnChances;
         List<int> values;
         List<float> difficulty;
+        List<Vector2> sizes;
         public int score;
         Sprite image;
         bool fullDown;
         bool downHeld;
-        RatPooeys nextPooey;
-        RatPooeys lastPooey;
+        public RatPooeys nextPooey;
+        public RatPooeys lastPooey;
+        public RatPooeys savedPooey;
         int nevadaready;
         public bool lose;
-        int progression;
-        public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, Sprite im, float sc = 1, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space)
+        public int progression;
+        int hold;
+        bool isClassic;
+        float tempScale;
+        bool saveGo = false;
+        TimeSpan lifitime;
+        float badFactor;
+        float scoreBonus;
+        public float freeMoves = 10;
+        public bool overused;
+        public bool dangerUse;
+        public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, List<Vector2> ss, Sprite im, float sc = 1, bool ic = false, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space)
         {
             lose = false;
             nevadaready = n;
@@ -59,15 +71,18 @@ namespace Tetris
             symmetry = sy;
             colors = c;
             values = va;
+            sizes = ss;
             spawnChances = ch;
             difficulty = ds;
+            isClassic = ic;
+            badFactor = 0;
             map = new List<List<Coordinate>>();
             for (int i = 0; i < size.X; i++)
             {
                 map.Add(new List<Coordinate>());
                 for (int j = 0; j < size.Y; j++)
                 {
-                    map[i].Add(new Coordinate(new Sprite(empty.Image, empty.Location, Color.White, empty.Rotation, empty.Effects, empty.Origin, (float)scale, empty.Depth), new Vector2(i, j), 0));
+                    map[i].Add(new Coordinate(new Sprite(empty.Image, empty.Location, Color.White, empty.Rotation, empty.Effects, empty.Origin, (float)scale, empty.Depth), new Vector2(i, j), 0, 0));
                     Vector2 oragami = new Vector2(map[i][j].image.Origin.X * (float)scale, map[i][j].image.Origin.Y * (float)scale);
                     map[i][j].image.Location = new Vector2(i * (float)Math.Round(60 * scale), j * (float)Math.Round(60 * scale) - (float)Math.Round(360 * scale)) + oragami;
                 }
@@ -77,6 +92,11 @@ namespace Tetris
 
         public void Reset()
         {
+            freeMoves = 10;
+            scoreBonus = 0;
+            badFactor = 0;
+            hold = 0;
+            progression = 0;
             lose = false;
             score = 0;
             map = new List<List<Coordinate>>();
@@ -86,7 +106,7 @@ namespace Tetris
                 map.Add(new List<Coordinate>());
                 for (int j = 0; j < size.Y; j++)
                 {
-                    map[i].Add(new Coordinate(new Sprite(empty.Image, empty.Location, Color.White, empty.Rotation, empty.Effects, empty.Origin, (float)scale, empty.Depth), new Vector2(i, j), 0));
+                    map[i].Add(new Coordinate(new Sprite(empty.Image, empty.Location, Color.White, empty.Rotation, empty.Effects, empty.Origin, (float)scale, empty.Depth), new Vector2(i, j), 0, 0));
                     Vector2 oragami = new Vector2(map[i][j].image.Origin.X * (float)scale, map[i][j].image.Origin.Y * (float)scale);
                     map[i][j].image.Location = new Vector2(i * (float)Math.Round(60 * scale), j * (float)Math.Round(60 * scale) - (float)Math.Round(360 * scale)) + oragami;
                 }
@@ -94,50 +114,230 @@ namespace Tetris
             generate(3);
         }
 
+        public void Switch(int switcher)
+        {
+            if (overused)
+            {
+                return;
+            }
+            badFactor++;
+            var blah = savedPooey;
+            if (switcher == 0)
+            {
+                savedPooey = nextPooey;
+                if (blah == null)
+                {
+                    nextPooey = lastPooey;
+                    lastPooey = gen();
+                    lastPooey.Display(new Vector2(450, 540), 140);
+                }
+                else
+                {
+                    nextPooey = blah;
+                }
+                savedPooey.Display(new Vector2(450, 740), 140);
+                nextPooey.Display(new Vector2(450, 340), 140);
+                freeMoves--;
+                return;
+            }
+            if (switcher == 1)
+            {
+                savedPooey = lastPooey;
+                if (blah == null)
+                {
+                    lastPooey = gen();
+                }
+                else
+                {
+                    lastPooey = blah;
+                }
+                savedPooey.Display(new Vector2(450, 740), 140);
+                lastPooey.Display(new Vector2(450, 540), 140);
+                freeMoves--;
+                return;
+            }
+            if (switcher == 2)
+            {
+                float tempProg;
+                tempProg = (30 - progression) / 6;
+                if (tempProg <= 0)
+                {
+                    tempProg = 0;
+                }
+                float tempProg2;
+                tempProg2 = progression / 30;
+                if (tempProg2 >= 1)
+                {
+                    tempProg2 /= 5;
+                }
+                if (savedPooey == null)
+                {
+                    if (lifitime.Seconds <= 2 - tempProg2 && pooey.boxes[0].place.Y - 5 <= 5 + tempProg && freeMoves >= 5)
+                    {
+                        freeMoves -= 5;
+                        pooey.Revert();
+                        savedPooey = pooey;
+                        generate();
+                        lastPooey.Display(new Vector2(450, 540), 140);
+                        badFactor++;
+                    }
+                    return;
+                }
+                else if (lifitime.Seconds <= 2 - tempProg2 && pooey.boxes[0].place.Y - 5 <= 5 + tempProg && freeMoves >= 5)
+                {
+                    freeMoves -= 5;
+                    pooey.Revert();
+                    var temperPooey = pooey;
+                    saveGo = true;
+                    generate();
+                    savedPooey = temperPooey;
+                    savedPooey.Display(new Vector2(450, 740), 140);
+                    badFactor++;
+                    return;
+                }
+                saveGo = true;
+                return;
+            }
+            if (switcher == 3)
+            {
+                if (savedPooey != null)
+                {
+                    saveGo = true;
+                }
+            }
+        }
+
         public void generate()
         {
+            lifitime = TimeSpan.Zero;
+            fullDown = false;
+            if (saveGo)
+            {
+                pooey = savedPooey;
+                pooey.Ready();
+                savedPooey = null;
+                saveGo = false;
+                return;
+            }
+            if (badFactor <= 0)
+            {
+                scoreBonus += 5;
+            }
+            else
+            {
+                scoreBonus -= 15;
+                if (scoreBonus <= 0)
+                {
+                    scoreBonus = 0;
+                }
+            }
+            freeMoves++;
+            if (freeMoves >= 15)
+            {
+                overused = false;
+            }
             generate(1);
+            if (freeMoves > 15)
+            {
+                freeMoves = 15;
+            }
         }
         public void generate(int num)
         {
             if (num >= 3)
             {
                 pooey = gen();
+                pooey.Ready();
                 nextPooey = gen();
+                nextPooey.Display(new Vector2(450, 340), 140);
                 lastPooey = gen();
+                lastPooey.Display(new Vector2(440, 540), 140);
                 return;
             }
             if (num >= 2)
             {
                 pooey = nextPooey;
+                pooey.Ready();
                 nextPooey = gen();
+                nextPooey.Display(new Vector2(440, 340), 140);
                 lastPooey = gen();
+                lastPooey.Display(new Vector2(440, 540), 140);
                 return;
             }
             pooey = nextPooey;
+            pooey.Ready();
             nextPooey = lastPooey;
+            nextPooey.Display(new Vector2(440, 340), 140);
             lastPooey = gen();
+            lastPooey.Display(new Vector2(440, 540), 140);
         }
         public RatPooeys gen()
         {
-            fullDown = false;
             int blah;
+            int chonk = 0;
+            hold--;
             while (true)
             {
                 blah = random.Next(0, locations.Count);
                 int size = random.Next(0, 100);
-                int diffFactor = (int)(100 + difficulty[blah] * progression);
-                if ((spawnChances[blah] * diffFactor) / 100 >= size)
+                var diffTemp = progression / 2;
+                var diffAdd = badFactor * difficulty[blah] / Math.Abs(difficulty[blah]);
+                if (difficulty[blah] == 0)
                 {
+                    diffAdd = 0;
+                }
+                if (badFactor < 0)
+                {
+                    badFactor = 0;
+                }
+                float diffFactor = (100 + difficulty[blah] * diffTemp) / 100;
+                float helpFactor = (100 - difficulty[blah] * ((hold - 22) * (4 - progression / 25))) / 100;
+                if (hold <= 15)
+                {
+                    helpFactor = 1;
+                }
+                if (!isClassic && blah == spawnChances.Count - 1)
+                {
+                    if (hold <= 0 && (spawnChances[blah] * diffFactor) / 100 - diffAdd / 20 >= size)
+                    {
+                        hold = 35;
+                        freeMoves += 10;
+                        break;
+                    }
+                }
+                else if ((spawnChances[blah] * diffFactor * helpFactor) >= size - diffAdd)
+                {
+                    if (!isClassic && size <= 1 * (progression / 10) && helpFactor == 1)
+                    {
+                        chonk = 3 + progression / 10;
+                    }
                     break;
                 }
             }
 
             //blah = 4;
-            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.Rotation, image.Effects, image.Origin, (float)scale, image.Depth), locations[blah], colors[blah], values[blah], (float)scale, symmetry[blah], 650 - progression * 10);
+            var temp = progression * 10;
+            if (temp > 300)
+            {
+                temp = 300;
+            }
+            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.Rotation, image.Effects, image.Origin, (float)scale, image.Depth), locations[blah], sizes[blah], colors[blah], values[blah], (float)scale, symmetry[blah], 650 - temp, chonk);
         }
         public void Update(GameTime gameTime)
-        {            
+        {
+            if (freeMoves <= 0)
+            {
+                overused = true;
+            }
+            else if (freeMoves <= 5)
+            {
+                dangerUse = true;
+            }
+            else
+            {
+                dangerUse = false;
+            }
+            lifitime += gameTime.ElapsedGameTime;
             if (!fullDown)
             {
                 California = Keyboard.GetState();
@@ -201,8 +401,8 @@ namespace Tetris
                     lose = true;
                     return;
                 }
-                score += pooey.score;
-                if (score - 3500 >= progression * 1000 && progression < 30)
+                score += pooey.score * (int)((100 + scoreBonus + progression) / 100);
+                if (score - 3500 >= progression * 1000 && progression < 100)
                 {
                     progression++;
                 }
@@ -237,14 +437,14 @@ namespace Tetris
                     {
                         return 0;
                     }
-                    if  (piece.boxes[i].place.Y - 1 < 0)
+                    if (piece.boxes[i].place.Y - 1 < 0)
                     {
                         return 2;
                     }
-                    if (piece.boxes[i].place.Y - 1 >= size.Y || map[(int)piece.boxes[i].place.X][(int)piece.boxes[i].place.Y - 1].isfull)
+                    if (piece.boxes[i].place.Y >= size.Y || !fullDown && map[(int)piece.boxes[i].place.X][(int)piece.boxes[i].place.Y - 1].isfull)
                     {
                         for (int j = 0; j < piece.boxes.Count; j++)
-                        {                            
+                        {
                             if (piece.boxes[j].place.Y - 1 < 0)
                             {
                                 return 2;
@@ -265,7 +465,10 @@ namespace Tetris
                     }
                     return 1;
                 }
-                else if (piece.goDown && (piece.boxes[i].place.Y + 1 >= size.Y || !fullDown && map[(int)piece.boxes[i].place.X][(int)piece.boxes[i].place.Y + 1].isfull))
+            }
+            for (int i = 0; i < piece.boxes.Count; i++)
+            {
+                if (piece.goDown && (piece.boxes[i].place.Y + 1 >= size.Y || !fullDown && map[(int)piece.boxes[i].place.X][(int)piece.boxes[i].place.Y + 1].isfull))
                 {
                     if (piece.sideways != 0)
                     {
@@ -284,6 +487,7 @@ namespace Tetris
                     return 1;
                 }
             }
+
             piece.sideways = 0;
             piece.rotated = false;
             return 0;
@@ -292,6 +496,7 @@ namespace Tetris
         {
             for (int i = 0; i < size.Y; i++)
             {
+                bool fullChonk = true;
                 bool isFull = true;
                 for (int j = 0; j < size.X; j++)
                 {
@@ -299,21 +504,33 @@ namespace Tetris
                     {
                         isFull = false;
                     }
+                    if (!map[j][i].Chonker())
+                    {
+                        fullChonk = false;
+                    }
                 }
                 if (isFull)
                 {
                     for (int j = 0; j < size.X; j++)
                     {
-                        score += map[j][i].score;
-                        map[j][i].empty(empty);
-                        for (int q = i; q > 0; q--)
+                        score += map[j][i].score * (int)((100 + scoreBonus + progression) / 100);
+                        if (map[j][i].chonker <= 1 || fullChonk)
                         {
-                            map[j][q] = map[j][q - 1];
-                            map[j][q].image.Location = new Vector2(map[j][q].image.Location.X, map[j][q].image.Location.Y + (float)Math.Round(60 * scale));
+                            map[j][i].empty(empty);
+                            for (int q = i; q > 0; q--)
+                            {
+                                map[j][q] = map[j][q - 1];
+                                map[j][q].image.Location = new Vector2(map[j][q].image.Location.X, map[j][q].image.Location.Y + (float)Math.Round(60 * scale));
+                            }
+
+                            map[j][0] = new Coordinate(new Sprite(empty.Image, empty.Location, Color.White, empty.Rotation, empty.Effects, empty.Origin, (float)scale, empty.Depth), new Vector2(j, 0), map[j][0].score, 0);
+                            Vector2 oragami = new Vector2(map[j][0].image.Origin.X * (float)scale, map[j][0].image.Origin.Y * (float)scale);
+                            map[j][0].image.Location = new Vector2(j * (float)Math.Round(60 * scale), 0 * (float)Math.Round(60 * scale) - (float)Math.Round(360 * scale)) + oragami;
                         }
-                        map[j][0] = new Coordinate(new Sprite(empty.Image, empty.Location, Color.White, empty.Rotation, empty.Effects, empty.Origin, (float)scale, empty.Depth), new Vector2(j, 0), map[j][0].score);
-                        Vector2 oragami = new Vector2(map[j][0].image.Origin.X * (float)scale, map[j][0].image.Origin.Y * (float)scale);
-                        map[j][0].image.Location = new Vector2(j * (float)Math.Round(60 * scale), 0 * (float)Math.Round(60 * scale) - (float)Math.Round(360 * scale)) + oragami;
+                        else
+                        {
+                            map[j][i].reduceChonk();
+                        }
 
                     }
                     while (true)
@@ -337,6 +554,12 @@ namespace Tetris
                 }
             }
             pooey.Draw(bunch);
+            nextPooey.Draw(bunch);
+            lastPooey.Draw(bunch);
+            if (savedPooey != null)
+            {
+                savedPooey.Draw(bunch);
+            }
         }
     }
 }

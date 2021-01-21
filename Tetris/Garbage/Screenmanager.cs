@@ -17,19 +17,20 @@ namespace Tetris
             allScreens = screens;
             activeScreens.Push(allScreens[0]);
             previousScreens = new Stack<Screen>();
+            activeScreens.Peek().Start();
         }
-        public Screen peek ()
+        public Screen peek()
         {
             return activeScreens.Peek();
         }
         public void back()
         {
-            activeScreens.Pop();
+            activeScreens.Pop().StopMusic();
             if (activeScreens.Count > 0)
             {
                 if (activeScreens.Peek() != previousScreens.Peek())
                 {
-                    activeScreens.Pop();
+                    activeScreens.Pop().StopMusic();
                 }
                 else
                 {
@@ -44,12 +45,15 @@ namespace Tetris
         {
             if (replace)
             {
-                previousScreens.Push(activeScreens.Pop());
-                if (activeScreens.Count > 0)
-                {
-                    activeScreens.Clear();
-                }
-                activeScreens.Push(allScreens[index]);
+                    activeScreens.Peek().StopMusic();
+                    previousScreens.Push(activeScreens.Pop());
+                    if (activeScreens.Count > 0)
+                    {
+                        activeScreens.Peek().StopMusic();
+                        activeScreens.Clear();
+                    }
+                    activeScreens.Push(allScreens[index]);
+                    activeScreens.Peek().Start();
             }
             else
             {
@@ -57,13 +61,23 @@ namespace Tetris
                 activeScreens.Push(allScreens[index]);
             }
             activeScreens.Peek().heldMouse = true;
-        }        
+        }
         public void clearMemory()
         {
             previousScreens.Clear();
         }
         public void Update(GameTime time)
         {
+            Stack<Screen> drawScreens = new Stack<Screen>();
+            while (activeScreens.Count > 0)
+            {
+                drawScreens.Push(activeScreens.Pop());
+            }
+            drawScreens.Peek().Play(time);
+            while (drawScreens.Count > 0)
+            {
+                activeScreens.Push(drawScreens.Pop());
+            }
             activeScreens.Peek().Update(time, this);
         }
 

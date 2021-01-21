@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -24,6 +26,7 @@ namespace Tetris
         List<int> scores;
         List<int> vals;
         List<float> diffs;
+        List<Vector2> sizes;
         Sprite image;
         Sprite Gimage;
         private GraphicsDeviceManager _graphics;
@@ -46,6 +49,15 @@ namespace Tetris
         Button complexButty;
         Sprite tint;
         Sprite loser;
+        SoundEffect music;
+        SoundEffect unlimitedMusic;
+        SoundEffect unlimitedIntro;
+        SoundEffect menuMusic;
+        Sprite box;
+        AnimatingSprite bottomScroll;
+        SoundEffect turnEffect;
+        SoundEffect landEffect;
+        SoundEffect boomEffect;
 
         public Game1()
         {
@@ -57,19 +69,28 @@ namespace Tetris
         protected override void Initialize()
         {
             _graphics.PreferredBackBufferWidth = 600;
-            _graphics.PreferredBackBufferHeight = 800;
+            _graphics.PreferredBackBufferHeight = 890;
             _graphics.ApplyChanges();
             base.Initialize();
         }
 
         protected override void LoadContent()
         {
+            _spriteBatch = new SpriteBatch(GraphicsDevice);
             if (!File.Exists("data.json"))
             {
                 var stuffToWrite = JsonSerializer.Serialize(new List<int>());
                 File.WriteAllText("data.json", stuffToWrite);
             }
-            _spriteBatch = new SpriteBatch(GraphicsDevice);
+            //music = Content.Load<Song>("Rick Astley - Never Gonna Give You Up [HQ]");
+            music = Content.Load<SoundEffect>("Original Tetris theme (Tetris Soundtrack)-[AudioTrimmer.com]");
+            unlimitedMusic = Content.Load<SoundEffect>("UnlimitedMusic");
+            unlimitedIntro = Content.Load<SoundEffect>("UnlimitedIntro");
+            menuMusic = Content.Load<SoundEffect>("MenuMusic");
+            turnEffect = Content.Load<SoundEffect>("Rotate");
+            landEffect = Content.Load<SoundEffect>("Landing");
+            boomEffect = Content.Load<SoundEffect>("Boom");
+
 
             locations = new List<List<Vector2>>
             {
@@ -101,7 +122,37 @@ namespace Tetris
 
                 new List<Vector2> { new Vector2 (2, 0), new Vector2 (1, 1), new Vector2 (2, 1), new Vector2(3, 1), new Vector2(0, 2), new Vector2(1, 2), new Vector2 (3, 2), new Vector2 (4, 2), new Vector2 (1, 3), new Vector2(2, 3), new Vector2(3, 3), new Vector2(2, 4) } //Death Donut
       
-        };
+            };
+
+            sizes = new List<Vector2>
+            {
+                new Vector2(60, 60),
+
+                 new Vector2(60, 120),
+
+                 new Vector2(60, 180),
+                 new Vector2(120, 120),
+
+                 new Vector2(60, 240),
+                 new Vector2(120, 120),
+                 new Vector2(180, 120),
+
+                 new Vector2(120, 180),
+                 new Vector2(120, 180),
+                 new Vector2(120, 180),
+                 new Vector2(180, 120),
+                 new Vector2(180, 120),
+
+                 new Vector2(180, 180),
+                 new Vector2(180, 120),
+                 new Vector2(180, 180),
+                 new Vector2(180, 180),
+
+                 new Vector2(300, 120),
+                 new Vector2(300, 120),
+
+                 new Vector2(300, 300)
+            };
 
             vals = new List<int>
             {
@@ -135,15 +186,15 @@ namespace Tetris
 
             chances = new List<int>
             {
-                40,
-
-                55,
+                60,
 
                 70,
-                75,
 
                 75,
                 85,
+
+                85,
+                100,
                 90,
 
                 100,
@@ -152,13 +203,13 @@ namespace Tetris
                 100,
                 100,
 
-                50,
-                80,
-                65,
+                40,
                 60,
+                55,
+                50,
 
-                20,
-                20,
+                13,
+                13,
 
                 7,
             };
@@ -232,7 +283,7 @@ namespace Tetris
                 -1.5f,
                 -1,
 
-                -.5f,
+                -1,
                 0,
                 0.1f,
 
@@ -253,13 +304,31 @@ namespace Tetris
                 3
             };
 
-
+            bottomScroll = new AnimatingSprite(Content.Load<Texture2D>("bottom"), new Vector2(0, 800), Color.White, 0, SpriteEffects.None, new Rectangle(0, 0, 0, 0), new Vector2(0, 0), 1, 1, new List<Rectangle>
+            {
+                new Rectangle(0, 0, 600, 90),
+                new Rectangle(0, 91, 600, 90),
+                new Rectangle(0, 182, 600, 90),
+                new Rectangle(0, 273, 600, 90),
+                new Rectangle(0, 364, 600, 90),
+                new Rectangle(0, 455, 600, 90),
+                new Rectangle(0, 546, 600, 90),
+                new Rectangle(0, 637, 600, 90),
+                new Rectangle(0, 728, 600, 90),
+                new Rectangle(0, 819, 600, 90),
+                new Rectangle(0, 910, 600, 90),
+                new Rectangle(0, 1001, 600, 90),
+                new Rectangle(0, 1092, 600, 90),
+                new Rectangle(0, 1183, 600, 90),
+                new Rectangle(0, 1274, 600, 90)
+            }, 70);
             laby = new Label(Content.Load<SpriteFont>("Font"), Color.White, new Vector2(450, 20), "Score: \n", new TimeSpan(0, 0, 0));
             image = new Sprite(Content.Load<Texture2D>("tile"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 1, 1);
             tint = new Sprite(Content.Load<Texture2D>("darkener"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1);
+            box = new Sprite(Content.Load<Texture2D>("Nexts"), new Vector2(400, 290), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1);
             loser = new Sprite(Content.Load<Texture2D>("Game Over Screen"), new Vector2(150, 198), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1);
             Gimage = new Sprite(Content.Load<Texture2D>("grid"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 1, 1);
-            grid = new Grid(new Vector2(10, 20), Gimage, locations, symmetry, colors, chances, vals, diffs, image, (float).6667);
+            grid = new Grid(new Vector2(10, 20), Gimage, locations, symmetry, colors, chances, vals, diffs, sizes, image, (float).6667);
             butty = new Button(Content.Load<Texture2D>("Classic button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 150, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
             pauser = new Button(Content.Load<Texture2D>("Pause symbol alt"), new Vector2(435, 120), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
             complexButty = new Button(Content.Load<Texture2D>("Power Unlimited Power"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
@@ -313,14 +382,14 @@ namespace Tetris
             },
             new List<int>
             {
-                10,
-                10,
+                6,
+                8,
 
-                10,
-                10,
-                10,
-                10,
-                10
+                8,
+                8,
+                8,
+                8,
+                8
             },
             new List<float>
             {
@@ -333,19 +402,37 @@ namespace Tetris
                 0,
                 0
             },
-            image, .6667f);
+            new List<Vector2>
+            {
+                 new Vector2(60, 240),
+                 new Vector2(120, 120),
 
+                 new Vector2(120, 180),
+                 new Vector2(120, 180),
+                 new Vector2(120, 180),
+                 new Vector2(180, 120),
+                 new Vector2(180, 120),
+            },
+            image, .6667f, true);
+
+            var boxPlaces = new List<Vector2>
+            {
+                new Vector2(406, 296),
+                new Vector2(406, 496),
+                new Vector2(406, 696)
+            };
 
             pause = new PauseScreen(tint, toMenu, resume);
-            game = new GameScreen(grid, laby, pauser);
-            oldGame = new GameScreen(clasgrid, laby, pauser);
+            game = new GameScreen(grid, laby, pauser, box, bottomScroll, Content.Load<Texture2D>("hoverBrick"), boxPlaces, unlimitedMusic, unlimitedIntro);
+            oldGame = new GameScreen(clasgrid, laby, pauser, box, bottomScroll, music, null);
             lose = new LoseScreen(tint, loser, toMenu2, restart, Content.Load<SpriteFont>("File"));
-            menu = new MenuScreen(butty, complexButty);
+            menu = new MenuScreen(butty, complexButty, menuMusic);
             destroyerOfKarens = new Screenmanager(new List<Screen> { menu, game, oldGame, pause, lose });
         }
 
         protected override void Update(GameTime gameTime)
         {
+            
             destroyerOfKarens.Update(gameTime);
         }
 

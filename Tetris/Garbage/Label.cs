@@ -40,6 +40,7 @@ namespace Tetris
             scale = Scale;
             depth = Depth;
             effect = Effect;
+            rotation = Rotation;
         }
         public void update(GameTime timetick)
         {
@@ -48,6 +49,35 @@ namespace Tetris
             {
                 fade = true;
             }
+        }
+        public bool Fade()
+        {
+            return Fade(originalcolor);
+        }
+        public bool Fade(Color tint)
+        {
+            if (Color.A <= 0)
+            {
+                Color = tint;
+                Color = Color.FromNonPremultiplied(Color.A, Color.G, Color.B, 0);
+                return true;
+            }
+            Color = Color.FromNonPremultiplied(Color.A, Color.G, Color.B, Color.A - 2);
+            return false;
+        }
+        public bool Fill()
+        {
+            return Fill(originalcolor);
+        }
+        public bool Fill(Color tint)
+        {
+            Color = Color.FromNonPremultiplied(tint.R, tint.G, tint.B, Color.A + 2);
+            if (Color.A >= 255)
+            {
+                Color = Color.FromNonPremultiplied(tint.R, tint.G, tint.B, 255);
+                return true;
+            }
+            return false;
         }
         public void write(SpriteBatch batch)
         {

@@ -21,9 +21,28 @@ namespace Tetris
         public bool rotated;
         int prepsize;
         public int score;
-
-        public RatPooeys(Sprite im, List<Vector2> spots, Color c, int se, float sc = 1, bool s = false, int t = 650, int o = 6, int d1 = 10, int d2 = 26, int p = 6, float r = 0)
+        Vector2 pieceSize;
+        List<Vector2> spots;
+        int chonkValue;
+        public RatPooeys(RatPooeys old)
         {
+            rotated = false;
+            sideways = 0;
+            scale = old.scale;
+            downtime = old.downtime;
+            locations = new List<Vector2>();
+            boxes = new List<Coordinate>();
+            symmetry = old.symmetry;
+            image = old.image;
+            rotation = old.rotation;
+            prepsize = old.prepsize;
+            pieceSize = old.pieceSize;
+            dimensions = old.dimensions;
+            boxes = old.boxes;
+        }
+        public RatPooeys(Sprite im, List<Vector2> spots, Vector2 widthHeight, Color c, int se, float sc = 1, bool s = false, int t = 650, int ch = 0, int o = 6, int d1 = 10, int d2 = 26, int p = 6, float r = 0)
+        {
+            chonkValue = ch;
             rotated = false;
             sideways = 0;
             scale = sc;
@@ -34,19 +53,76 @@ namespace Tetris
             image = im;
             rotation = r;
             prepsize = p;
+            pieceSize = widthHeight;
             dimensions = new Vector2(d1, d2);
             image.Color = c;
+            this.spots = spots;
+            if (ch > 0)
+            {
+                score = ch;
+            }
+            else
+            {
+                score = 1;
+            }
             for (int i = 0; i < spots.Count; i++)
             {
                 locations.Add(spots[i] * (float)Math.Round(60 * scale));
-                boxes.Add(new Coordinate(new Sprite(image.Image, image.Location, image.Color, image.Rotation, image.Effects, image.Origin, image.Scale, image.Depth), spots[i], se));
-
+                boxes.Add(new Coordinate(new Sprite(image.Image, image.Location, image.Color, image.Rotation, image.Effects, image.Origin, image.Scale, image.Depth), spots[i], se, ch));
+                if (ch > 0)
+                {
+                    boxes[i].image.Color = Color.Black;
+                }
                 Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
                 boxes[i].image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (o * (float)Math.Round(60 * scale))) + oragami;
             }
-            score = se * ((int)Math.Sqrt(boxes.Count) + 1);
+            score *= se * ((int)Math.Sqrt(boxes.Count) + 1);
         }
-
+        public void Revert()
+        {
+            boxes.Clear();
+            locations.Clear();
+            for (int i = 0; i < spots.Count; i++)
+            {
+                locations.Add(spots[i] * (float)Math.Round(60 * scale));
+                boxes.Add(new Coordinate(new Sprite(image.Image, image.Location, image.Color, image.Rotation, image.Effects, image.Origin, image.Scale, image.Depth), spots[i], (int)image.Scale, chonkValue));
+                Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
+                boxes[i].image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
+            }
+            rotated = false;
+            sideways = 0;
+        }
+        public void Display(Vector2 location, int size)
+        {
+            float biggerSide;
+            if (pieceSize.X > pieceSize.Y)
+            {
+                biggerSide = pieceSize.X;
+            }
+            else
+            {
+                biggerSide = pieceSize.Y;
+            }
+            var tempScale = size / biggerSide;
+            if (tempScale > 1)
+            {
+                tempScale = 1;
+            }
+            for (int i = 0; i < boxes.Count; i++)
+            {
+                boxes[i].image.Scale = tempScale;
+                boxes[i].image.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * tempScale), boxes[i].place.Y * (float)Math.Round(60 * tempScale)) + location + new Vector2(size / 2 - pieceSize.X / 2 * tempScale, size / 2 - pieceSize.Y / 2 * tempScale) + image.Origin * tempScale / 2;
+            }
+        }
+        public void Ready()
+        {
+            for (int i = 0; i < boxes.Count; i++)
+            {
+                boxes[i].image.Scale = image.Scale;
+                Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
+                boxes[i].image.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * scale), boxes[i].place.Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
+            }
+        }
         public void Update(GameTime gameTime)
         {
             if (goDown)
@@ -61,7 +137,7 @@ namespace Tetris
             }
         }
 
-        public void rotate ()
+        public void rotate()
         {
             rotate(1);
             rotated = true;
@@ -70,11 +146,11 @@ namespace Tetris
         {
             for (int i = 0; i < boxes.Count; i++)
             {
-                if (boxes[i].place.Y < prepsize)
+                if (boxes[i].place.Y < prepsize - 2)
                 {
                     return;
                 }
-            }    
+            }
             rotation = MathHelper.ToRadians(90) * direction;
             if (!symmetry)
             {
@@ -164,6 +240,15 @@ namespace Tetris
                     boxes[i].image.Location = new Vector2(boxes[i].image.Location.X, boxes[i].image.Location.Y - (float)Math.Round(60 * scale));
                     boxes[i].place.Y -= 1;
                 }
+            }
+        }
+
+        public void forceUp()
+        {
+            for (int i = 0; i < boxes.Count; i++)
+            {
+                boxes[i].image.Location = new Vector2(boxes[i].image.Location.X, boxes[i].image.Location.Y + (float)Math.Round(60 * scale));
+                boxes[i].place.Y += 1;
             }
         }
 

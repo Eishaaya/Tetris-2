@@ -1,6 +1,8 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,8 +13,8 @@ namespace Tetris
     {
         Button chrisIsAPoopyHead;
         Button Unlimited;
-        public MenuScreen(Button poopMakerOfff, Button infinite)
-            :base()
+        public MenuScreen(Button poopMakerOfff, Button infinite, SoundEffect music)
+            :base(music)
         {
             chrisIsAPoopyHead = poopMakerOfff;            
             Unlimited = infinite;      
@@ -20,6 +22,7 @@ namespace Tetris
         public override void Update(GameTime time, Screenmanager manny)
         {
             base.Update(time, manny);
+            Play(time);
             if (heldMouse)
             {
                 return;
