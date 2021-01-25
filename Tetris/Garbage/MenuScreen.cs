@@ -13,11 +13,13 @@ namespace Tetris
     {
         Button chrisIsAPoopyHead;
         Button Unlimited;
-        public MenuScreen(Button poopMakerOfff, Button infinite, SoundEffect music)
+        Button setting;
+        public MenuScreen(Button poopMakerOfff, Button infinite, SoundEffect music, Button sett)
             :base(music)
         {
             chrisIsAPoopyHead = poopMakerOfff;            
-            Unlimited = infinite;      
+            Unlimited = infinite;
+            setting = sett;
         }
         public override void Update(GameTime time, Screenmanager manny)
         {
@@ -37,11 +39,17 @@ namespace Tetris
                 manny.next(2, true);
                 return;
             }
+            else if (setting.check(mousy.Position.ToVector2(), nou))
+            {
+                manny.next(5, true);
+                return;
+            }
         }
         public override void Draw(SpriteBatch batch)
         {
             chrisIsAPoopyHead.Draw(batch);
             Unlimited.Draw(batch);
+            setting.Draw(batch);
         }
 
     }

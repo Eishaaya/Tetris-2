@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using System;
 using System.Collections.Generic;
@@ -17,7 +18,7 @@ namespace Tetris
         Sprite nextBox;
         AnimatingSprite bottom;
         bool lost = false;
-        int baseSpeed;
+        float baseSpeed;
         bool fade = false;
         bool fill = false;
         int stage = 0;
@@ -28,9 +29,11 @@ namespace Tetris
         int doubleTap;
         bool labelFade = true;
         Color moveColor;
-        public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, Texture2D boxSprite, List<Vector2> boxLocations, SoundEffect mus, SoundEffect intro)
+        Keys pauseKey;
+        public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, Texture2D boxSprite, List<Vector2> boxLocations, SoundEffect mus, SoundEffect intro, Keys pauseK = Keys.Escape)
             : base(mus, intro)
         {
+            pauseKey = pauseK;
             boxes = new List<Button>();
             pause = pauser;
             grid = newgrid;
@@ -59,9 +62,10 @@ namespace Tetris
             moveLabel = new Label(laby.Font, Color.White, new Vector2(420, 850), "", TimeSpan.Zero);
             bottom.Color = colors[0];
         }
-        public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, SoundEffect mus, SoundEffect intro)
-    : base(mus, intro)
+        public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, SoundEffect mus, SoundEffect intro, Keys pauseK = Keys.Escape)
+            : base(mus, intro)
         {
+            pauseKey = pauseK;
             boxes = new List<Button>();
             pause = pauser;
             grid = newgrid;
@@ -84,14 +88,27 @@ namespace Tetris
             };
             bottom.Color = colors[0];
         }
+        public override void changeBinds(List<Keys> newBinds)
+        {
+            grid.downKey = newBinds[0];
+            grid.turnKey = newBinds[1];
+            grid.leftKey = newBinds[2];
+            grid.rightKey = newBinds[3];
+            grid.TeleKey = newBinds[4];
+            grid.switchKeys[0] = newBinds[5];
+            grid.switchKeys[1] = newBinds[6];
+            grid.switchKeys[2] = newBinds[7];
+            grid.switchKeys[3] = newBinds[8];
+            pauseKey = newBinds[9];
+        }
         public override void Reset()
         {
             grid.Reset();
         }
         public override void Update(GameTime time, Screenmanager manny)
         {
-            bottom.frametime = new TimeSpan(0, 0, 0, 0, baseSpeed - (grid.progression / 50) * baseSpeed);
-            moveLabel.Text = $"{(int)grid.freeMoves / 5}";
+            bottom.frametime = new TimeSpan(0, 0, 0, 0, (int)(baseSpeed - (grid.progression * (50 / baseSpeed))));
+            moveLabel.Text = $"{(int)grid.freeMoves}";
             if (grid.overused)
             {
                 if (!labelFade)
@@ -245,7 +262,7 @@ namespace Tetris
             base.Update(time, manny);
             grid.Update(time);
             score.Text = $"Score: \n {grid.score}";
-            if (heldMouse)
+            if (heldMouse || keysDown)
             {
                 return;
             }
@@ -262,7 +279,7 @@ namespace Tetris
                     break;
                 }
             }
-            if (pause.check(mousy.Position.ToVector2(), nou))
+            if (pause.check(mousy.Position.ToVector2(), nou) || Maryland.IsKeyDown(pauseKey))
             {
                 manny.next(3, false);
                 return;

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -11,6 +12,7 @@ namespace Tetris
         Stack<Screen> activeScreens;
         List<Screen> allScreens;
         public Stack<Screen> previousScreens;
+        public bool bindsChanged;
         public Screenmanager(List<Screen> screens)
         {
             activeScreens = new Stack<Screen>();
@@ -25,6 +27,13 @@ namespace Tetris
         }
         public void back()
         {
+            if (bindsChanged)
+            {
+                for (int i = 0; i < allScreens.Count; i++)
+                {
+                    allScreens[i].changeBinds(activeScreens.Peek().binds);
+                }
+            }
             activeScreens.Pop().StopMusic();
             if (activeScreens.Count > 0)
             {
@@ -35,25 +44,27 @@ namespace Tetris
                 else
                 {
                     previousScreens.Pop();
+                    activeScreens.Peek().heldMouse = true;
+                    activeScreens.Peek().Start();
                     return;
                 }
             }
             activeScreens.Push(previousScreens.Pop());
             activeScreens.Peek().heldMouse = true;
+            activeScreens.Peek().Start();
         }
         public void next(int index, bool replace)
         {
             if (replace)
             {
+                activeScreens.Peek().StopMusic();
+                previousScreens.Push(activeScreens.Pop());
+                if (activeScreens.Count > 0)
+                {
                     activeScreens.Peek().StopMusic();
-                    previousScreens.Push(activeScreens.Pop());
-                    if (activeScreens.Count > 0)
-                    {
-                        activeScreens.Peek().StopMusic();
-                        activeScreens.Clear();
-                    }
-                    activeScreens.Push(allScreens[index]);
-                    activeScreens.Peek().Start();
+                    activeScreens.Clear();
+                }
+                activeScreens.Push(allScreens[index]);
             }
             else
             {
@@ -61,6 +72,7 @@ namespace Tetris
                 activeScreens.Push(allScreens[index]);
             }
             activeScreens.Peek().heldMouse = true;
+            activeScreens.Peek().Start();
         }
         public void clearMemory()
         {

@@ -14,22 +14,25 @@ namespace Tetris
         public SoundEffectInstance introMusic;
         public SoundEffectInstance music;
         protected MouseState mousy;
+        public List<Keys> binds;
         protected bool nou;
         protected bool uno;
         public bool heldMouse;
         bool introDone;
+        protected bool keysDown = false;
+        protected KeyboardState Maryland;
         public Screen()
             : this(null, null) { }
         public Screen(SoundEffect m)
             : this(m, null) { }
         public Screen(SoundEffect m, SoundEffect im)
         {
+            Maryland = new KeyboardState();
             mousy = new MouseState();
             nou = false;
             uno = false;
             music = null;
             introMusic = null;
-            mousy = new MouseState();
             nou = false;
             if (m != null)
             {
@@ -50,6 +53,10 @@ namespace Tetris
                 introDone = true;
             }
         }
+        public virtual void changeBinds(List<Keys> newBinds)
+        {
+
+        }
         public void StopMusic()
         {
             if (music != null)
@@ -64,6 +71,8 @@ namespace Tetris
         }
         public virtual void Start()
         {
+            keysDown = true;
+            heldMouse = true;
             if (introMusic == null)
             {
                 if (music != null)
@@ -78,6 +87,11 @@ namespace Tetris
         public virtual void Update(GameTime time, Screenmanager manny)
         {
             Play(time);
+            Maryland = Keyboard.GetState();
+            if (Maryland.GetPressedKeyCount() == 0)
+            {
+                keysDown = false;
+            }
             if (mousy.LeftButton == ButtonState.Pressed || mousy.RightButton == ButtonState.Pressed)
             {
                 heldMouse = true;

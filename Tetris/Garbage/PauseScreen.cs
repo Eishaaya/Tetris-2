@@ -12,9 +12,11 @@ namespace Tetris
         Button menu;
         Button back;
         Sprite tint;
-        public PauseScreen(Sprite dark, Button menuButt, Button ReturnButt)
+        Keys exit;
+        public PauseScreen(Sprite dark, Button menuButt, Button ReturnButt, Keys Exit = Keys.Escape)
             : base()
         {
+            exit = Exit;
             tint = dark;
             menu = menuButt;
             back = ReturnButt;
@@ -23,7 +25,7 @@ namespace Tetris
         public override void Update(GameTime time, Screenmanager manny)
         {
             base.Update(time, manny);
-            if (heldMouse)
+            if (heldMouse || keysDown)
             {
                 return;
             }
@@ -35,7 +37,7 @@ namespace Tetris
                 manny.clearMemory();
                 return;
             }
-            if (back.check(mousy.Position.ToVector2(), nou))
+            if (back.check(mousy.Position.ToVector2(), nou) || Maryland.IsKeyDown(exit) || nou)
             {
                 manny.back();
             }

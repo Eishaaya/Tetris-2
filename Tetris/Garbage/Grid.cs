@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -17,11 +18,12 @@ namespace Tetris
         List<List<Coordinate>> map;
         double scale;
         RatPooeys pooey;
-        Keys downKey;
-        Keys leftKey;
-        Keys rightKey;
-        Keys turnKey;
-        Keys TeleKey;
+        public Keys downKey;
+        public Keys leftKey;
+        public Keys rightKey;
+        public Keys turnKey;
+        public Keys TeleKey;
+        public List<Keys> switchKeys;
         KeyboardState California;
         Timer NevadaCheck;
         List<List<Vector2>> locations;
@@ -51,8 +53,15 @@ namespace Tetris
         public float freeMoves = 10;
         public bool overused;
         public bool dangerUse;
-        public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, List<Vector2> ss, Sprite im, float sc = 1, bool ic = false, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space)
+        SoundEffectInstance rotate;
+        SoundEffectInstance land;
+        SoundEffectInstance boom;
+        public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, List<Vector2> ss, Sprite im, SoundEffect ro, SoundEffect la, SoundEffect b, float sc = 1, bool ic = false, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space, Keys s1 = Keys.D1, Keys s2 = Keys.D2, Keys s3 = Keys.D3, Keys s4 = Keys.D4)
         {
+            switchKeys = new List<Keys>();
+            rotate = ro.CreateInstance();
+            land = la.CreateInstance();
+            boom = b.CreateInstance();
             lose = false;
             nevadaready = n;
             score = 0;
@@ -64,6 +73,10 @@ namespace Tetris
             rightKey = r;
             turnKey = t;
             TeleKey = D;
+            switchKeys.Add(s1);
+            switchKeys.Add(s2);
+            switchKeys.Add(s3);
+            switchKeys.Add(s4);
             scale = sc;
             size = new Vector2(s.X, s.Y + 6);
             empty = e;
@@ -92,6 +105,7 @@ namespace Tetris
 
         public void Reset()
         {
+            savedPooey = null;
             freeMoves = 10;
             scoreBonus = 0;
             badFactor = 0;
@@ -154,6 +168,7 @@ namespace Tetris
                 savedPooey.Display(new Vector2(450, 740), 140);
                 lastPooey.Display(new Vector2(450, 540), 140);
                 freeMoves--;
+                badFactor += 4;
                 return;
             }
             if (switcher == 2)
@@ -219,9 +234,11 @@ namespace Tetris
                 saveGo = false;
                 return;
             }
+            badFactor--;
             if (badFactor <= 0)
             {
                 scoreBonus += 5;
+                badFactor = 0;
             }
             else
             {
@@ -338,9 +355,17 @@ namespace Tetris
                 dangerUse = false;
             }
             lifitime += gameTime.ElapsedGameTime;
+            var tempTexas = California;
+            California = Keyboard.GetState();
+            for (int i = 0; i < switchKeys.Count; i++)
+            {
+                if (California.IsKeyDown(switchKeys[i]) && !tempTexas.IsKeyDown(switchKeys[i]))
+                {
+                    Switch(i);
+                }
+            }
             if (!fullDown)
             {
-                California = Keyboard.GetState();
                 if (California.IsKeyDown(downKey))
                 {
                     if (NevadaCheck.ready())
@@ -352,7 +377,9 @@ namespace Tetris
                 {
                     if (NevadaCheck.ready())
                     {
+                        rotate.Stop();
                         pooey.rotate();
+                        rotate.Play();
                     }
                 }
                 else if (California.IsKeyDown(leftKey))
@@ -401,12 +428,18 @@ namespace Tetris
                     lose = true;
                     return;
                 }
+                land.Stop();
+                land.Play();
                 score += pooey.score * (int)((100 + scoreBonus + progression) / 100);
                 if (score - 3500 >= progression * 1000 && progression < 100)
                 {
                     progression++;
                 }
-                hippityHoppityYourRowIsNowMyProperty();
+                if (!hippityHoppityYourRowIsNowMyProperty())
+                {
+                    boom.Stop();
+                    boom.Play();
+                }
                 generate();
             }
         }
@@ -540,6 +573,7 @@ namespace Tetris
                             break;
                         }
                     }
+                    return false;
                 }
             }
             return true;
