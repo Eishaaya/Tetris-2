@@ -64,7 +64,8 @@ namespace Tetris
         AnimatingSprite bottomScroll;
         SoundEffect turnEffect;
         SoundEffect landEffect;
-        SoundEffect boomEffect;        
+        SoundEffect boomEffect;
+        Toggler toggleMeUwu;
 
         public Game1()
         {
@@ -337,25 +338,28 @@ namespace Tetris
                 new Rectangle(0, 1274, 600, 90)
             }, 80);
             laby = new Label(Content.Load<SpriteFont>("Font"), Color.White, new Vector2(450, 20), "Score: \n", new TimeSpan(0, 0, 0));
-            image = new Sprite(Content.Load<Texture2D>("tile"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 1, 1);
+            image = new Sprite(Content.Load<Texture2D>("Tile"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 1, 1);
             tint = new Sprite(Content.Load<Texture2D>("darkener"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1);
             box = new Sprite(Content.Load<Texture2D>("Nexts"), new Vector2(400, 290), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1);
             loser = new Sprite(Content.Load<Texture2D>("Game Over Screen"), new Vector2(150, 198), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1);
             Gimage = new Sprite(Content.Load<Texture2D>("grid"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 1, 1);
             grid = new Grid(new Vector2(10, 20), Gimage, locations, symmetry, colors, chances, vals, diffs, sizes, image, turnEffect, landEffect, boomEffect, (float).6667);
-            butty = new Button(Content.Load<Texture2D>("Classic button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 150, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-            pauser = new Button(Content.Load<Texture2D>("Pause symbol alt"), new Vector2(435, 120), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-            complexButty = new Button(Content.Load<Texture2D>("Power Unlimited Power"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-            resume = new Button(Content.Load<Texture2D>("Resume Button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 134, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-            toMenu = new Button(Content.Load<Texture2D>("Menu button"), new Vector2(GraphicsDevice.Viewport.Width / 2, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-            toMenu2 = new Button(Content.Load<Texture2D>("Menu button"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 504), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-            toMenu3 = new Button(Content.Load<Texture2D>("Menu button"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 25, 550), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-            setting = new Button(Content.Load<Texture2D>("SettingsButt"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 172), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-            restart = new Button(Content.Load<Texture2D>("Restart Button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 150, 504), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-            apply = new Button(Content.Load<Texture2D>("Applu"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 159, 550), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-            defaults = new Button(Content.Load<Texture2D>("Default"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 159, 100), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-            arrows = new Button(Content.Load<Texture2D>("Arrows"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 29, 100), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Gray);
-
+            butty = new Button(Content.Load<Texture2D>("Classic button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 150, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            pauser = new Button(Content.Load<Texture2D>("Pause symbol alt"), new Vector2(435, 120), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            complexButty = new Button(Content.Load<Texture2D>("Power Unlimited Power"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            resume = new Button(Content.Load<Texture2D>("Resume Button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 134, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            toMenu = new Button(Content.Load<Texture2D>("Menu button"), new Vector2(GraphicsDevice.Viewport.Width / 2, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            toMenu2 = new Button(Content.Load<Texture2D>("Menu button"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 504), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            toMenu3 = new Button(Content.Load<Texture2D>("Menu button"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 25, 550), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            setting = new Button(Content.Load<Texture2D>("SettingsButt"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 172), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            restart = new Button(Content.Load<Texture2D>("Restart Button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 150, 504), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            apply = new Button(Content.Load<Texture2D>("Applu"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 159, 550), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            defaults = new Button(Content.Load<Texture2D>("Default"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 159, 100), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            arrows = new Button(Content.Load<Texture2D>("Arrows"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 29, 100), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            toggleMeUwu = new Toggler(Content.Load<Texture2D>("Toggle Base"), new Vector2(300, 450), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Black,
+            new Sprite(Content.Load<Texture2D>("Toggle Ball"), new Vector2(300, 450), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1),
+            new Sprite(Content.Load<Texture2D>("Toggle Color"), new Vector2(300, 450), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1),
+            new ScalableSprite(Content.Load<Texture2D>("ToggleBaseColor"), new Vector2(300, 450), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), new Vector2(0, 1)));
             clasgrid = new Grid(
             new Vector2(10, 20), Gimage, new List<List<Vector2>>
             {
@@ -491,6 +495,7 @@ namespace Tetris
         {
 
             destroyerOfKarens.Update(gameTime);
+         //   toggleMeUwu.check(Mouse.GetState().Position.ToVector2(), Mouse.GetState().LeftButton == ButtonState.Pressed);
         }
 
         protected override void Draw(GameTime gameTime)
@@ -498,6 +503,7 @@ namespace Tetris
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin();
             destroyerOfKarens.Draw(_spriteBatch);
+          //  toggleMeUwu.Draw(_spriteBatch);
             _spriteBatch.End();
             base.Draw(gameTime);
         }

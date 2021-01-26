@@ -44,7 +44,7 @@ namespace Tetris
         public bool lose;
         public int progression;
         int hold;
-        bool isClassic;
+        public bool isClassic;
         float tempScale;
         bool saveGo = false;
         TimeSpan lifitime;
@@ -130,7 +130,7 @@ namespace Tetris
 
         public void Switch(int switcher)
         {
-            if (overused)
+            if (overused || isClassic)
             {
                 return;
             }
@@ -234,30 +234,34 @@ namespace Tetris
                 saveGo = false;
                 return;
             }
-            badFactor--;
-            if (badFactor <= 0)
+            if (!isClassic)
             {
-                scoreBonus += 5;
-                badFactor = 0;
-            }
-            else
-            {
-                scoreBonus -= 15;
-                if (scoreBonus <= 0)
+                badFactor--;
+                if (badFactor <= 0)
                 {
-                    scoreBonus = 0;
+                    scoreBonus += 5;
+                    badFactor = 0;
+                }
+                else
+                {
+                    scoreBonus -= 15;
+                    if (scoreBonus <= 0)
+                    {
+                        scoreBonus = 0;
+                    }
+                }
+                freeMoves++;
+                if (freeMoves >= 15)
+                {
+                    overused = false;
+                }
+                if (freeMoves > 15)
+                {
+                    freeMoves = 15;
                 }
             }
-            freeMoves++;
-            if (freeMoves >= 15)
-            {
-                overused = false;
-            }
             generate(1);
-            if (freeMoves > 15)
-            {
-                freeMoves = 15;
-            }
+
         }
         public void generate(int num)
         {

@@ -71,7 +71,7 @@ namespace Tetris
             }
             return false;
         }
-        public void Draw(SpriteBatch batch)
+        public virtual void Draw(SpriteBatch batch)
         {
             batch.Draw(Image, Location, null, Color, Rotation, Origin, Scale, Effects, Depth);
         }

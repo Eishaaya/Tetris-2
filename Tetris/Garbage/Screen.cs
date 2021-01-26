@@ -75,10 +75,14 @@ namespace Tetris
             heldMouse = true;
             if (introMusic == null)
             {
-                if (music != null)
+                if (music != null && music.State != SoundState.Playing)
                 {
                     music.Play();
                 }
+                return;
+            }
+            if (music.State == SoundState.Playing)
+            {
                 return;
             }
             introMusic.Play();

@@ -28,7 +28,7 @@ namespace Tetris
             ClickedColor = clickedcolor;
             OriginalColor = color;
         }
-        public bool check(Vector2 cursor, bool isclicked)
+        public virtual bool check(Vector2 cursor, bool isclicked)
         {
             if (Hitbox.Contains(cursor))
             {

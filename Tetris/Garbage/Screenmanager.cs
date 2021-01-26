@@ -32,6 +32,7 @@ namespace Tetris
                 for (int i = 0; i < allScreens.Count; i++)
                 {
                     allScreens[i].changeBinds(activeScreens.Peek().binds);
+                    bindsChanged = false;
                 }
             }
             activeScreens.Pop().StopMusic();

@@ -30,6 +30,8 @@ namespace Tetris
         bool labelFade = true;
         Color moveColor;
         Keys pauseKey;
+        bool isClassic;
+
         public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, Texture2D boxSprite, List<Vector2> boxLocations, SoundEffect mus, SoundEffect intro, Keys pauseK = Keys.Escape)
             : base(mus, intro)
         {
@@ -38,6 +40,7 @@ namespace Tetris
             pause = pauser;
             grid = newgrid;
             score = laby;
+            isClassic = grid.isClassic;
             lost = false;
             nextBox = box;
             bottom = down;
@@ -70,6 +73,7 @@ namespace Tetris
             pause = pauser;
             grid = newgrid;
             score = laby;
+            isClassic = grid.isClassic;
             lost = false;
             nextBox = box;
             bottom = down;
@@ -108,53 +112,56 @@ namespace Tetris
         public override void Update(GameTime time, Screenmanager manny)
         {
             bottom.frametime = new TimeSpan(0, 0, 0, 0, (int)(baseSpeed - (grid.progression * (50 / baseSpeed))));
-            moveLabel.Text = $"{(int)grid.freeMoves}";
-            if (grid.overused)
+            if (!isClassic)
             {
-                if (!labelFade)
+                moveLabel.Text = $"{(int)grid.freeMoves}";
+                if (grid.overused)
                 {
-                    if (moveLabel.Fade(Color.White))
+                    if (!labelFade)
                     {
-                        labelFade = true;
+                        if (moveLabel.Fade(Color.White))
+                        {
+                            labelFade = true;
+                        }
+                    }
+                    else
+                    {
+                        moveLabel.Fill(Color.Red);
+                    }
+                }
+                else if (grid.dangerUse)
+                {
+                    if (!labelFade)
+                    {
+                        if (moveLabel.Fade(moveColor))
+                        {
+                            labelFade = true;
+                            if (moveColor == Color.Red)
+                            {
+                                moveColor = Color.White;
+                            }
+                            else
+                            {
+                                moveColor = Color.Red;
+                            }
+                        }
+                    }
+                    else
+                    {
+                        if (moveLabel.Fill(moveColor))
+                        {
+                            labelFade = false;
+                        }
                     }
                 }
                 else
                 {
-                    moveLabel.Fill(Color.Red);
-                }
-            }
-            else if (grid.dangerUse)
-            {
-                if (!labelFade)
-                {
-                    if (moveLabel.Fade(moveColor))
+                    if (moveLabel.Color != Color.White)
                     {
-                        labelFade = true;
-                        if (moveColor == Color.Red)
-                        {
-                            moveColor = Color.White;
-                        }
-                        else
-                        {
-                            moveColor = Color.Red;
-                        }
-                    }
-                }
-                else
-                {
-                    if (moveLabel.Fill(moveColor))
-                    {
+                        moveLabel.Fill(Color.White);
+                        moveColor = Color.White;
                         labelFade = false;
                     }
-                }
-            }
-            else
-            {
-                if (moveLabel.Color != Color.White)
-                {
-                    moveLabel.Fill(Color.White);
-                    moveColor = Color.White;
-                    labelFade = false;
                 }
             }
             if (fade)
@@ -303,7 +310,10 @@ namespace Tetris
             {
                 pause.Draw(batch);
             }
-            moveLabel.write(batch);
+            if (!isClassic)
+            {
+                moveLabel.write(batch);
+            }
             grid.Draw(batch);
         }
     }
