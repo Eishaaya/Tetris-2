@@ -22,6 +22,7 @@ namespace Tetris
         {
             fadeTime.tick(gameTime);
             scale = speed * Scale;
+            Location += speed;
             if (fadeTime.ready())
             {
                 if (Fade())

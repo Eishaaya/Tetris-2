@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -14,7 +15,7 @@ namespace Tetris
         public float chonker;
         public float explosive;
         float totalChonk;
-        Color chonkColor;        
+        Color chonkColor;
         //public Coordinate(Sprite I, Vector2 P, int s, Color cc)
         //{
         //    Coordinate(I, P, s);
@@ -59,10 +60,10 @@ namespace Tetris
             totalChonk = pooey.chonker;
             chonker = pooey.chonker;
             explosive = pooey.explosive;
-            
+
         }
 
-        public List<Vector2> Explode (List<List<Coordinate>> coords)
+        public List<Vector2> Explode(List<List<Coordinate>> coords)
         {
             float top = place.Y - explosive - 1;
             if (top < 0)
@@ -70,9 +71,9 @@ namespace Tetris
                 top = 0;
             }
             float bottom = place.Y + explosive + 1;
-            if (bottom >= coords[0].Count)
+            if (bottom > coords[0].Count)
             {
-                bottom = coords[0].Count - 1;
+                bottom = coords[0].Count;
             }
             float left = place.X - explosive - 1;
             if (left < 0)
@@ -80,9 +81,9 @@ namespace Tetris
                 left = 0;
             }
             float right = place.X + explosive + 1;
-            if (right >= coords.Count)
+            if (right > coords.Count)
             {
-                right = coords.Count - 1;
+                right = coords.Count;
             }
             List<Vector2> spots = new List<Vector2>();
             for (int i = (int)left; i < right; i++)
@@ -110,7 +111,7 @@ namespace Tetris
             }
         }
         public void empty(Sprite empty)
-        {            
+        {
             image = new Sprite(empty.Image, image.Location, empty.Color, empty.Rotation, empty.Effects, empty.Origin, image.Scale, empty.Depth);
             isfull = false;
             explosive = 0;

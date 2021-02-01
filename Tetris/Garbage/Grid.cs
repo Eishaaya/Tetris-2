@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -34,6 +35,7 @@ namespace Tetris
         List<float> difficulty;
         List<Vector2> sizes;
         List<ParticleEffect> effects;
+        List<List<Vector2>> explosives;
         public int score;
         Sprite image;
         bool fullDown;
@@ -463,8 +465,22 @@ namespace Tetris
                 {
                     progression++;
                 }
+                explosives = new List<List<Vector2>>();
                 if (!hippityHoppityYourRowIsNowMyProperty())
                 {
+                    for (int i = 0; i < explosives.Count; i++)
+                    {
+                        for (int j = 0; j < explosives[i].Count; j++)
+                        {
+                            if (map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive > 0)
+                            {
+                                explosives.Add(map[(int)explosives[i][j].X][(int)explosives[i][j].Y].Explode(map));
+                            }
+                            map[(int)explosives[i][j].X][(int)explosives[i][j].Y].empty(empty);
+                            map[(int)explosives[i][j].X][(int)explosives[i][j].Y].image.Scale = (float)scale;
+                            //map[(int)explosives[i][j].X][(int)explosives[i][j].Y].image.Color = Color.Cyan;
+                        }
+                    }
                     boom.Stop();
                     boom.Play();
                     for (int i = 0; i < map.Count; i++)
@@ -587,30 +603,13 @@ namespace Tetris
                         score += map[j][i].score * (int)((100 + scoreBonus + progression) / 100);
                         if (map[j][i].chonker <= 1 || fullChonk)
                         {
-                            if (map[j][i].explosive < 1)
+                            if (map[j][i].explosive > 0)
                             {
-                                map[j][i].empty(empty);
-                            }
-                            else
-                            {
-                                effects.Add(new ParticleEffect(pixel, map[j][i].image.Location, new List<Color> { Color.Yellow, Color.Orange, Color.Red }, 99, 4000, new List<double> { 3, 6, 9 }, new List<int> { 20, 25, 30 }));
+                                effects.Add(new ParticleEffect(pixel, map[j][i].image.Location, new List<Color> { Color.Yellow, Color.Orange, Color.Red }, 99, (int)map[j][i].explosive, new List<double> { 3, 6, 9 }, new List<int> { 20, 25, 30 }));
                                 var deads = map[j][i].Explode(map);
-                                for (int e = 0; e < deads.Count; e++)
-                                {
-                                    if (deads[e].X > map[j][i].place.X)
-                                    {
-                                        map[(int)deads[e].X][(int)deads[e].Y - 1].empty(empty);
-                                        map[(int)deads[e].X][(int)deads[e].Y - 1].image.Scale = (float)scale;
-                                        map[(int)deads[e].X][(int)deads[e].Y - 1].image.Color = Color.Cyan;
-                                    }
-                                    else
-                                    {
-                                        map[(int)deads[e].X][(int)deads[e].Y].empty(empty);
-                                        map[(int)deads[e].X][(int)deads[e].Y].image.Scale = (float)scale;
-                                        map[(int)deads[e].X][(int)deads[e].Y].image.Color = Color.Cyan;
-                                    }
-                                }
+                                explosives.Add(deads);
                             }
+                            map[j][i].empty(empty);
                             for (int q = i; q > 0; q--)
                             {
                                 if (map[j][q - 1].isfull)

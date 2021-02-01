@@ -30,7 +30,8 @@ namespace Tetris
                 {
                     j++;
                 }
-                particles.Add(new Particle(image, origin, colors[j], 0, SpriteEffects.None, new Vector2(0, 0), new Vector2(MathHelper.ToRadians((float)(Math.Sin(random.Next(360)) * speeds[j])), (float)(Math.Cos(random.Next(360)) * speeds[j])), time, new Vector2(random.Next(scales[j]) / 100, random.Next(scales[j]) / 100), 1, scales[j]));
+                particles.Add(new Particle(image, origin, colors[j], 0, SpriteEffects.None, new Vector2(0, 0), new Vector2(MathHelper.ToRadians((float)(Math.Sin(random.Next(360)) * speeds[j])), (float)(Math.Cos(random.Next(360)) * speeds[j])), time, new Vector2(random.Next(scales[j]), random.Next(scales[j])), 1, scales[j]));
+                return;
             }
         }
         public void Update(GameTime time)
