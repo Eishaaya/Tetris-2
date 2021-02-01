@@ -197,14 +197,14 @@ namespace Tetris
 
             chances = new List<int>
             {
-                60,
+                40,
 
+                55,
+
+                62,
                 70,
 
-                75,
-                85,
-
-                85,
+                65,
                 100,
                 50,
                 50,
@@ -215,13 +215,13 @@ namespace Tetris
                 100,
                 100,
 
-                40,
+                45,
+                65,
                 60,
                 55,
-                50,
 
-                13,
-                13,
+                15,
+                15,
 
                 7,
             };
@@ -319,7 +319,7 @@ namespace Tetris
                 3
             };
 
-            bottomScroll = new AnimatingSprite(Content.Load<Texture2D>("bottom"), new Vector2(0, 800), Color.White, 0, SpriteEffects.None, new Rectangle(0, 0, 0, 0), new Vector2(0, 0), 1, 1, new List<Rectangle>
+            bottomScroll = new AnimatingSprite(Content.Load<Texture2D>("bottom"), new Vector2(0, 800), Color.White, 0, SpriteEffects.None, new Rectangle(0, 0, 0, 0), new Vector2(0, 0), 1, .025f, new List<Rectangle>
             {
                 new Rectangle(0, 0, 600, 90),
                 new Rectangle(0, 91, 600, 90),
@@ -337,13 +337,13 @@ namespace Tetris
                 new Rectangle(0, 1183, 600, 90),
                 new Rectangle(0, 1274, 600, 90)
             }, 80);
-            laby = new Label(Content.Load<SpriteFont>("Font"), Color.White, new Vector2(450, 20), "Score: \n", new TimeSpan(0, 0, 0));
-            image = new Sprite(Content.Load<Texture2D>("Tile"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 1, 1);
-            tint = new Sprite(Content.Load<Texture2D>("darkener"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1);
-            box = new Sprite(Content.Load<Texture2D>("Nexts"), new Vector2(400, 290), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1);
-            loser = new Sprite(Content.Load<Texture2D>("Game Over Screen"), new Vector2(150, 198), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1);
-            Gimage = new Sprite(Content.Load<Texture2D>("grid"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 1, 1);
-            grid = new Grid(new Vector2(10, 20), Gimage, locations, symmetry, colors, chances, vals, diffs, sizes, image, turnEffect, landEffect, boomEffect, (float).6667);
+            laby = new Label(Content.Load<SpriteFont>("Font"), Color.White, new Vector2(450, 20), "Score: \n", new TimeSpan(0, 0, 0), new Vector2(0, 0), 0, SpriteEffects.None, 1, .8f);
+            image = new Sprite(Content.Load<Texture2D>("Tile"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 1, 0.1f);
+            tint = new Sprite(Content.Load<Texture2D>("darkener"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .9f);
+            box = new Sprite(Content.Load<Texture2D>("Nexts"), new Vector2(400, 290), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .8f);
+            loser = new Sprite(Content.Load<Texture2D>("Game Over Screen"), new Vector2(150, 198), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .95f);
+            Gimage = new Sprite(Content.Load<Texture2D>("grid"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 0, 0);
+            grid = new Grid(new Vector2(10, 20), Gimage, locations, symmetry, colors, chances, vals, diffs, sizes, image, turnEffect, landEffect, boomEffect, (float).6667, false, Content.Load<Texture2D>("Explosive"), Content.Load<Texture2D>("Pixel"));
             butty = new Button(Content.Load<Texture2D>("Classic button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 150, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             pauser = new Button(Content.Load<Texture2D>("Pause symbol alt"), new Vector2(435, 120), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             complexButty = new Button(Content.Load<Texture2D>("Power Unlimited Power"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
@@ -493,15 +493,14 @@ namespace Tetris
 
         protected override void Update(GameTime gameTime)
         {
-
             destroyerOfKarens.Update(gameTime);
-         //   toggleMeUwu.check(Mouse.GetState().Position.ToVector2(), Mouse.GetState().LeftButton == ButtonState.Pressed);
+            //   toggleMeUwu.check(Mouse.GetState().Position.ToVector2(), Mouse.GetState().LeftButton == ButtonState.Pressed);
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-            _spriteBatch.Begin();
+            _spriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack);
             destroyerOfKarens.Draw(_spriteBatch);
           //  toggleMeUwu.Draw(_spriteBatch);
             _spriteBatch.End();

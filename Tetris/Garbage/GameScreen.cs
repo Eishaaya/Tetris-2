@@ -59,7 +59,7 @@ namespace Tetris
             };
             for (int i = 0; i < boxLocations.Count; i++)
             {
-                boxes.Add(new Button(boxSprite, boxLocations[i], Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray));
+                boxes.Add(new Button(boxSprite, boxLocations[i], Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .05f, Color.Gray, Color.DarkGray));
             }
             doubleTap = boxes.Count - 1;
             moveLabel = new Label(laby.Font, Color.White, new Vector2(420, 850), "", TimeSpan.Zero);
