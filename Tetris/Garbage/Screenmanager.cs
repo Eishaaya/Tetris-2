@@ -31,7 +31,7 @@ namespace Tetris
             {
                 for (int i = 0; i < allScreens.Count; i++)
                 {
-                    allScreens[i].changeBinds(activeScreens.Peek().binds);
+                    allScreens[i].changeBinds(activeScreens.Peek().binds, activeScreens.Peek().GetBools());
                     bindsChanged = false;
                 }
             }

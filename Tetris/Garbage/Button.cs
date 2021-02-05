@@ -11,9 +11,11 @@ namespace Tetris
     class Button : Sprite
     {
         Color OriginalColor;
-        Color HoverColor;
+        public Color HoverColor;
         public Color ClickedColor;
         public bool hold;
+        public bool held;
+        public bool prevDown;
         public override Rectangle Hitbox
         {
             get
@@ -27,6 +29,8 @@ namespace Tetris
             HoverColor = hovercolor;
             ClickedColor = clickedcolor;
             OriginalColor = color;
+            hold = false;
+            prevDown = false;
         }
         public virtual bool check(Vector2 cursor, bool isclicked)
         {
@@ -35,16 +39,20 @@ namespace Tetris
                 if (!isclicked)
                 {
                     Color = HoverColor;
+                    hold = false;
+                    prevDown = false;
                 }
                 else
                 {
                     Color = ClickedColor;
+                    hold = prevDown;
+                    prevDown = true;
                     return true;
                 }
             }
             else
             {
-                if (!hold)
+                if (!held)
                 {
                     Color = OriginalColor;
                 }

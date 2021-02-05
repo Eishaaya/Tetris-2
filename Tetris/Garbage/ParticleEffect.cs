@@ -30,8 +30,9 @@ namespace Tetris
                 {
                     j++;
                 }
-                particles.Add(new Particle(image, origin, colors[j], 0, SpriteEffects.None, new Vector2(0, 0), new Vector2(MathHelper.ToRadians((float)(Math.Sin(random.Next(360)) * speeds[j])), (float)(Math.Cos(random.Next(360)) * speeds[j])), time, new Vector2(random.Next(scales[j]), random.Next(scales[j])), 1, scales[j]));
-                return;
+                float distance = (360 * (subsections.Count + 1)) / amount;
+                float angle = MathHelper.ToRadians(distance * i);
+                particles.Add(new Particle(image, origin, colors[j], 0, SpriteEffects.None, new Vector2(0, 0), new Vector2((float)(Math.Cos(angle) * speeds[j]), (float)(Math.Sin(angle) * speeds[j])), time, new Vector2(random.Next(scales[j]), random.Next(scales[j])), 1, scales[j]));
             }
         }
         public void Update(GameTime time)
@@ -41,21 +42,15 @@ namespace Tetris
                 fullFaded = true;
                 return;
             }
-            bool blah = true;
-            while (blah)
+            for (int i = particles.Count - 1; i >= 0; i--)
             {
-                blah = false;
-                for (int i = 0; i < particles.Count; i++)
+                particles[i].Update(time);
+                if (particles[i].faded)
                 {
-                    particles[i].Update(time);
-                    if (particles[i].faded)
-                    {
-                        particles.RemoveAt(i);
-                        blah = true;
-                        break;
-                    }
+                    particles.RemoveAt(i);
                 }
             }
+
         }
         public void Draw(SpriteBatch batch)
         {

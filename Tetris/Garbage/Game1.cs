@@ -350,16 +350,16 @@ namespace Tetris
             resume = new Button(Content.Load<Texture2D>("Resume Button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 134, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             toMenu = new Button(Content.Load<Texture2D>("Menu button"), new Vector2(GraphicsDevice.Viewport.Width / 2, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             toMenu2 = new Button(Content.Load<Texture2D>("Menu button"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 504), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
-            toMenu3 = new Button(Content.Load<Texture2D>("Menu button"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 25, 550), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            toMenu3 = new Button(Content.Load<Texture2D>("Menu button"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 25, 750), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             setting = new Button(Content.Load<Texture2D>("SettingsButt"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 172), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             restart = new Button(Content.Load<Texture2D>("Restart Button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 150, 504), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
-            apply = new Button(Content.Load<Texture2D>("Applu"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 159, 550), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            apply = new Button(Content.Load<Texture2D>("Applu"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 159, 750), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             defaults = new Button(Content.Load<Texture2D>("Default"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 159, 100), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             arrows = new Button(Content.Load<Texture2D>("Arrows"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 29, 100), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
-            toggleMeUwu = new Toggler(Content.Load<Texture2D>("Toggle Base"), new Vector2(300, 450), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.Black,
-            new Sprite(Content.Load<Texture2D>("Toggle Ball"), new Vector2(300, 450), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1),
-            new Sprite(Content.Load<Texture2D>("Toggle Color"), new Vector2(300, 450), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1),
-            new ScalableSprite(Content.Load<Texture2D>("ToggleBaseColor"), new Vector2(300, 450), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), new Vector2(0, 1)));
+            toggleMeUwu = new Toggler(Content.Load<Texture2D>("Toggle Base"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .9f, Color.Gray, Color.Black,
+            new Sprite(Content.Load<Texture2D>("Toggle Ball"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1),
+            new Sprite(Content.Load<Texture2D>("Toggle Color"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .7f),
+            new ScalableSprite(Content.Load<Texture2D>("ToggleBaseColor"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), new Vector2(0, 1), .8f));
             clasgrid = new Grid(
             new Vector2(10, 20), Gimage, new List<List<Vector2>>
             {
@@ -486,15 +486,30 @@ namespace Tetris
                 "Last",
                 "Swap",
                 "Queue",
-                "Pause"
-            }, Content.Load<SpriteFont>("File"), settingsMusic);
+                "Pause",
+                "Music",
+                "Sound",
+                "Held Turning",
+                "Held Vertical",
+                "Held Horizontal"
+            }, new List<bool> 
+            { 
+                true, 
+                true, 
+                true, 
+                true,
+                true
+            }, toggleMeUwu, Content.Load<SpriteFont>("File"), settingsMusic);
             destroyerOfKarens = new Screenmanager(new List<Screen> { menu, game, oldGame, pause, lose, settings });
         }
 
         protected override void Update(GameTime gameTime)
         {
-            destroyerOfKarens.Update(gameTime);
-            //   toggleMeUwu.check(Mouse.GetState().Position.ToVector2(), Mouse.GetState().LeftButton == ButtonState.Pressed);
+            //toggleMeUwu.check(Mouse.GetState().Position.ToVector2(), Mouse.GetState().LeftButton == ButtonState.Pressed);
+            //if (toggleMeUwu.on)
+            //{
+                destroyerOfKarens.Update(gameTime);
+            //}
         }
 
         protected override void Draw(GameTime gameTime)
@@ -502,7 +517,7 @@ namespace Tetris
             GraphicsDevice.Clear(Color.Black);
             _spriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack);
             destroyerOfKarens.Draw(_spriteBatch);
-          //  toggleMeUwu.Draw(_spriteBatch);
+            //toggleMeUwu.Draw(_spriteBatch);
             _spriteBatch.End();
             base.Draw(gameTime);
         }

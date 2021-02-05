@@ -92,7 +92,17 @@ namespace Tetris
                 {
                     if (Vector2.Distance(new Vector2(i, j), place) <= explosive + .01f)
                     {
-                        spots.Add(new Vector2(i, j));
+                        if (coords[i][j].chonker > 0)
+                        {
+                            for (int e = 0; e < Vector2.Distance(new Vector2(i, j), place) + .01f; e++)
+                            {
+                                spots.Add(new Vector2(i, j));
+                            }
+                        }  
+                        else
+                        {
+                            spots.Add(new Vector2(i, j));
+                        }
                     }
                 }
             }

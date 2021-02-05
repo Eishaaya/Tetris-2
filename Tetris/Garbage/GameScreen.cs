@@ -30,7 +30,7 @@ namespace Tetris
         bool labelFade = true;
         Color moveColor;
         Keys pauseKey;
-        bool isClassic;
+        bool isClassic;       
 
         public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, Texture2D boxSprite, List<Vector2> boxLocations, SoundEffect mus, SoundEffect intro, Keys pauseK = Keys.Escape)
             : base(mus, intro)
@@ -59,7 +59,7 @@ namespace Tetris
             };
             for (int i = 0; i < boxLocations.Count; i++)
             {
-                boxes.Add(new Button(boxSprite, boxLocations[i], Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .05f, Color.Gray, Color.DarkGray));
+                boxes.Add(new Button(boxSprite, boxLocations[i], Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .079f, Color.Gray, Color.DarkGray));
             }
             doubleTap = boxes.Count - 1;
             moveLabel = new Label(laby.Font, Color.White, new Vector2(420, 850), "", TimeSpan.Zero);
@@ -92,8 +92,9 @@ namespace Tetris
             };
             bottom.Color = colors[0];
         }
-        public override void changeBinds(List<Keys> newBinds)
+        public override void changeBinds(List<Keys> newBinds, List<bool> bools)
         {
+            base.changeBinds(newBinds, bools); 
             grid.downKey = newBinds[0];
             grid.turnKey = newBinds[1];
             grid.leftKey = newBinds[2];
@@ -104,6 +105,10 @@ namespace Tetris
             grid.switchKeys[2] = newBinds[7];
             grid.switchKeys[3] = newBinds[8];
             pauseKey = newBinds[9];
+            grid.playSounds = bools[1];
+            grid.holdTurn = bools[2];
+            grid.holdDown = bools[3];
+            grid.holdSide = bools[4];
         }
         public override void Reset()
         {

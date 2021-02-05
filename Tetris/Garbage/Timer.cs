@@ -22,6 +22,10 @@ namespace Tetris
         {
             wait += time.ElapsedGameTime;
         }
+        public int getMillies()
+        {
+            return Until.Milliseconds;
+        }
         public bool ready()
         {
             if(wait >= Until)
