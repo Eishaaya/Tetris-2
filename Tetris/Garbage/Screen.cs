@@ -21,12 +21,14 @@ namespace Tetris
         bool introDone;
         protected bool keysDown = false;
         protected KeyboardState Maryland;
+        protected bool playMusic;
         public Screen()
             : this(null, null) { }
         public Screen(SoundEffect m)
             : this(m, null) { }
         public Screen(SoundEffect m, SoundEffect im)
         {
+            playMusic = true;
             Maryland = new KeyboardState();
             mousy = new MouseState();
             nou = false;
@@ -53,9 +55,17 @@ namespace Tetris
                 introDone = true;
             }
         }
-        public virtual void changeBinds(List<Keys> newBinds)
+        public virtual void changeBinds(List<Keys> newBinds, List<bool> bools)
         {
-
+            playMusic = bools[0];
+            if (!playMusic)
+            {
+                StopMusic();
+            }
+        }
+        public virtual List<bool> GetBools()
+        {
+            return new List<bool>();
         }
         public void StopMusic()
         {
@@ -73,19 +83,22 @@ namespace Tetris
         {
             keysDown = true;
             heldMouse = true;
-            if (introMusic == null)
+            if (playMusic)
             {
-                if (music != null && music.State != SoundState.Playing)
+                if (introMusic == null)
                 {
-                    music.Play();
+                    if (music != null && music.State != SoundState.Playing)
+                    {
+                        music.Play();
+                    }
+                    return;
                 }
-                return;
+                if (music.State == SoundState.Playing)
+                {
+                    return;
+                }
+                introMusic.Play();
             }
-            if (music.State == SoundState.Playing)
-            {
-                return;
-            }
-            introMusic.Play();
             introDone = false;
         }
         public virtual void Update(GameTime time, Screenmanager manny)
@@ -119,7 +132,7 @@ namespace Tetris
 
         public void PlayMusic()
         {
-            if (!introDone && (introMusic == null || introMusic.State == SoundState.Stopped))
+            if (!introDone && playMusic && (introMusic == null || introMusic.State == SoundState.Stopped))
             {
                 music.Play();
                 introDone = true;
@@ -127,7 +140,10 @@ namespace Tetris
         }
         public virtual void Play(GameTime time)
         {
-            PlayMusic();
+            if (music != null)
+            {
+                PlayMusic();
+            }
         }
 
         public virtual void Transfer(int transfer)

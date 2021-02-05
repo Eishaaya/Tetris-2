@@ -24,6 +24,8 @@ namespace Tetris
         Vector2 pieceSize;
         List<Vector2> spots;
         int chonkValue;
+        float explosive;
+        Random random;
         public RatPooeys(RatPooeys old)
         {
             rotated = false;
@@ -40,8 +42,9 @@ namespace Tetris
             dimensions = old.dimensions;
             boxes = old.boxes;
         }
-        public RatPooeys(Sprite im, List<Vector2> spots, Vector2 widthHeight, Color c, int se, float sc = 1, bool s = false, int t = 650, int ch = 0, int o = 6, int d1 = 10, int d2 = 26, int p = 6, float r = 0)
+        public RatPooeys(Sprite im, List<Vector2> spots, Vector2 widthHeight, Color c, int se, float sc = 1, bool s = false, int t = 650, int ch = 0, float ex = 0, Texture2D exImage = null, int o = 6, int d1 = 10, int d2 = 26, int p = 6, float r = 0)
         {
+            random = new Random();
             chonkValue = ch;
             rotated = false;
             sideways = 0;
@@ -57,6 +60,11 @@ namespace Tetris
             dimensions = new Vector2(d1, d2);
             image.Color = c;
             this.spots = spots;
+            int exSpot = 0;
+            if (ex > 0)
+            {
+                exSpot = random.Next(spots.Count); 
+            }
             if (ch > 0)
             {
                 score = ch;
@@ -64,11 +72,25 @@ namespace Tetris
             else
             {
                 score = 1;
-            }
+            }            
             for (int i = 0; i < spots.Count; i++)
             {
+                float depthFactor = 0;
+                Color tempColor = image.Color;
+                Texture2D tempImage = image.Image;
+                if (i == exSpot && ex > 0)
+                {
+                    tempImage = exImage;
+                    tempColor = Color.White;
+                    explosive = ex;
+                    depthFactor = .5f;
+                }            
+                else
+                {
+                    explosive = 0;
+                }
                 locations.Add(spots[i] * (float)Math.Round(60 * scale));
-                boxes.Add(new Coordinate(new Sprite(image.Image, image.Location, image.Color, image.Rotation, image.Effects, image.Origin, image.Scale, image.Depth), spots[i], se, ch));
+                boxes.Add(new Coordinate(new Sprite(tempImage, image.Location, tempColor, image.Rotation, image.Effects, image.Origin, image.Scale, image.Depth + depthFactor), spots[i], se, ch, explosive));
                 if (ch > 0)
                 {
                     boxes[i].image.Color = Color.Black;
@@ -77,15 +99,17 @@ namespace Tetris
                 boxes[i].image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (o * (float)Math.Round(60 * scale))) + oragami;
             }
             score *= se * ((int)Math.Sqrt(boxes.Count) + 1);
+            explosive = ex;
         }
         public void Revert()
         {
+            var noxes = new List<Coordinate>(boxes);
             boxes.Clear();
             locations.Clear();
             for (int i = 0; i < spots.Count; i++)
             {
                 locations.Add(spots[i] * (float)Math.Round(60 * scale));
-                boxes.Add(new Coordinate(new Sprite(image.Image, image.Location, image.Color, image.Rotation, image.Effects, image.Origin, image.Scale, image.Depth), spots[i], (int)image.Scale, chonkValue));
+                boxes.Add(new Coordinate(new Sprite(noxes[i].image.Image, image.Location, noxes[i].image.Color, image.Rotation, image.Effects, image.Origin, image.Scale, image.Depth), spots[i], (int)image.Scale, chonkValue, noxes[i].explosive));
                 Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
                 boxes[i].image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
             }
@@ -125,6 +149,10 @@ namespace Tetris
         }
         public void Update(GameTime gameTime)
         {
+            for (int i = 0; i < boxes.Count; i++)
+            {
+                boxes[i].Animate();
+            }    
             if (goDown)
             {
                 moveDown();

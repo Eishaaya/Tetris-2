@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -12,14 +13,15 @@ namespace Tetris
         public bool isfull;
         public int score;
         public float chonker;
+        public float explosive;
         float totalChonk;
-        Color chonkColor;        
+        Color chonkColor;
         //public Coordinate(Sprite I, Vector2 P, int s, Color cc)
         //{
         //    Coordinate(I, P, s);
         //    chonkColor = Color.Black;
         //}
-        public Coordinate(Sprite I, Vector2 P, int s, int c)
+        public Coordinate(Sprite I, Vector2 P, int s, int c, float e)
         {
             image = I;
             place = P;
@@ -27,6 +29,7 @@ namespace Tetris
             chonker = c;
             isfull = false;
             chonkColor = I.Color;
+            explosive = e;
             if (c > 0)
             {
                 image.Color = Color.Black;
@@ -46,24 +49,83 @@ namespace Tetris
             chonker--;
             image.Color = Color.FromNonPremultiplied((int)(chonkColor.R * ((totalChonk - chonker) / totalChonk)), (int)(chonkColor.G * ((totalChonk - chonker) / totalChonk)), (int)(chonkColor.B * ((totalChonk - chonker) / totalChonk)), 255);
         }
-        public void fill(RatPooeys pooey)
+        public void fill(Coordinate pooey)
         {
             image.Image = pooey.image.Image;
-            image.Color = pooey.boxes[0].image.Color;
-            chonkColor = pooey.image.Color;
+            image.Color = pooey.image.Color;
+            chonkColor = pooey.chonkColor;
             score = pooey.score;
             isfull = true;
-            totalChonk = pooey.boxes[0].chonker;
-            chonker = pooey.boxes[0].chonker;
-            if (chonker > 0)
+            image.Depth = pooey.image.Depth;
+            totalChonk = pooey.chonker;
+            chonker = pooey.chonker;
+            explosive = pooey.explosive;
+
+        }
+
+        public List<Vector2> Explode(List<List<Coordinate>> coords)
+        {
+            float top = place.Y - explosive - 1;
+            if (top < 0)
             {
-                ;
-            }    
+                top = 0;
+            }
+            float bottom = place.Y + explosive + 1;
+            if (bottom > coords[0].Count)
+            {
+                bottom = coords[0].Count;
+            }
+            float left = place.X - explosive - 1;
+            if (left < 0)
+            {
+                left = 0;
+            }
+            float right = place.X + explosive + 1;
+            if (right > coords.Count)
+            {
+                right = coords.Count;
+            }
+            List<Vector2> spots = new List<Vector2>();
+            for (int i = (int)left; i < right; i++)
+            {
+                for (int j = (int)top; j < bottom; j++)
+                {
+                    if (Vector2.Distance(new Vector2(i, j), place) <= explosive + .01f)
+                    {
+                        if (coords[i][j].chonker > 0)
+                        {
+                            for (int e = 0; e < Vector2.Distance(new Vector2(i, j), place) + .01f; e++)
+                            {
+                                spots.Add(new Vector2(i, j));
+                            }
+                        }  
+                        else
+                        {
+                            spots.Add(new Vector2(i, j));
+                        }
+                    }
+                }
+            }
+            return spots;
+        }
+        public void Animate()
+        {
+            if (explosive == 2)
+            {
+                image.Pulsate(20, .05f);
+            }
+            else if (explosive == 3)
+            {
+                image.Pulsate(35, .1f);
+                image.Vibrate(12, .1f);
+            }
         }
         public void empty(Sprite empty)
-        {            
-            image = new Sprite(empty.Image, empty.Location, empty.Color, empty.Rotation, empty.Effects, empty.Origin, empty.Scale, empty.Depth);
+        {
+            image = new Sprite(empty.Image, image.Location, empty.Color, empty.Rotation, empty.Effects, empty.Origin, image.Scale, empty.Depth);
             isfull = false;
+            explosive = 0;
+            chonker = 0;
         }
     }
 }

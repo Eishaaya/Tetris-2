@@ -14,9 +14,17 @@ namespace Tetris
         {
             Until = until;
         }
+        public Timer(int length)
+        {
+            Until = new TimeSpan(0, 0, 0, 0, length);
+        }
         public void tick(GameTime time)
         {
             wait += time.ElapsedGameTime;
+        }
+        public int getMillies()
+        {
+            return Until.Milliseconds;
         }
         public bool ready()
         {

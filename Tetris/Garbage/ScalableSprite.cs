@@ -8,7 +8,7 @@ namespace Tetris
 {
     class ScalableSprite : Sprite
     {
-        Vector2 scale;
+        public Vector2 scale;
         public override Rectangle Hitbox
         {
             get
