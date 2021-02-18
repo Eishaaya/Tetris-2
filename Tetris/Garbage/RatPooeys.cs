@@ -21,10 +21,11 @@ namespace Tetris
         public bool rotated;
         int prepsize;
         public int score;
-        Vector2 pieceSize;
+        public Vector2 pieceSize;
         List<Vector2> spots;
         int chonkValue;
         float explosive;
+        bool speedUp;
         Random random;
         public RatPooeys(RatPooeys old)
         {
@@ -42,7 +43,7 @@ namespace Tetris
             dimensions = old.dimensions;
             boxes = old.boxes;
         }
-        public RatPooeys(Sprite im, List<Vector2> spots, Vector2 widthHeight, Color c, int se, float sc = 1, bool s = false, int t = 650, int ch = 0, float ex = 0, Texture2D exImage = null, int o = 6, int d1 = 10, int d2 = 26, int p = 6, float r = 0)
+        public RatPooeys(Sprite im, List<Vector2> spots, Vector2 widthHeight, Color c, int se, float sc = 1, bool s = false, int t = 650, int ch = 0, bool sp = false, Texture2D spImage = null, float ex = 0, Texture2D exImage = null, int o = 6, int d1 = 10, int d2 = 26, int p = 6, float r = 0)
         {
             random = new Random();
             chonkValue = ch;
@@ -61,9 +62,9 @@ namespace Tetris
             image.Color = c;
             this.spots = spots;
             int exSpot = 0;
-            if (ex > 0)
+            if (ex > 0 || sp)
             {
-                exSpot = random.Next(spots.Count); 
+                exSpot = random.Next(spots.Count);
             }
             if (ch > 0)
             {
@@ -72,25 +73,34 @@ namespace Tetris
             else
             {
                 score = 1;
-            }            
+            }
             for (int i = 0; i < spots.Count; i++)
             {
-                float depthFactor = 0;
+                float depthFactor = 0.01f;
                 Color tempColor = image.Color;
-                Texture2D tempImage = image.Image;
-                if (i == exSpot && ex > 0)
+                Texture2D tempImage = image.Image;                
+                if (i == exSpot)
                 {
-                    tempImage = exImage;
-                    tempColor = Color.White;
-                    explosive = ex;
-                    depthFactor = .5f;
-                }            
+                    if (ex > 0)
+                    {
+                        tempImage = exImage;
+                        tempColor = Color.White;
+                        explosive = ex;
+                        depthFactor = .5f;
+                    }
+                    else if (sp)
+                    {
+                        tempImage = spImage;
+                        speedUp = sp;
+                    }
+                }
                 else
                 {
                     explosive = 0;
+                    speedUp = false;
                 }
                 locations.Add(spots[i] * (float)Math.Round(60 * scale));
-                boxes.Add(new Coordinate(new Sprite(tempImage, image.Location, tempColor, image.Rotation, image.Effects, image.Origin, image.Scale, image.Depth + depthFactor), spots[i], se, ch, explosive));
+                boxes.Add(new Coordinate(new Sprite(tempImage, image.Location, tempColor, image.rotation, image.effect, image.Origin, image.Scale, image.Depth + depthFactor), spots[i], se, ch, explosive, speedUp));
                 if (ch > 0)
                 {
                     boxes[i].image.Color = Color.Black;
@@ -100,6 +110,7 @@ namespace Tetris
             }
             score *= se * ((int)Math.Sqrt(boxes.Count) + 1);
             explosive = ex;
+            speedUp = sp;
         }
         public void Revert()
         {
@@ -109,7 +120,7 @@ namespace Tetris
             for (int i = 0; i < spots.Count; i++)
             {
                 locations.Add(spots[i] * (float)Math.Round(60 * scale));
-                boxes.Add(new Coordinate(new Sprite(noxes[i].image.Image, image.Location, noxes[i].image.Color, image.Rotation, image.Effects, image.Origin, image.Scale, image.Depth), spots[i], (int)image.Scale, chonkValue, noxes[i].explosive));
+                boxes.Add(new Coordinate(new Sprite(noxes[i].image.Image, image.Location, noxes[i].image.Color, image.rotation, image.effect, image.Origin, image.Scale, image.Depth), spots[i], (int)image.Scale, chonkValue, noxes[i].explosive, speedUp));
                 Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
                 boxes[i].image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
             }
@@ -152,7 +163,7 @@ namespace Tetris
             for (int i = 0; i < boxes.Count; i++)
             {
                 boxes[i].Animate();
-            }    
+            }
             if (goDown)
             {
                 moveDown();
@@ -165,22 +176,22 @@ namespace Tetris
             }
         }
 
-        public void rotate()
+        public bool rotate()
         {
-            rotate(1);
             rotated = true;
+            return rotate(1);
         }
-        public void rotate(int direction)
+        public bool rotate(int direction)
         {
             for (int i = 0; i < boxes.Count; i++)
             {
                 if (boxes[i].place.Y < prepsize - 2)
                 {
-                    return;
+                    return false;
                 }
             }
             rotation = MathHelper.ToRadians(90) * direction;
-            if (!symmetry)
+            if (!symmetry || explosive > 0 || speedUp)
             {
                 for (int i = 0; i < boxes.Count; i++)
                 {
@@ -224,6 +235,7 @@ namespace Tetris
                 }
                 while (true);
             }
+            return true;
         }
 
         #region later

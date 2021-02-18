@@ -11,7 +11,6 @@ namespace Tetris
 {
     class GameScreen : Screen
     {
-        Song music;
         Grid grid;
         Label score;
         Button pause;
@@ -26,15 +25,18 @@ namespace Tetris
         bool erase = false;
         List<Button> boxes;
         Label moveLabel;
+        Label scoreX;
         int doubleTap;
         bool labelFade = true;
         Color moveColor;
         Keys pauseKey;
-        bool isClassic;       
+        bool isClassic;
+        bool colorChanged;        
 
         public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, Texture2D boxSprite, List<Vector2> boxLocations, SoundEffect mus, SoundEffect intro, Keys pauseK = Keys.Escape)
             : base(mus, intro)
         {
+            colorChanged = false;
             pauseKey = pauseK;
             boxes = new List<Button>();
             pause = pauser;
@@ -62,12 +64,14 @@ namespace Tetris
                 boxes.Add(new Button(boxSprite, boxLocations[i], Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .079f, Color.Gray, Color.DarkGray));
             }
             doubleTap = boxes.Count - 1;
-            moveLabel = new Label(laby.Font, Color.White, new Vector2(420, 850), "", TimeSpan.Zero);
+            moveLabel = new Label(laby.Font, Color.White, new Vector2(420, 850), "", TimeSpan.Zero, new Vector2(0, 0), 0, SpriteEffects.None, 1, .8f);
+            scoreX = new Label(laby.Font, Color.White, score.Location + new Vector2(score.Font.MeasureString(score.Text).X + 0, 0), "x1", TimeSpan.Zero, new Vector2(0, 0), 0, SpriteEffects.None, 1, .8f);
             bottom.Color = colors[0];
         }
         public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, SoundEffect mus, SoundEffect intro, Keys pauseK = Keys.Escape)
             : base(mus, intro)
         {
+            colorChanged = false;
             pauseKey = pauseK;
             boxes = new List<Button>();
             pause = pauser;
@@ -112,6 +116,7 @@ namespace Tetris
         }
         public override void Reset()
         {
+            colorChanged = false;
             grid.Reset();
         }
         public override void Update(GameTime time, Screenmanager manny)
@@ -171,7 +176,7 @@ namespace Tetris
             }
             if (fade)
             {
-                if (bottom.Fade(colors[stage]))
+                if (bottom.FadeTo(1))
                 {
                     fade = false;
                     fill = true;
@@ -185,11 +190,16 @@ namespace Tetris
                 }
             }
             #region Bottom
+            if (!colorChanged)
+            {
+                colorChanged = grid.ChangeBackColor(Color.Lerp(colors[stage], Color.White, .0f));
+            }
             if (grid.progression == 0)
             {
                 if (stage > 0)
                 {
                     fade = true;
+                    colorChanged = false;
                 }
                 stage = 0;
             }
@@ -198,6 +208,7 @@ namespace Tetris
                 if (stage == 0)
                 {
                     fade = true;
+                    colorChanged = false;
                 }
                 stage = 1;
             }
@@ -206,6 +217,7 @@ namespace Tetris
                 if (stage == 1)
                 {
                     fade = true;
+                    colorChanged = false;
                 }
                 stage = 2;
             }
@@ -214,6 +226,7 @@ namespace Tetris
                 if (stage == 2)
                 {
                     fade = true;
+                    colorChanged = false;
                 }
                 stage = 3;
             }
@@ -222,6 +235,7 @@ namespace Tetris
                 if (stage == 3)
                 {
                     fade = true;
+                    colorChanged = false;
                 }
                 stage = 4;
             }
@@ -230,6 +244,7 @@ namespace Tetris
                 if (stage == 4)
                 {
                     fade = true;
+                    colorChanged = false;
                 }
                 stage = 5;
             }
@@ -238,6 +253,7 @@ namespace Tetris
                 if (stage == 5)
                 {
                     fade = true;
+                    colorChanged = false;
                 }
                 stage = 6;
             }
@@ -246,6 +262,7 @@ namespace Tetris
                 if (stage == 6)
                 {
                     fade = true;
+                    colorChanged = false;
                 }
                 stage = 7;
             }
@@ -254,6 +271,7 @@ namespace Tetris
                 if (stage == 7)
                 {
                     fade = true;
+                    colorChanged = false;
                 }
                 stage = 8;
             }
@@ -273,6 +291,7 @@ namespace Tetris
             }
             base.Update(time, manny);
             grid.Update(time);
+            scoreX.Text = $"x{Math.Round(grid.scoreFactor, 1)}";
             score.Text = $"Score: \n {grid.score}";
             if (heldMouse || keysDown)
             {
@@ -310,6 +329,7 @@ namespace Tetris
                 boxes[i].Draw(batch);
             }
             nextBox.Draw(batch);
+            scoreX.write(batch);
             score.write(batch);
             if (!lost)
             {

@@ -67,10 +67,10 @@ namespace Tetris
                     offSet = new Vector2(offSet.X + finalRow, offSet.Y);
                 }
                 toggOns[i] = !toggOns[i];
-                toggles.Add(new Toggler(template.Image, template.Location + offSet, template.Color, template.Rotation, template.Effects, template.Origin, template.Scale, template.Depth, template.HoverColor, template.ClickedColor,
-                    new Sprite(template.ball.Image, template.ball.Location + offSet, template.ball.Color, template.ball.Rotation, template.ball.Effects, template.ball.Origin, template.ball.Scale, template.ball.Depth),
-                    new Sprite(template.bottomColor.Image, template.bottomColor.Location + offSet, template.bottomColor.Color, template.bottomColor.Rotation, template.bottomColor.Effects, template.bottomColor.Origin, template.bottomColor.Scale, template.bottomColor.Depth),
-                    new ScalableSprite(template.MovingColor.Image, template.MovingColor.Location + offSet, template.MovingColor.Color, template.MovingColor.Rotation, template.MovingColor.Effects, template.MovingColor.Origin, template.MovingColor.scale, template.MovingColor.Depth, template.MovingColor.Scale), font, keyTypes[i + binds.Count], 50, 0, 0, togs[i]));
+                toggles.Add(new Toggler(template.Image, template.Location + offSet, template.Color, template.rotation, template.effect, template.Origin, template.Scale, template.Depth, template.HoverColor, template.ClickedColor,
+                    new Sprite(template.ball.Image, template.ball.Location + offSet, template.ball.Color, template.ball.rotation, template.ball.effect, template.ball.Origin, template.ball.Scale, template.ball.Depth),
+                    new Sprite(template.bottomColor.Image, template.bottomColor.Location + offSet, template.bottomColor.Color, template.bottomColor.rotation, template.bottomColor.effect, template.bottomColor.Origin, template.bottomColor.Scale, template.bottomColor.Depth),
+                    new ScalableSprite(template.MovingColor.Image, template.MovingColor.Location + offSet, template.MovingColor.Color, template.MovingColor.rotation, template.MovingColor.effect, template.MovingColor.Origin, template.MovingColor.scale, template.MovingColor.Depth, template.MovingColor.Scale), font, keyTypes[i + binds.Count], 50, 0, 0, togs[i]));
             }
         }
         public override void Start()
@@ -130,7 +130,7 @@ namespace Tetris
                 else if (menuButt.check(mousy.Position.ToVector2(), nou))
                 {
                     binds = oldBinds;
-                    manny.back();                    
+                    manny.back();
                     for (int i = 0; i < toggles.Count; i++)
                     {
                         toggles[i].on = !toggOns[i];

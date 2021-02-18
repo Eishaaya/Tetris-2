@@ -23,7 +23,7 @@ namespace Tetris
         }
         public override void Draw(SpriteBatch batch)
         {
-            batch.Draw(Image, Location, null, Color, Rotation, Origin, scale, Effects, Depth);
+            batch.Draw(Image, Location, null, Color, rotation, Origin, scale, effect, Depth);
         }
     }
 }

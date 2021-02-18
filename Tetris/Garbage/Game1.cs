@@ -51,6 +51,7 @@ namespace Tetris
         Button defaults;
         Button arrows;
         Button restart;
+        Button restart2;
         Button complexButty;
         Button setting;
         Sprite tint;
@@ -65,6 +66,7 @@ namespace Tetris
         SoundEffect turnEffect;
         SoundEffect landEffect;
         SoundEffect boomEffect;
+        SoundEffect speedEffect;
         Toggler toggleMeUwu;
 
         public Game1()
@@ -98,6 +100,7 @@ namespace Tetris
             turnEffect = Content.Load<SoundEffect>("Rotate");
             landEffect = Content.Load<SoundEffect>("Landing");
             boomEffect = Content.Load<SoundEffect>("Boom");
+            speedEffect = Content.Load<SoundEffect>("Zoom");
             settingsMusic = Content.Load<SoundEffect>("Settings");
 
 
@@ -337,13 +340,13 @@ namespace Tetris
                 new Rectangle(0, 1183, 600, 90),
                 new Rectangle(0, 1274, 600, 90)
             }, 80);
-            laby = new Label(Content.Load<SpriteFont>("Font"), Color.White, new Vector2(450, 20), "Score: \n", new TimeSpan(0, 0, 0), new Vector2(0, 0), 0, SpriteEffects.None, 1, .8f);
+            laby = new Label(Content.Load<SpriteFont>("Font"), Color.White, new Vector2(425, 20), "Score: \n", new TimeSpan(0, 0, 0), new Vector2(0, 0), 0, SpriteEffects.None, 1, .8f);
             image = new Sprite(Content.Load<Texture2D>("Tile"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 1, 0.1f);
             tint = new Sprite(Content.Load<Texture2D>("darkener"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .9f);
             box = new Sprite(Content.Load<Texture2D>("Nexts"), new Vector2(400, 290), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .8f);
             loser = new Sprite(Content.Load<Texture2D>("Game Over Screen"), new Vector2(150, 198), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .95f);
             Gimage = new Sprite(Content.Load<Texture2D>("grid"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 0, 0);
-            grid = new Grid(new Vector2(10, 20), Gimage, locations, symmetry, colors, chances, vals, diffs, sizes, image, turnEffect, landEffect, boomEffect, (float).6667, false, Content.Load<Texture2D>("Explosive"), Content.Load<Texture2D>("Pixel"));
+            grid = new Grid(new Vector2(10, 20), Gimage, locations, symmetry, colors, chances, vals, diffs, sizes, image, turnEffect, landEffect, boomEffect, speedEffect, (float).6667, false, Content.Load<Texture2D>("Explosive"), Content.Load<Texture2D>("Speeder Tile"), Content.Load<Texture2D>("Pixel"), Content.Load<Texture2D>("Speed Particle"));
             butty = new Button(Content.Load<Texture2D>("Classic button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 150, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             pauser = new Button(Content.Load<Texture2D>("Pause symbol alt"), new Vector2(435, 120), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             complexButty = new Button(Content.Load<Texture2D>("Power Unlimited Power"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
@@ -353,6 +356,7 @@ namespace Tetris
             toMenu3 = new Button(Content.Load<Texture2D>("Menu button"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 25, 750), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             setting = new Button(Content.Load<Texture2D>("SettingsButt"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 172), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             restart = new Button(Content.Load<Texture2D>("Restart Button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 150, 504), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
+            restart2 = new Button(Content.Load<Texture2D>("Restart Button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 67, 140), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             apply = new Button(Content.Load<Texture2D>("Applu"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 159, 750), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             defaults = new Button(Content.Load<Texture2D>("Default"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 159, 100), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             arrows = new Button(Content.Load<Texture2D>("Arrows"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 29, 100), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
@@ -437,7 +441,7 @@ namespace Tetris
                  new Vector2(180, 120),
                  new Vector2(180, 120),
             },
-            image, turnEffect, landEffect, boomEffect, .6667f, true);
+            image, turnEffect, landEffect, boomEffect, null, .6667f, true);
 
             var boxPlaces = new List<Vector2>
             {
@@ -446,9 +450,9 @@ namespace Tetris
                 new Vector2(406, 696)
             };
 
-            pause = new PauseScreen(tint, toMenu, resume);
+            pause = new PauseScreen(tint, toMenu, resume, restart2);
             game = new GameScreen(grid, laby, pauser, box, bottomScroll, Content.Load<Texture2D>("hoverBrick"), boxPlaces, unlimitedMusic, unlimitedIntro);
-            oldGame = new GameScreen(clasgrid, laby, pauser, box, bottomScroll, music, null);
+            oldGame = new GameScreen(clasgrid, laby, pauser, box, bottomScroll, Content.Load<Texture2D>("hoverBrick"), boxPlaces, music, null);
             lose = new LoseScreen(tint, loser, toMenu2, restart, Content.Load<SpriteFont>("File"));
             menu = new MenuScreen(butty, complexButty, menuMusic, setting);
             settings = new SettingsScreen(defaults, arrows, apply, toMenu3, Content.Load<Texture2D>("BindButt"), new List<Keys>

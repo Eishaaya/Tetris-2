@@ -11,14 +11,16 @@ namespace Tetris
     {
         Button menu;
         Button back;
+        Button restart;
         Sprite tint;
         Keys exit;
-        public PauseScreen(Sprite dark, Button menuButt, Button ReturnButt, Keys Exit = Keys.Escape)
+        public PauseScreen(Sprite dark, Button menuButt, Button ReturnButt, Button restartButt, Keys Exit = Keys.Escape)
             : base()
         {
             exit = Exit;
             tint = dark;
             menu = menuButt;
+            restart = restartButt;
             back = ReturnButt;
         }
 
@@ -37,9 +39,16 @@ namespace Tetris
                 manny.clearMemory();
                 return;
             }
+            if (restart.check(mousy.Position.ToVector2(), nou))
+            {
+                manny.back();
+                manny.peek().Reset();
+                return;
+            }
             if (back.check(mousy.Position.ToVector2(), nou) || Maryland.IsKeyDown(exit) || nou)
             {
                 manny.back();
+                return;
             }
         }
 
@@ -48,6 +57,7 @@ namespace Tetris
             tint.Draw(batch);
             back.Draw(batch);
             menu.Draw(batch);
+            restart.Draw(batch);
         }
     }
 }

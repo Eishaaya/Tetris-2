@@ -44,9 +44,9 @@ namespace Tetris
                 currentframe = 0;
             }
         }   
-        public void Draw(SpriteBatch batch)
+        public override void Draw(SpriteBatch batch)
         {
-            batch.Draw(Image, Location, Frames[currentframe], Color, Rotation, Origin, Scale, Effects, Depth);
+            batch.Draw(Image, Location, Frames[currentframe], Color, rotation, Origin, Scale, effect, Depth);
         }
     }
 }

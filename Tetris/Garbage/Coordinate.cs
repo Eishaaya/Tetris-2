@@ -15,13 +15,14 @@ namespace Tetris
         public float chonker;
         public float explosive;
         float totalChonk;
+        public bool speed;
         Color chonkColor;
         //public Coordinate(Sprite I, Vector2 P, int s, Color cc)
         //{
         //    Coordinate(I, P, s);
         //    chonkColor = Color.Black;
         //}
-        public Coordinate(Sprite I, Vector2 P, int s, int c, float e)
+        public Coordinate(Sprite I, Vector2 P, int s, int c, float e, bool sp)
         {
             image = I;
             place = P;
@@ -30,6 +31,7 @@ namespace Tetris
             isfull = false;
             chonkColor = I.Color;
             explosive = e;
+            speed = sp;
             if (c > 0)
             {
                 image.Color = Color.Black;
@@ -60,6 +62,7 @@ namespace Tetris
             totalChonk = pooey.chonker;
             chonker = pooey.chonker;
             explosive = pooey.explosive;
+            speed = pooey.speed;
 
         }
 
@@ -122,10 +125,11 @@ namespace Tetris
         }
         public void empty(Sprite empty)
         {
-            image = new Sprite(empty.Image, image.Location, empty.Color, empty.Rotation, empty.Effects, empty.Origin, image.Scale, empty.Depth);
+            image = new Sprite(empty.Image, image.Location, empty.Color, empty.rotation, empty.effect, empty.Origin, image.Scale, empty.Depth);
             isfull = false;
             explosive = 0;
             chonker = 0;
+            speed = false;
         }
     }
 }

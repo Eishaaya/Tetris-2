@@ -8,33 +8,63 @@ namespace Tetris
 {
     class Particle : ScalableSprite
     {
+        public bool going;
         Vector2 speed;
         Timer fadeTime;
-        public bool faded;        
+        Timer startTime;
+        public bool faded;
+        bool noScale;
 
-        public Particle(Texture2D image, Vector2 location, Color color, float rotation, SpriteEffects effects, Vector2 origin, Vector2 Speed, int time, Vector2 scale, float depth = 1, float plebScale = 1)
-            :base(image, location, color, rotation, effects, origin, scale, depth, plebScale)
+        public Particle(Texture2D image, Vector2 location, Color color, float rotation, SpriteEffects effects, Vector2 origin, Vector2 Speed, int time, Vector2 scale, float depth = 1, float plebScale = 1, int timeTillStart = 0, bool willScale = true)
+            : base(image, location, color, rotation, effects, origin, scale, depth, plebScale)
         {
+            noScale = !willScale;
             speed = Speed;
             fadeTime = new Timer(time);
-            Scale = Scale / 50;
+            startTime = new Timer(timeTillStart);
+            if (timeTillStart == 0)
+            {
+                going = true;
+            }
+            else
+            {
+                going = false;
+            }
+            //if (!noScale)
+            //{
+                Scale = Scale / 50;
+            //}
         }
         public void Update(GameTime gameTime)
         {
-            fadeTime.tick(gameTime);
-            scale += new Vector2(Math.Abs(speed.X), Math.Abs(speed.Y)) * Scale;
-            Location += speed;
-            if (fadeTime.ready())
+            if (!going)
             {
-                if (Fade())
+                startTime.tick(gameTime);
+                if (startTime.ready())
                 {
-                    faded = true;
+                    going = true;
                 }
-                if (fadeTime.getMillies() < 0)
+            }
+            else
+            {
+                fadeTime.tick(gameTime);
+                //if (!noScale)
+                //{
+                    scale += new Vector2(Math.Abs(speed.X), Math.Abs(speed.Y)) * Scale;
+                //}
+                Location += speed;
+                if (fadeTime.ready())
                 {
-                    for (int i = 0; i < -fadeTime.getMillies(); i++)
+                    if (Fade())
                     {
-                        Fade();
+                        faded = true;
+                    }
+                    if (fadeTime.getMillies() < 0)
+                    {
+                        for (int i = 0; i < -fadeTime.getMillies(); i++)
+                        {
+                            Fade();
+                        }
                     }
                 }
             }

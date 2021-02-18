@@ -364,6 +364,30 @@
 /processorParam:TextureFormat=Color
 /build:Settings.png;SettingsButt.png
 
+#begin Speed Particle.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Speed Particle.png
+
+#begin Speeder Tile.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Speeder Tile.png
+
 #begin square.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -471,4 +495,10 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:zigzag right.png
+
+#begin Zoom.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/build:Zoom.mp3
 
