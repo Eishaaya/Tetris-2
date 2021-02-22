@@ -24,9 +24,10 @@ namespace Tetris
         public Vector2 pieceSize;
         List<Vector2> spots;
         int chonkValue;
-        float explosive;
-        bool speedUp;
+        public float explosive;
+        public bool speedUp;
         Random random;
+        float biggerSide;
         public RatPooeys(RatPooeys old)
         {
             rotated = false;
@@ -34,14 +35,21 @@ namespace Tetris
             scale = old.scale;
             downtime = old.downtime;
             locations = new List<Vector2>();
-            boxes = new List<Coordinate>();
             symmetry = old.symmetry;
-            image = old.image;
+            image = new Sprite(old.image.Image, old.image.Location, old.image.Color, old.image.rotation, old.image.effect, old.image.Origin, old.image.Scale, old.image.Depth);
+            var newBoxes = new List<Coordinate>();
+            for (int i = 0; i < old.boxes.Count; i++)
+            {
+                newBoxes.Add(new Coordinate(new Sprite(old.boxes[i].image.Image, old.boxes[i].image.Location, old.boxes[i].image.Color, old.boxes[i].image.rotation, old.boxes[i].image.effect, old.boxes[i].image.Origin, old.boxes[i].image.Scale, old.boxes[i].image.Depth), old.boxes[i].place, old.boxes[i].score, old.boxes[i].chonker, old.boxes[i].explosive, old.boxes[i].speed));
+            }
+            boxes = newBoxes;
             rotation = old.rotation;
             prepsize = old.prepsize;
             pieceSize = old.pieceSize;
             dimensions = old.dimensions;
-            boxes = old.boxes;
+            chonkValue = old.chonkValue;
+            speedUp = old.speedUp;
+            explosive = old.explosive;
         }
         public RatPooeys(Sprite im, List<Vector2> spots, Vector2 widthHeight, Color c, int se, float sc = 1, bool s = false, int t = 650, int ch = 0, bool sp = false, Texture2D spImage = null, float ex = 0, Texture2D exImage = null, int o = 6, int d1 = 10, int d2 = 26, int p = 6, float r = 0)
         {
@@ -129,7 +137,6 @@ namespace Tetris
         }
         public void Display(Vector2 location, int size)
         {
-            float biggerSide;
             if (pieceSize.X > pieceSize.Y)
             {
                 biggerSide = pieceSize.X;
@@ -185,7 +192,7 @@ namespace Tetris
         {
             for (int i = 0; i < boxes.Count; i++)
             {
-                if (boxes[i].place.Y < prepsize - 2)
+                if (boxes[i].place.Y < biggerSide / 120)
                 {
                     return false;
                 }
@@ -287,8 +294,8 @@ namespace Tetris
         {
             for (int i = 0; i < boxes.Count; i++)
             {
-                boxes[i].image.Location = new Vector2(boxes[i].image.Location.X, boxes[i].image.Location.Y + (float)Math.Round(60 * scale));
-                boxes[i].place.Y += 1;
+                boxes[i].image.Location = new Vector2(boxes[i].image.Location.X, boxes[i].image.Location.Y - (float)Math.Round(60 * scale));
+                boxes[i].place.Y -= 1;
             }
         }
 

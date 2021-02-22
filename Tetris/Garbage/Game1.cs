@@ -346,7 +346,7 @@ namespace Tetris
             box = new Sprite(Content.Load<Texture2D>("Nexts"), new Vector2(400, 290), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .8f);
             loser = new Sprite(Content.Load<Texture2D>("Game Over Screen"), new Vector2(150, 198), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .95f);
             Gimage = new Sprite(Content.Load<Texture2D>("grid"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 0, 0);
-            grid = new Grid(new Vector2(10, 20), Gimage, locations, symmetry, colors, chances, vals, diffs, sizes, image, turnEffect, landEffect, boomEffect, speedEffect, (float).6667, false, Content.Load<Texture2D>("Explosive"), Content.Load<Texture2D>("Speeder Tile"), Content.Load<Texture2D>("Pixel"), Content.Load<Texture2D>("Speed Particle"));
+            grid = new Grid(new Vector2(10, 20), Gimage, locations, symmetry, colors, chances, vals, diffs, sizes, image, turnEffect, landEffect, boomEffect, speedEffect, Content.Load<Texture2D>("ShadowImage"), .6667f, false, Content.Load<Texture2D>("Explosive"), Content.Load<Texture2D>("Speeder Tile"), Content.Load<Texture2D>("Pixel"), Content.Load<Texture2D>("Speed Particle"));
             butty = new Button(Content.Load<Texture2D>("Classic button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 150, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             pauser = new Button(Content.Load<Texture2D>("Pause symbol alt"), new Vector2(435, 120), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             complexButty = new Button(Content.Load<Texture2D>("Power Unlimited Power"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
@@ -441,7 +441,7 @@ namespace Tetris
                  new Vector2(180, 120),
                  new Vector2(180, 120),
             },
-            image, turnEffect, landEffect, boomEffect, null, .6667f, true);
+            image, turnEffect, landEffect, boomEffect, null, Content.Load<Texture2D>("ShadowImage"), .6667f, true);
 
             var boxPlaces = new List<Vector2>
             {
@@ -495,12 +495,14 @@ namespace Tetris
                 "Sound",
                 "Held Turning",
                 "Held Vertical",
-                "Held Horizontal"
+                "Held Horizontal",
+                "Piece Projection"
             }, new List<bool> 
             { 
                 true, 
                 true, 
                 true, 
+                true,
                 true,
                 true
             }, toggleMeUwu, Content.Load<SpriteFont>("File"), settingsMusic);

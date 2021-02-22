@@ -43,6 +43,7 @@ namespace Tetris
         public RatPooeys nextPooey;
         public RatPooeys lastPooey;
         public RatPooeys savedPooey;
+        RatPooeys shadowPooey;
         int nevadaready;
         public bool lose;
         public int progression;
@@ -64,6 +65,7 @@ namespace Tetris
         Texture2D speedImage;
         Texture2D pixel;
         Texture2D speedParticle;
+        Texture2D projectionImage;
         public bool playSounds;
         public bool holdTurn;
         public bool holdDown;
@@ -74,8 +76,8 @@ namespace Tetris
         public float scoreFactor = 1;
         int changeDone;
         int finishedColors;
-
-        public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, List<Vector2> ss, Sprite im, SoundEffect ro, SoundEffect la, SoundEffect b, SoundEffect sp, float sc = 1, bool ic = false, Texture2D ei = null, Texture2D si = null, Texture2D pi = null, Texture2D spp = null, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space, Keys s1 = Keys.D1, Keys s2 = Keys.D2, Keys s3 = Keys.D3, Keys s4 = Keys.D4)
+        public bool willProject = true;
+        public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, List<Vector2> ss, Sprite im, SoundEffect ro, SoundEffect la, SoundEffect b, SoundEffect sp, Texture2D spi, float sc = 1, bool ic = false, Texture2D ei = null, Texture2D si = null, Texture2D pi = null, Texture2D spp = null, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space, Keys s1 = Keys.D1, Keys s2 = Keys.D2, Keys s3 = Keys.D3, Keys s4 = Keys.D4)
         {
             speedTime = 0;
             finishedColors = -1;
@@ -126,6 +128,7 @@ namespace Tetris
             badFactor = 0;
             explosiveImage = ei;
             speedImage = si;
+            projectionImage = spi;
             map = new List<List<Coordinate>>();
             for (int i = 0; i < size.X; i++)
             {
@@ -138,6 +141,10 @@ namespace Tetris
                 }
             }
             generate(4);
+            if (willProject)
+            {
+                shadowPlace();
+            }
         }
 
         public void Reset()
@@ -169,6 +176,10 @@ namespace Tetris
                 }
             }
             generate(3);
+            if (willProject)
+            {
+                shadowPlace();
+            }
         }
 
         public void Switch(int switcher)
@@ -278,6 +289,11 @@ namespace Tetris
             {
                 pooey = savedPooey;
                 pooey.Ready();
+                if (willProject)
+                {
+                    shadowPooey = new RatPooeys(pooey);
+                    shadowPlace();
+                }
                 savedPooey = null;
                 saveGo = false;
                 return;
@@ -356,7 +372,7 @@ namespace Tetris
                             allTouched = false;
                         }
                     }
-                }                
+                }
             }
             if (doneUP)
             {
@@ -400,6 +416,11 @@ namespace Tetris
                 {
                     pooey = gen();
                     pooey.Ready();
+                    if (willProject)
+                    {
+                        shadowPooey = new RatPooeys(pooey);
+                        shadowPlace();
+                    }
                     nextPooey = gen();
                     nextPooey.Display(new Vector2(450, 340), 140);
                     lastPooey = gen();
@@ -417,6 +438,11 @@ namespace Tetris
             {
                 pooey = gen();
                 pooey.Ready();
+                if (willProject)
+                {
+                    shadowPooey = new RatPooeys(pooey);
+                    shadowPlace();
+                }
                 nextPooey = gen();
                 nextPooey.Display(new Vector2(450, 340), 140);
                 lastPooey = gen();
@@ -427,6 +453,11 @@ namespace Tetris
             {
                 pooey = nextPooey;
                 pooey.Ready();
+                if (willProject)
+                {
+                    shadowPooey = new RatPooeys(pooey);
+                    shadowPlace();
+                }
                 nextPooey = gen();
                 nextPooey.Display(new Vector2(440, 340), 140);
                 lastPooey = gen();
@@ -435,6 +466,11 @@ namespace Tetris
             }
             pooey = nextPooey;
             pooey.Ready();
+            if (willProject)
+            {
+                shadowPooey = new RatPooeys(pooey);
+                shadowPlace();
+            }
             nextPooey = lastPooey;
             nextPooey.Display(new Vector2(440, 340), 140);
             lastPooey = gen();
@@ -506,7 +542,7 @@ namespace Tetris
             }
 
             //blah = 4;
-            var temp = progression * 6;
+            var temp = progression * 5;
             var currentSpeed = temp;
             if (speedAdd != 1)
             {
@@ -514,21 +550,14 @@ namespace Tetris
             }
             if (temp > 325)
             {
-                bool fine = false;
                 if (speedAdd != 1)
                 {
-                    if (temp < 400)
+                    if (temp > 375)
                     {
-                        fine = true;
-                    }
-                    else if (currentSpeed > 325)
-                    {
-                        temp = 325;
-                        temp += 75;
-                        fine = true;
+                        temp = 375;
                     }
                 }
-                if (!fine)
+                else
                 {
                     temp = 325;
                 }
@@ -537,6 +566,11 @@ namespace Tetris
         }
         public void Update(GameTime gameTime)
         {
+            if (pooey.explosive > 0 && willProject)
+            {
+                shadowPooey = new RatPooeys(pooey);
+                shadowPlace();
+            }
             if (speedTime <= 0)
             {
                 speedTime = 0;
@@ -594,6 +628,11 @@ namespace Tetris
                     {
                         if (pooey.rotate())
                         {
+                            if (willProject)
+                            {
+                                shadowPooey = new RatPooeys(pooey);
+                                shadowPlace();
+                            }
                             rotate.Stop();
                             if (playSounds)
                             {
@@ -607,6 +646,11 @@ namespace Tetris
                     if (NevadaCheck.ready())
                     {
                         pooey.moveSide(-1);
+                        if (willProject)
+                        {
+                            shadowPooey = new RatPooeys(pooey);
+                            shadowPlace();
+                        }
                     }
                 }
                 else if (California.IsKeyDown(rightKey) && (holdSide || !tempTexas.IsKeyDown(rightKey)))
@@ -614,6 +658,11 @@ namespace Tetris
                     if (NevadaCheck.ready())
                     {
                         pooey.moveSide();
+                        if (willProject)
+                        {
+                            shadowPooey = new RatPooeys(pooey);
+                            shadowPlace();
+                        }
                     }
                 }
                 if (!(California.IsKeyDown(downKey) && (holdDown || !tempTexas.IsKeyDown(downKey))))
@@ -726,11 +775,21 @@ namespace Tetris
                     {
                         good = false;
                         piece.rotate(-1);
+                        if (willProject)
+                        {
+                            shadowPooey = new RatPooeys(piece);
+                            shadowPlace();
+                        }
                         piece.rotated = false;
                     }
                     if (piece.sideways != 0)
                     {
                         piece.forceSide(-piece.sideways);
+                        if (willProject)
+                        {
+                            shadowPooey = new RatPooeys(piece);
+                            shadowPlace();
+                        }
                         piece.sideways = 0;
                         return 0;
                     }
@@ -819,7 +878,7 @@ namespace Tetris
                         {
                             if (map[j][i].explosive > 0)
                             {
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, map[j][i].image.Location, new List<Color> { Color.LightGoldenrodYellow, Color.OrangeRed, Color.Crimson }, 500, (int)map[j][i].explosive - 2, new List<double> { .5f * map[j][i].explosive, map[j][i].explosive, 1.5f * map[j][i].explosive}, new List<int> { 15, 20, 25 }));
+                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, map[j][i].image.Location, new List<Color> { Color.LightGoldenrodYellow, Color.OrangeRed, Color.Crimson }, 500, (int)map[j][i].explosive - 2, new List<double> { .5f * map[j][i].explosive, map[j][i].explosive, 1.5f * map[j][i].explosive }, new List<int> { 15, 20, 25 }));
                                 var deads = map[j][i].Explode(map);
                                 explosives.Add(deads);
                             }
@@ -832,7 +891,7 @@ namespace Tetris
                                 {
                                     zoom.Play();
                                 }
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, map[j][i].image.Location, new List<Color> { Color.White, Color.White}, 50, 5, new List<double> {10, 10}, new List<int> { 1, 1}, null, 30, 30, 1, 0));
+                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, map[j][i].image.Location, new List<Color> { Color.White, Color.White }, 50, 5, new List<double> { 10, 10 }, new List<int> { 1, 1 }, null, 30, 30, 1, 0));
                             }
                             map[j][i].empty(empty);
                             for (int q = i; q > 0; q--)
@@ -875,6 +934,49 @@ namespace Tetris
             }
             return true;
         }
+        void shadowPlace()
+        {
+            for (int i = 0; i < shadowPooey.boxes.Count; i++)
+            {
+                if (shadowPooey.boxes[i].explosive > 0)
+                {
+                    shadowPooey.boxes[i].image.Color = Color.Red;
+                }
+                else if (shadowPooey.boxes[i].speed)
+                {
+                    shadowPooey.boxes[i].image.Color = Color.Cyan;
+                }
+                else if (shadowPooey.boxes[i].Chonker())
+                {
+                    shadowPooey.boxes[i].image.Color = Color.Black;
+                }
+                else
+                {
+                    shadowPooey.boxes[i].image.Color = Color.DarkSlateGray;
+                }
+                shadowPooey.boxes[i].image.Image = projectionImage;
+                shadowPooey.boxes[i].image.Depth -= .01f;
+            }
+            while (true)
+            {
+                shadowPooey.moveDown();
+                for (int i = 0; i < shadowPooey.boxes.Count; i++)
+                {
+                    if (map[(int)shadowPooey.boxes[i].place.X][(int)shadowPooey.boxes[i].place.Y].isfull)
+                    {
+                        shadowPooey.forceUp();
+                        return;
+                    }
+                }
+                for (int i = 0; i < shadowPooey.boxes.Count; i++)
+                {
+                    if (shadowPooey.boxes[i].place.Y >= size.Y - 1)
+                    {
+                        return;
+                    }
+                }
+            }
+        }
         public void Draw(SpriteBatch bunch)
         {
             for (int i = 0; i < map.Count; i++)
@@ -888,9 +990,17 @@ namespace Tetris
             {
                 effects[i].Draw(bunch);
             }
+            if (shadowPooey.boxes[0].place == pooey.boxes[0].place)
+            {
+                ;
+            }
             pooey.Draw(bunch);
             nextPooey.Draw(bunch);
             lastPooey.Draw(bunch);
+            if (willProject)
+            {
+                shadowPooey.Draw(bunch);
+            }
             if (savedPooey != null)
             {
                 savedPooey.Draw(bunch);

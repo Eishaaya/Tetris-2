@@ -113,6 +113,7 @@ namespace Tetris
             grid.holdTurn = bools[2];
             grid.holdDown = bools[3];
             grid.holdSide = bools[4];
+            grid.willProject = bools[5];
         }
         public override void Reset()
         {

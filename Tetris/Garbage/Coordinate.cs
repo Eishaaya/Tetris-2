@@ -22,7 +22,7 @@ namespace Tetris
         //    Coordinate(I, P, s);
         //    chonkColor = Color.Black;
         //}
-        public Coordinate(Sprite I, Vector2 P, int s, int c, float e, bool sp)
+        public Coordinate(Sprite I, Vector2 P, int s, float c, float e, bool sp)
         {
             image = I;
             place = P;
