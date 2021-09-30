@@ -17,7 +17,7 @@ namespace Tetris
         Sprite empty;
         Vector2 size;
         List<List<Coordinate>> map;
-        double scale;
+        public double scale;
         RatPooeys pooey;
         public Keys downKey;
         public Keys leftKey;
@@ -61,7 +61,9 @@ namespace Tetris
         SoundEffectInstance land;
         SoundEffectInstance boom;
         SoundEffectInstance zoom;
+        SoundEffectInstance boss;
         Texture2D explosiveImage;
+        Texture2D chonkImage;
         Texture2D speedImage;
         Texture2D pixel;
         Texture2D speedParticle;
@@ -77,12 +79,12 @@ namespace Tetris
         int changeDone;
         int finishedColors;
         public bool willProject = true;
-        public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, List<Vector2> ss, Sprite im, SoundEffect ro, SoundEffect la, SoundEffect b, SoundEffect sp, Texture2D spi, float sc = 1, bool ic = false, Texture2D ei = null, Texture2D si = null, Texture2D pi = null, Texture2D spp = null, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space, Keys s1 = Keys.D1, Keys s2 = Keys.D2, Keys s3 = Keys.D3, Keys s4 = Keys.D4)
+        public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, List<Vector2> ss, Sprite im, SoundEffect ro, SoundEffect la, SoundEffect b, SoundEffect sp, SoundEffect bs, Texture2D spi, float sc = 1, bool ic = false, Texture2D chi = null, Texture2D ei = null, Texture2D si = null, Texture2D pi = null, Texture2D spp = null, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space, Keys s1 = Keys.D1, Keys s2 = Keys.D2, Keys s3 = Keys.D3, Keys s4 = Keys.D4)
         {
             speedTime = 0;
             finishedColors = -1;
             changeDone = -1;
-            speedAdd = 1;
+            speedAdd = 100;
             rowBonus = 1;
             playSounds = true;
             holdDown = true;
@@ -93,10 +95,12 @@ namespace Tetris
             switchKeys = new List<Keys>();
             rotate = ro.CreateInstance();
             land = la.CreateInstance();
-            boom = b.CreateInstance();
             if (!ic)
             {
                 zoom = sp.CreateInstance();
+                boom = b.CreateInstance();
+                boss = bs.CreateInstance();
+                boss.IsLooped = true;
             }
             effects = new List<ParticleEffect>();
             lose = false;
@@ -127,6 +131,7 @@ namespace Tetris
             isClassic = ic;
             badFactor = 0;
             explosiveImage = ei;
+            chonkImage = chi;
             speedImage = si;
             projectionImage = spi;
             map = new List<List<Coordinate>>();
@@ -153,7 +158,7 @@ namespace Tetris
             speedTime = 0;
             finishedColors = -1;
             changeDone = -1;
-            speedAdd = 1;
+            speedAdd = 100;
             rowBonus = 1;
             savedPooey = null;
             freeMoves = 10;
@@ -254,7 +259,8 @@ namespace Tetris
                     return;
                 }
                 else if (lifitime.Seconds <= 2 - tempProg2 && pooey.boxes[0].place.Y - 5 <= 5 + tempProg && freeMoves >= 5)
-                {
+                {                    
+                    boss.Stop();
                     freeMoves -= 5;
                     pooey.Revert();
                     var temperPooey = pooey;
@@ -296,6 +302,11 @@ namespace Tetris
                 }
                 savedPooey = null;
                 saveGo = false;
+                boss.Stop();
+                if (pooey.boxes.Count > 10)
+                {
+                    boss.Play();
+                }
                 return;
             }
             if (!isClassic)
@@ -329,7 +340,14 @@ namespace Tetris
                 }
             }
             generate(1);
-
+            if (boss != null)
+            {
+                boss.Stop();
+            }
+            if (pooey.boxes.Count > 10)
+            {
+                boss.Play();
+            }
         }
         public bool ChangeBackColor(Color newColor, int speed = 5)
         {
@@ -521,7 +539,7 @@ namespace Tetris
                 }
                 else if ((spawnChances[blah] * diffFactor * helpFactor) >= size - diffAdd)
                 {
-                    if (!isClassic && size <= 1 * (progression / 10 + 1) && helpFactor == 1 && hold <= 5)
+                    if (!isClassic && size <= 2 * (progression / 10 + 1) && helpFactor == 1 && hold <= 5)
                     {
                         chonk = 3 + progression / 10;
                         break;
@@ -533,7 +551,7 @@ namespace Tetris
                         break;
                     }
                     size = random.Next(1000);
-                    if (!isClassic && size <= 50 * (progression / 10 + 1) && helpFactor == 1 && hold <= 5)
+                    if (!isClassic && size <= 45 * (progression / 10 + 1) && helpFactor == 1 && hold <= 5)
                     {
                         sp = true;
                     }
@@ -544,7 +562,7 @@ namespace Tetris
             //blah = 4;
             var temp = progression * 5;
             var currentSpeed = temp;
-            if (speedAdd != 1)
+            if (speedAdd != 100)
             {
                 temp += speedAdd;
             }
@@ -562,7 +580,7 @@ namespace Tetris
                     temp = 325;
                 }
             }
-            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[blah], sizes[blah], colors[blah], values[blah], (float)scale, symmetry[blah], 650 - temp, chonk, sp, speedImage, ex, explosiveImage);
+            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[blah], sizes[blah], colors[blah], values[blah], (float)scale, symmetry[blah], 650 - temp, chonk, chonkImage, sp, speedImage, ex, explosiveImage);
         }
         public void Update(GameTime gameTime)
         {
@@ -574,9 +592,9 @@ namespace Tetris
             if (speedTime <= 0)
             {
                 speedTime = 0;
-                speedAdd = 1;
+                speedAdd = 100;
             }
-            scoreFactor = ((100 + scoreBonus + progression) * (speedAdd / 100 + 1) / 100) * rowBonus;
+            scoreFactor = ((100 + scoreBonus + progression) * (speedAdd / 100) / 100) * rowBonus;
             for (int i = 0; i < effects.Count; i++)
             {
                 effects[i].Update(gameTime);
@@ -665,9 +683,14 @@ namespace Tetris
                         }
                     }
                 }
+                shadowPooey.Animate();
                 if (!(California.IsKeyDown(downKey) && (holdDown || !tempTexas.IsKeyDown(downKey))))
                 {
                     pooey.Update(gameTime);
+                }
+                else
+                {
+                    pooey.Animate();
                 }
             }
             if (California.IsKeyDown(TeleKey))
@@ -686,6 +709,7 @@ namespace Tetris
             if (fullDown)
             {
                 pooey.moveDown();
+                pooey.Animate();
             }
 
             NevadaCheck.tick(gameTime);
@@ -733,10 +757,13 @@ namespace Tetris
                         }
                     }
                     rowBonus++;
-                    boom.Stop();
-                    if (playSounds)
+                    if (boom != null)
                     {
-                        boom.Play();
+                        boom.Stop();
+                        if (playSounds)
+                        {
+                            boom.Play();
+                        }
                     }
                     for (int i = 0; i < map.Count; i++)
                     {
@@ -934,6 +961,7 @@ namespace Tetris
             }
             return true;
         }
+
         void shadowPlace()
         {
             for (int i = 0; i < shadowPooey.boxes.Count; i++)
@@ -948,6 +976,7 @@ namespace Tetris
                 }
                 else if (shadowPooey.boxes[i].Chonker())
                 {
+                    shadowPooey.boxes[i].chonkImage = null;
                     shadowPooey.boxes[i].image.Color = Color.Black;
                 }
                 else
@@ -983,7 +1012,7 @@ namespace Tetris
             {
                 for (int j = 6; j < map[i].Count; j++)
                 {
-                    map[i][j].image.Draw(bunch);
+                    map[i][j].Draw(bunch);
                 }
             }
             for (int i = 0; i < effects.Count; i++)

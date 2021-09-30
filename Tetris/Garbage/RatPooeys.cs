@@ -40,7 +40,14 @@ namespace Tetris
             var newBoxes = new List<Coordinate>();
             for (int i = 0; i < old.boxes.Count; i++)
             {
-                newBoxes.Add(new Coordinate(new Sprite(old.boxes[i].image.Image, old.boxes[i].image.Location, old.boxes[i].image.Color, old.boxes[i].image.rotation, old.boxes[i].image.effect, old.boxes[i].image.Origin, old.boxes[i].image.Scale, old.boxes[i].image.Depth), old.boxes[i].place, old.boxes[i].score, old.boxes[i].chonker, old.boxes[i].explosive, old.boxes[i].speed));
+                if (old.boxes[i].chonkImage != null)
+                {
+                    newBoxes.Add(new Coordinate(new Sprite(old.boxes[i].image.Image, old.boxes[i].image.Location, old.boxes[i].image.Color, old.boxes[i].image.rotation, old.boxes[i].image.effect, old.boxes[i].image.Origin, old.boxes[i].image.Scale, old.boxes[i].image.Depth), old.boxes[i].place, old.boxes[i].score, old.boxes[i].chonker, old.boxes[i].explosive, old.boxes[i].speed, old.boxes[i].chonkImage.Image));
+                }
+                else
+                {
+                    newBoxes.Add(new Coordinate(new Sprite(old.boxes[i].image.Image, old.boxes[i].image.Location, old.boxes[i].image.Color, old.boxes[i].image.rotation, old.boxes[i].image.effect, old.boxes[i].image.Origin, old.boxes[i].image.Scale, old.boxes[i].image.Depth), old.boxes[i].place, old.boxes[i].score, old.boxes[i].chonker, old.boxes[i].explosive, old.boxes[i].speed));
+                }
             }
             boxes = newBoxes;
             rotation = old.rotation;
@@ -49,9 +56,9 @@ namespace Tetris
             dimensions = old.dimensions;
             chonkValue = old.chonkValue;
             speedUp = old.speedUp;
-            explosive = old.explosive;
+            explosive = old.explosive;            
         }
-        public RatPooeys(Sprite im, List<Vector2> spots, Vector2 widthHeight, Color c, int se, float sc = 1, bool s = false, int t = 650, int ch = 0, bool sp = false, Texture2D spImage = null, float ex = 0, Texture2D exImage = null, int o = 6, int d1 = 10, int d2 = 26, int p = 6, float r = 0)
+        public RatPooeys(Sprite im, List<Vector2> spots, Vector2 widthHeight, Color c, int se, float sc = 1, bool s = false, int t = 650, int ch = 0, Texture2D chImage = null, bool sp = false, Texture2D spImage = null, float ex = 0, Texture2D exImage = null, int o = 6, int d1 = 10, int d2 = 26, int p = 6, float r = 0)
         {
             random = new Random();
             chonkValue = ch;
@@ -108,10 +115,13 @@ namespace Tetris
                     speedUp = false;
                 }
                 locations.Add(spots[i] * (float)Math.Round(60 * scale));
-                boxes.Add(new Coordinate(new Sprite(tempImage, image.Location, tempColor, image.rotation, image.effect, image.Origin, image.Scale, image.Depth + depthFactor), spots[i], se, ch, explosive, speedUp));
                 if (ch > 0)
                 {
-                    boxes[i].image.Color = Color.Black;
+                    boxes.Add(new Coordinate(new Sprite(tempImage, image.Location, tempColor, image.rotation, image.effect, image.Origin, image.Scale, image.Depth + depthFactor), spots[i], se, ch, explosive, speedUp, chImage));
+                }
+                else
+                {
+                    boxes.Add(new Coordinate(new Sprite(tempImage, image.Location, tempColor, image.rotation, image.effect, image.Origin, image.Scale, image.Depth + depthFactor), spots[i], se, ch, explosive, speedUp));
                 }
                 Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
                 boxes[i].image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (o * (float)Math.Round(60 * scale))) + oragami;
@@ -154,6 +164,11 @@ namespace Tetris
             {
                 boxes[i].image.Scale = tempScale;
                 boxes[i].image.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * tempScale), boxes[i].place.Y * (float)Math.Round(60 * tempScale)) + location + new Vector2(size / 2 - pieceSize.X / 2 * tempScale, size / 2 - pieceSize.Y / 2 * tempScale) + image.Origin * tempScale / 2;
+                if (boxes[i].Chonker() && boxes[i].chonkImage != null)
+                {
+                    boxes[i].chonkImage.Scale = tempScale;
+                    boxes[i].chonkImage.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * tempScale), boxes[i].place.Y * (float)Math.Round(60 * tempScale)) + location + new Vector2(size / 2 - pieceSize.X / 2 * tempScale, size / 2 - pieceSize.Y / 2 * tempScale) + image.Origin * tempScale / 2;
+                }
             }
         }
         public void Ready()
@@ -163,17 +178,18 @@ namespace Tetris
                 boxes[i].image.Scale = image.Scale;
                 Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
                 boxes[i].image.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * scale), boxes[i].place.Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
+                if (boxes[i].Chonker() && boxes[i].chonkImage != null)
+                {
+                    boxes[i].chonkImage.Scale = image.Scale;
+                    boxes[i].chonkImage.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * scale), boxes[i].place.Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
+                }
             }
         }
         public void Update(GameTime gameTime)
         {
-            for (int i = 0; i < boxes.Count; i++)
-            {
-                boxes[i].Animate();
-            }
             if (goDown)
             {
-                moveDown();
+                moveDown();                
                 goDown = false;
             }
             downtime.tick(gameTime);
@@ -181,6 +197,7 @@ namespace Tetris
             {
                 goDown = true;
             }
+            Animate();
         }
 
         public bool rotate()
@@ -269,7 +286,7 @@ namespace Tetris
         #endregion
 
         public void moveDown()
-        {
+        {            
             bool good = true;
             for (int i = 0; i < boxes.Count; i++)
             {
@@ -332,11 +349,18 @@ namespace Tetris
                 }
             }
         }
+        public void Animate()
+        {
+            for (int i = 0; i < boxes.Count; i++)
+            {
+                boxes[i].Animate();
+            }
+        }
         public void Draw(SpriteBatch JohannSebastianBach)
         {
             for (int i = 0; i < boxes.Count; i++)
             {
-                boxes[i].image.Draw(JohannSebastianBach);
+                boxes[i].Draw(JohannSebastianBach);
             }
         }
     }

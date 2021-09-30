@@ -11,6 +11,7 @@ namespace Tetris
 {
     class GameScreen : Screen
     {
+        Random random = new Random();
         Grid grid;
         Label score;
         Button pause;
@@ -122,6 +123,7 @@ namespace Tetris
         }
         public override void Update(GameTime time, Screenmanager manny)
         {
+           // grid.scale = (float)random.Next(0, 200) / 100;
             bottom.frametime = new TimeSpan(0, 0, 0, 0, (int)(baseSpeed - (grid.progression * (50 / baseSpeed))));
             if (!isClassic)
             {
