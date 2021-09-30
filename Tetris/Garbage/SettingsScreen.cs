@@ -106,7 +106,7 @@ namespace Tetris
                     binds = defaults;
                     for (int i = 0; i < binds.Count; i++)
                     {
-                        bindLabels[i].Text = $"{keyTypes[i]} : {binds[i]}";
+                        bindLabels[i].SetText($"{keyTypes[i]} : {binds[i]}");
                     }
                 }
                 else if (arrowButt.check(mousy.Position.ToVector2(), nou))
@@ -114,7 +114,7 @@ namespace Tetris
                     binds = arrows;
                     for (int i = 0; i < binds.Count; i++)
                     {
-                        bindLabels[i].Text = $"{keyTypes[i]} : {binds[i]}";
+                        bindLabels[i].SetText($"{keyTypes[i]} : {binds[i]}");
                     }
                 }
                 else if (applyButt.check(mousy.Position.ToVector2(), nou))
@@ -142,7 +142,7 @@ namespace Tetris
                 {
                     if (bindButtons[i].check(mousy.Position.ToVector2(), nou))
                     {
-                        bindLabels[i].Text = $"{keyTypes[i]} : ";
+                        bindLabels[i].SetText($"{keyTypes[i]} : ");
                         index = i;
                     }
                 }
@@ -170,14 +170,14 @@ namespace Tetris
             {
                 if (!bindButtons[index].check(mousy.Position.ToVector2(), nou) && nou)
                 {
-                    bindLabels[index].Text = $"{keyTypes[index]} : {binds[index]}";
+                    bindLabels[index].SetText($"{keyTypes[index]} : {binds[index]}");
                     index = -1;
                     return;
                 }
                 if (Maryland.GetPressedKeyCount() > 0)
                 {
                     binds[index] = Maryland.GetPressedKeys()[0];
-                    bindLabels[index].Text = $"{keyTypes[index]} : {binds[index]}";
+                    bindLabels[index].SetText($"{keyTypes[index]} : {binds[index]}");
                     index = -1;
                     return;
                 }
@@ -194,7 +194,7 @@ namespace Tetris
             for (int i = 0; i < binds.Count; i++)
             {
                 bindButtons[i].Draw(batch);
-                bindLabels[i].write(batch);
+                bindLabels[i].Print(batch);
             }
             for (int i = 0; i < toggles.Count; i++)
             {

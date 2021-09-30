@@ -1,12 +1,13 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace Tetris
 {
-    public class VisualObject
+    public class VisualObject : IPoolable
     {
         public Color Color;
         public Vector2 Location;
@@ -16,6 +17,7 @@ namespace Tetris
         public SpriteEffects effect;
         public Vector2 Origin;
         protected bool moved;
+
         protected bool bigger;
         protected bool rotated;
         protected Vector2 spotSet;
@@ -39,7 +41,7 @@ namespace Tetris
             originalColor = color;
             oldScale = Scale;
             oldRotation = rotation;
-            random = new Random();
+            random = Extensions.random;
 
             offset = Vector2.Zero;
             moved = false;
@@ -48,6 +50,32 @@ namespace Tetris
             degreeSet = float.NaN;
             spotSet = new Vector2(float.NaN, float.NaN);
         }
+
+        #region clone
+
+        public VisualObject Clone()
+        {
+            var copy = new VisualObject(Location, Color, Origin, rotation, effect, Scale, Depth);
+            CloneLogic(copy);
+            return copy;
+        }
+        protected void CloneLogic<T>(T copy) where T:VisualObject
+        {
+            copy.bigger = bigger;
+            copy.rotated = rotated;
+            copy.spotSet = spotSet;
+            copy.sizeSet = sizeSet;
+            copy.degreeSet = degreeSet;
+            copy.offset = offset;
+            copy.oldScale = oldScale;
+            copy.originalColor = originalColor;
+            copy.oldRotation = oldRotation;
+        }
+
+
+        #endregion
+
+        #region visualFunctions
         public void Vibrate(int distance, float sped, bool rando = true)
         {
             if (float.IsNaN(spotSet.X))
@@ -125,7 +153,7 @@ namespace Tetris
             }
         }
         public void Rotate(float target, float sped, bool rando = true)
-        {            
+        {
             if (float.IsNaN(degreeSet))
             {
                 if (rando)
@@ -143,8 +171,12 @@ namespace Tetris
                 var temp = Vector2.Lerp(new Vector2(rotation, 0), new Vector2(oldRotation, 0), sped);
                 if (Vector2.Distance(temp, new Vector2(oldRotation, 0)) <= .01f)
                 {
-                    rotation = oldRotation;
+                    rotation = degreeSet;
                     rotated = true;
+                }
+                else
+                {
+                    rotation = temp.X;
                 }
             }
             else
@@ -153,8 +185,12 @@ namespace Tetris
                 if (Vector2.Distance(temp, new Vector2(rotation, 0)) <= .01f)
                 {
                     degreeSet = float.NaN;
-                    rotation = oldRotation;
+                    rotation = temp.X;
                     rotated = false;
+                }
+                else
+                {
+                    rotation = temp.X;
                 }
             }
         }
@@ -167,11 +203,11 @@ namespace Tetris
                 Color = newColor;
             }
         }
-        public bool Fade()
+        public bool Fade(int speed = 3)
         {
-            return Fade(originalColor);
+            return Fade(originalColor, speed);
         }
-        public bool Fade(Color tint)
+        public bool Fade(Color tint, int speed = 3)
         {
             if (Color.A <= 0)
             {
@@ -179,7 +215,7 @@ namespace Tetris
                 Color = Color.FromNonPremultiplied(tint.R, tint.G, tint.B, 0);
                 return true;
             }
-            Color = Color.FromNonPremultiplied(tint.R, tint.G, tint.B, Color.A - 3);
+            Color = Color.FromNonPremultiplied(tint.R, tint.G, tint.B, Color.A - speed);
             return false;
         }
 
@@ -203,7 +239,7 @@ namespace Tetris
                 tint = Color.FromNonPremultiplied(Color.R - Color.A, Color.G - Color.A, Color.A, Color.A);
             }
             if (Color.A <= 0)
-            {                
+            {
                 Color = tint;
                 Color = Color.FromNonPremultiplied(tint.R, tint.G, tint.B, 0);
                 return true;
@@ -225,5 +261,8 @@ namespace Tetris
             }
             return false;
         }
+
+
+        #endregion
     }
 }

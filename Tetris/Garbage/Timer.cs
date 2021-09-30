@@ -1,4 +1,5 @@
 ﻿using Microsoft.Xna.Framework;
+
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -9,33 +10,51 @@ namespace Tetris
     public class Timer
     {
         TimeSpan wait;
-        TimeSpan Until;
+        TimeSpan until;
+
+        public static implicit operator TimeSpan(Timer timer) => timer.until;
+        public static implicit operator Timer(TimeSpan span) => new Timer(span);
+        public static implicit operator Timer(int time) => new Timer(time);
+
         public Timer(TimeSpan until)
         {
-            Until = until;
+            this.until = until;
+            this.wait = TimeSpan.Zero;
         }
-        public Timer(int length)
+
+        public void SetTime(TimeSpan until)
         {
-            Until = new TimeSpan(0, 0, 0, 0, length);
+            this.until = until;
         }
-        public void tick(GameTime time)
+
+
+        public Timer(int length)
+            : this(TimeSpan.FromMilliseconds(length)) { }
+
+        public void Tick(GameTime time)
         {
             wait += time.ElapsedGameTime;
         }
-        public int getMillies()
+
+        public int GetMillies()
         {
-            return Until.Milliseconds;
+            return (int)until.TotalMilliseconds;
         }
-        public bool ready()
+
+        public bool Ready(bool reset = true)
         {
-            if(wait >= Until)
+            if (wait >= until)
             {
-                wait = TimeSpan.Zero;
+                if (reset)
+                {
+                    wait = TimeSpan.Zero;
+                }
                 return true;
             }
             return false;
         }
-        public void reset()
+
+        public void Reset()
         {
             wait = TimeSpan.Zero;
         }

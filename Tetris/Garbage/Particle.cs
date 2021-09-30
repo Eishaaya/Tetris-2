@@ -37,31 +37,30 @@ namespace Tetris
         }
         public void Update(GameTime gameTime)
         {
+            startTime.Tick(gameTime);
             if (!going)
-            {
-                startTime.tick(gameTime);
-                if (startTime.ready())
+            {                
+                if (startTime.Ready())
                 {
                     going = true;
                 }
             }
             else
             {
-                fadeTime.tick(gameTime);
                 //if (!noScale)
                 //{
                     scale += new Vector2(Math.Abs(speed.X), Math.Abs(speed.Y)) * Scale;
                 //}
                 Location += speed;
-                if (fadeTime.ready())
+                if (fadeTime.Ready())
                 {
                     if (Fade())
                     {
                         faded = true;
                     }
-                    if (fadeTime.getMillies() < 0)
+                    if (fadeTime.GetMillies() < 0)
                     {
-                        for (int i = 0; i < -fadeTime.getMillies(); i++)
+                        for (int i = 0; i < -fadeTime.GetMillies(); i++)
                         {
                             Fade();
                         }

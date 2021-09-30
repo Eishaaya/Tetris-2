@@ -47,7 +47,7 @@ namespace Tetris
             lost = false;
             nextBox = box;
             bottom = down;
-            baseSpeed = down.frametime.Milliseconds;
+            baseSpeed = down.FrameTime.GetMillies();
             colors = new List<Color>
             {
                 Color.White,
@@ -82,7 +82,7 @@ namespace Tetris
             lost = false;
             nextBox = box;
             bottom = down;
-            baseSpeed = down.frametime.Milliseconds;
+            baseSpeed = down.FrameTime.GetMillies();
             colors = new List<Color>
             {
                 Color.White,
@@ -124,10 +124,10 @@ namespace Tetris
         public override void Update(GameTime time, Screenmanager manny)
         {
            // grid.scale = (float)random.Next(0, 200) / 100;
-            bottom.frametime = new TimeSpan(0, 0, 0, 0, (int)(baseSpeed - (grid.progression * (50 / baseSpeed))));
+            bottom.FrameTime.SetTime(new TimeSpan(0, 0, 0, 0, (int)(baseSpeed - (grid.progression * (50 / baseSpeed)))));
             if (!isClassic)
             {
-                moveLabel.Text = $"{(int)grid.freeMoves}";
+                moveLabel.SetText($"{(int)grid.freeMoves}");
                 if (grid.overused)
                 {
                     if (!labelFade)
@@ -294,8 +294,8 @@ namespace Tetris
             }
             base.Update(time, manny);
             grid.Update(time);
-            scoreX.Text = $"x{Math.Round(grid.scoreFactor, 1)}";
-            score.Text = $"Score: \n {grid.score}";
+            scoreX.SetText($"x{Math.Round(grid.scoreFactor, 1)}");
+            score.SetText($"Score: \n {grid.score}");
             if (heldMouse || keysDown)
             {
                 return;
@@ -332,15 +332,15 @@ namespace Tetris
                 boxes[i].Draw(batch);
             }
             nextBox.Draw(batch);
-            scoreX.write(batch);
-            score.write(batch);
+            scoreX.Print(batch);
+            score.Print(batch);
             if (!lost)
             {
                 pause.Draw(batch);
             }
             if (!isClassic)
             {
-                moveLabel.write(batch);
+                moveLabel.Print(batch);
             }
             grid.Draw(batch);
         }

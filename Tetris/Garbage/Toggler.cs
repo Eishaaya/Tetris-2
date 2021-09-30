@@ -42,7 +42,7 @@ namespace Tetris
         {
             Move();
             var tempState = base.check(cursor, isclicked);
-            if (!hold)
+            if (!Hold)
             {
                 if (done)
                 {
@@ -93,7 +93,7 @@ namespace Tetris
             ball.Draw(batch);
             if (laby != null)
             {
-                laby.write(batch);
+                laby.Print(batch);
             }
         }
     }

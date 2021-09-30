@@ -84,7 +84,7 @@ namespace Tetris
             speedTime = 0;
             finishedColors = -1;
             changeDone = -1;
-            speedAdd = 100;
+            speedAdd = 1;
             rowBonus = 1;
             playSounds = true;
             holdDown = true;
@@ -158,7 +158,7 @@ namespace Tetris
             speedTime = 0;
             finishedColors = -1;
             changeDone = -1;
-            speedAdd = 100;
+            speedAdd = 1;
             rowBonus = 1;
             savedPooey = null;
             freeMoves = 10;
@@ -562,7 +562,7 @@ namespace Tetris
             //blah = 4;
             var temp = progression * 5;
             var currentSpeed = temp;
-            if (speedAdd != 100)
+            if (speedAdd != 1)
             {
                 temp += speedAdd;
             }
@@ -592,9 +592,9 @@ namespace Tetris
             if (speedTime <= 0)
             {
                 speedTime = 0;
-                speedAdd = 100;
+                speedAdd = 1;
             }
-            scoreFactor = ((100 + scoreBonus + progression) * (speedAdd / 100) / 100) * rowBonus;
+            scoreFactor = ((100 + scoreBonus + progression) * (speedAdd / 100 + 1) / 100) * rowBonus;
             for (int i = 0; i < effects.Count; i++)
             {
                 effects[i].Update(gameTime);
@@ -635,14 +635,14 @@ namespace Tetris
             {
                 if (California.IsKeyDown(downKey) && (holdDown || !tempTexas.IsKeyDown(downKey)))
                 {
-                    if (NevadaCheck.ready())
+                    if (NevadaCheck.Ready())
                     {
                         pooey.moveDown();
                     }
                 }
                 else if (California.IsKeyDown(turnKey) && (holdTurn || !tempTexas.IsKeyDown(turnKey)))
                 {
-                    if (NevadaCheck.ready())
+                    if (NevadaCheck.Ready())
                     {
                         if (pooey.rotate())
                         {
@@ -661,7 +661,7 @@ namespace Tetris
                 }
                 else if (California.IsKeyDown(leftKey) && (holdSide || !tempTexas.IsKeyDown(leftKey)))
                 {
-                    if (NevadaCheck.ready())
+                    if (NevadaCheck.Ready())
                     {
                         pooey.moveSide(-1);
                         if (willProject)
@@ -673,7 +673,7 @@ namespace Tetris
                 }
                 else if (California.IsKeyDown(rightKey) && (holdSide || !tempTexas.IsKeyDown(rightKey)))
                 {
-                    if (NevadaCheck.ready())
+                    if (NevadaCheck.Ready())
                     {
                         pooey.moveSide();
                         if (willProject)
@@ -712,7 +712,7 @@ namespace Tetris
                 pooey.Animate();
             }
 
-            NevadaCheck.tick(gameTime);
+            NevadaCheck.Tick(gameTime);
             int result = istouching();
             if (result > 0)
             {

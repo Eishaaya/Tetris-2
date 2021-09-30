@@ -92,10 +92,10 @@ namespace Tetris
             lose.Draw(batch);
             back.Draw(batch);
             menu.Draw(batch);
-            score.write(batch);
+            score.Print(batch);
             for (int i = 0; i < topScores.Count; i++)
             {
-                topScores[i].write(batch);
+                topScores[i].Print(batch);
             }    
         }
     }

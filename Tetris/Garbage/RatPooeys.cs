@@ -192,8 +192,8 @@ namespace Tetris
                 moveDown();                
                 goDown = false;
             }
-            downtime.tick(gameTime);
-            if (downtime.ready())
+            downtime.Tick(gameTime);
+            if (downtime.Ready())
             {
                 goDown = true;
             }
