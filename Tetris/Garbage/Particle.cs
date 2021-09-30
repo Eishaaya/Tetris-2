@@ -112,7 +112,7 @@ namespace Tetris
                 Location += speed;
                 if (fadeTime.Ready(false))
                 {
-                    if (Fade(Color, fadeSpeed))
+                    if (Fade(fadeSpeed))
                     {
                         faded = true;
                     }
