@@ -94,6 +94,10 @@ namespace Tetris
                 var stuffToWrite = JsonSerializer.Serialize(new List<int>());
                 File.WriteAllText("data.json", stuffToWrite);
             }
+
+            ObjectPool<Particle>.Instance.Populate(30, () => new Particle(null, Vector2.Zero, Color.White, 0, SpriteEffects.None, Vector2.Zero, Vector2.Zero, 0, Vector2.Zero));
+            ObjectPool<ParticleEffect>.Instance.Populate(3, () => new ParticleEffect());
+
             //music = Content.Load<Song>("Rick Astley - Never Gonna Give You Up [HQ]");
             music = Content.Load<SoundEffect>("Original Tetris theme (Tetris Soundtrack)-[AudioTrimmer.com]");
             unlimitedMusic = Content.Load<SoundEffect>("UnlimitedMusic");

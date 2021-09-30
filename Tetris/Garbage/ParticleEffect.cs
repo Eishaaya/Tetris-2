@@ -1,16 +1,18 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 using System;
 using System.Collections.Generic;
 
 namespace Tetris
 {
-    class ParticleEffect
+    class ParticleEffect : IPoolable
     {
         public enum EffectType
         {
             Explosion,
-            Ray
+            Ray,
+            Exhaust
         }
         bool fullFaded;
         List<Particle> particles;
@@ -43,7 +45,9 @@ namespace Tetris
                     {
                         scale = new Vector2(scales[j], scales[j]);
                     }
-                    particles.Add(new Particle(image, origin, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), new Vector2((float)(Math.Cos(angle) * speeds[j]), (float)(Math.Sin(angle) * speeds[j])), time, scale, 1f - (.1f / amount * i), scales[j]));
+                    var tempPart = ObjectPool<Particle>.Instance.Borrow<Particle>();
+                    tempPart.SetParticle(image, origin, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), new Vector2((float)(Math.Cos(angle) * speeds[j]), (float)(Math.Sin(angle) * speeds[j])), time, scale, 1f - (.1f / amount * i), scales[j]);
+                    particles.Add(tempPart);
                 }
                 else if (type == EffectType.Ray)
                 {
@@ -61,12 +65,15 @@ namespace Tetris
                             {
                                 Y = random.Next(-zoneHeight, zoneHeight);
                             }
+                            var tempPart = ObjectPool<Particle>.Instance.Borrow<Particle>();
                             var location = new Vector2(X, Y) + origin;
-                            particles.Add(new Particle(image, location, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), new Vector2(directionX, directionY) * new Vector2((float)(speeds[j]), (float)speeds[j]), time, new Vector2(scales[j], scales[j]), 1, scales[j], e * 10, false));
+                            tempPart.SetParticle(image, location, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), new Vector2(directionX, directionY) * new Vector2((float)(speeds[j]), (float)speeds[j]), time, new Vector2(scales[j], scales[j]), 1, scales[j], e * 10, false);
+                            particles.Add(tempPart);
                             if (e % 2 == 0)
                             {
-
-                                particles.Add(new Particle(image, location, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), Vector2.Transform(new Vector2(directionX, directionY), Matrix.CreateRotationZ(MathHelper.Pi)) * new Vector2((float)(speeds[j]), (float)speeds[j]), time, new Vector2(scales[j], scales[j]), 1, scales[j], e * 10, false));
+                                tempPart = ObjectPool<Particle>.Instance.Borrow<Particle>();
+                                tempPart.SetParticle(image, location, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), Vector2.Transform(new Vector2(directionX, directionY), Matrix.CreateRotationZ(MathHelper.Pi)) * new Vector2((float)(speeds[j]), (float)speeds[j]), time, new Vector2(scales[j], scales[j]), 1, scales[j], e * 10, false);
+                                particles.Add(tempPart);
                             }
                         }
                     }
@@ -77,6 +84,21 @@ namespace Tetris
                 }
             }
         }
+
+        public ParticleEffect(Particle startPart)
+        {
+            particles.Add(startPart);
+        }
+        public ParticleEffect()
+        {
+            particles = new List<Particle>();
+        }
+
+        public void AddParticle(Particle newP)
+        {
+            particles.Add(newP);
+        }
+
         public void Update(GameTime time)
         {
             if (particles.Count == 0)
