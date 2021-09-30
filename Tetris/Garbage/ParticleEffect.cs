@@ -17,7 +17,7 @@ namespace Tetris
         bool fullFaded;
         List<Particle> particles;
         Random random = new Random();
-        public ParticleEffect(EffectType type, Texture2D image, Vector2 origin, List<Color> colors, int amount, int time, List<double> speeds, List<int> scales, List<int> subsections = null, int zoneHeight = 0, int zoneWidth = 0, float directionX = 1, float directionY = 1, bool rando = true)
+        public ParticleEffect(EffectType type, Texture2D image, Vector2 origin, List<Color> colors, int amount, int time, List<double> speeds, List<int> scales, List<int> subsections = null, float scaleDown = 1, int zoneHeight = 0, int zoneWidth = 0, float directionX = 1, float directionY = 1, bool rando = true)
         {
             fullFaded = false;
             particles = new List<Particle>();
@@ -40,7 +40,7 @@ namespace Tetris
                 {
                     float distance = (360 * (subsections.Count + 1)) / amount;
                     float angle = MathHelper.ToRadians(distance * i);
-                    var scale = new Vector2(random.Next(scales[j]), random.Next(scales[j]));
+                    var scale = new Vector2(random.Next(scales[j]), random.Next(scales[j])) / scaleDown;
                     if (!rando)
                     {
                         scale = new Vector2(scales[j], scales[j]);

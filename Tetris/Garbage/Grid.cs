@@ -741,7 +741,7 @@ namespace Tetris
                             if (map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive > 0)
                             {
                                 explosives.Add(map[(int)explosives[i][j].X][(int)explosives[i][j].Y].Explode(map));
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, map[(int)explosives[i][j].X][(int)explosives[i][j].Y].image.Location, new List<Color> { Color.LightGoldenrodYellow, Color.OrangeRed, Color.Crimson }, 500, (int)map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive - 2, new List<double> { .5f * map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive, map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive, 1.5 * map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive }, new List<int> { 15, 20, 25 }));
+                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, map[(int)explosives[i][j].X][(int)explosives[i][j].Y].image.Location, new List<Color> { Color.LightGoldenrodYellow, Color.OrangeRed, Color.Crimson }, 300, (int)map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive - 2, new List<double> { .5f * map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive, map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive, 1.5 * map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive }, new List<int> { 15, 20, 25 }, null, 200));
                             }
                             score += (int)(map[(int)explosives[i][j].X][(int)explosives[i][j].Y].score * scoreFactor);
                             if (map[(int)explosives[i][j].X][(int)explosives[i][j].Y].chonker <= 1)
@@ -918,7 +918,7 @@ namespace Tetris
                                 {
                                     zoom.Play();
                                 }
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, map[j][i].image.Location, new List<Color> { Color.White, Color.White }, 50, 5, new List<double> { 10, 10 }, new List<int> { 1, 1 }, null, 30, 30, 1, 0));
+                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, map[j][i].image.Location, new List<Color> { Color.White, Color.White }, 50, 5, new List<double> { 10, 10 }, new List<int> { 1, 1 }, null, 1, 30, 30, 1, 0));
                             }
                             map[j][i].empty(empty);
                             for (int q = i; q > 0; q--)
