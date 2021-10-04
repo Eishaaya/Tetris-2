@@ -79,7 +79,9 @@ namespace Tetris
         int changeDone;
         int finishedColors;
         public bool willProject = true;
-        public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, List<Vector2> ss, Sprite im, SoundEffect ro, SoundEffect la, SoundEffect b, SoundEffect sp, SoundEffect bs, Texture2D spi, float sc = 1, bool ic = false, Texture2D chi = null, Texture2D ei = null, Texture2D si = null, Texture2D pi = null, Texture2D spp = null, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space, Keys s1 = Keys.D1, Keys s2 = Keys.D2, Keys s3 = Keys.D3, Keys s4 = Keys.D4)
+
+        List<int> explosiveScales = new List<int> { 15, 20, 25 };
+    public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, List<Vector2> ss, Sprite im, SoundEffect ro, SoundEffect la, SoundEffect b, SoundEffect sp, SoundEffect bs, Texture2D spi, float sc = 1, bool ic = false, Texture2D chi = null, Texture2D ei = null, Texture2D si = null, Texture2D pi = null, Texture2D spp = null, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space, Keys s1 = Keys.D1, Keys s2 = Keys.D2, Keys s3 = Keys.D3, Keys s4 = Keys.D4)
         {
             speedTime = 0;
             finishedColors = -1;
@@ -494,6 +496,10 @@ namespace Tetris
             lastPooey = gen();
             if (isClassic)
             {
+                if (savedPooey == null)
+                {
+                    savedPooey = gen();
+                }
                 lastPooey = savedPooey;
                 savedPooey = gen();
                 savedPooey.Display(new Vector2(440, 740), 140);
@@ -738,22 +744,28 @@ namespace Tetris
                     {
                         for (int j = 0; j < explosives[i].Count; j++)
                         {
-                            if (map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive > 0)
+                            var explosiveSpot = map[(int)explosives[i][j].X][(int)explosives[i][j].Y];
+
+
+                            if (explosiveSpot.explosive > 0)
                             {
-                                explosives.Add(map[(int)explosives[i][j].X][(int)explosives[i][j].Y].Explode(map));
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, map[(int)explosives[i][j].X][(int)explosives[i][j].Y].image.Location, new List<Color> { Color.LightGoldenrodYellow, Color.OrangeRed, Color.Crimson }, 300, (int)map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive - 2, new List<double> { .5f * map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive, map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive, 1.5 * map[(int)explosives[i][j].X][(int)explosives[i][j].Y].explosive }, new List<int> { 15, 20, 25 }, null, 200));
+                                explosives.Add(explosiveSpot.Explode(map));
+                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, explosiveSpot.image.Location, new List<Color> { Color.OrangeRed, Color.Crimson, Color.Black },
+                                                               100, (int)explosiveSpot.explosive - 2, new List<double> { .5 * explosiveSpot.explosive, explosiveSpot.explosive, 1.5 * explosiveSpot.explosive },
+                                                              new List<float> { .5f * explosiveSpot.explosive / explosiveImage.Width, explosiveSpot.explosive / pixel.Width, 1.5f * explosiveSpot.explosive / pixel.Width }
+                                                              , explosiveScales, null, 200));
                             }
-                            score += (int)(map[(int)explosives[i][j].X][(int)explosives[i][j].Y].score * scoreFactor);
-                            if (map[(int)explosives[i][j].X][(int)explosives[i][j].Y].chonker <= 1)
+                            score += (int)(explosiveSpot.score * scoreFactor);
+                            if (explosiveSpot.chonker <= 1)
                             {
-                                map[(int)explosives[i][j].X][(int)explosives[i][j].Y].empty(empty);
-                                map[(int)explosives[i][j].X][(int)explosives[i][j].Y].image.Scale = (float)scale;
+                                explosiveSpot.empty(empty);
+                                explosiveSpot.image.Scale = (float)scale;
                             }
                             else
                             {
-                                map[(int)explosives[i][j].X][(int)explosives[i][j].Y].reduceChonk();
+                                explosiveSpot.reduceChonk();
                             }
-                            //map[(int)explosives[i][j].X][(int)explosives[i][j].Y].image.Color = Color.Cyan;
+                            //explosiveSpot.image.Color = Color.Cyan;
                         }
                     }
                     rowBonus++;
@@ -905,8 +917,14 @@ namespace Tetris
                         {
                             if (map[j][i].explosive > 0)
                             {
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, map[j][i].image.Location, new List<Color> { Color.LightGoldenrodYellow, Color.OrangeRed, Color.Crimson }, 500, (int)map[j][i].explosive - 2, new List<double> { .5f * map[j][i].explosive, map[j][i].explosive, 1.5f * map[j][i].explosive }, new List<int> { 15, 20, 25 }));
-                                var deads = map[j][i].Explode(map);
+                                var explosiveSpot = map[j][i];
+
+                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, explosiveSpot.image.Location, 
+                                            new List<Color> { Color.OrangeRed, Color.Crimson, Color.Black }, 100, (int)explosiveSpot.explosive - 2,
+                                            new List<double> { .5 * explosiveSpot.explosive, explosiveSpot.explosive, 1.5 * explosiveSpot.explosive },
+                                            new List<float> { .5f * explosiveSpot.explosive / pixel.Width, explosiveSpot.explosive / pixel.Width, 1.5f * explosiveSpot.explosive / pixel.Width }, explosiveScales));
+
+                                var deads = explosiveSpot.Explode(map);
                                 explosives.Add(deads);
                             }
                             else if (map[j][i].speed)
@@ -918,7 +936,9 @@ namespace Tetris
                                 {
                                     zoom.Play();
                                 }
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, map[j][i].image.Location, new List<Color> { Color.White, Color.White }, 50, 5, new List<double> { 10, 10 }, new List<int> { 1, 1 }, null, 1, 30, 30, 1, 0));
+                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, map[j][i].image.Location,
+                                            new List<Color> { Color.White, Color.White }, 50, 5, new List<double> { 10, 10 }, 
+                                            new List<float> { 10 / pixel.Width, 10 / pixel.Width }, new List<int> { 1, 1 }, null, 1, 30, 30, 1, 0));
                             }
                             map[j][i].empty(empty);
                             for (int q = i; q > 0; q--)

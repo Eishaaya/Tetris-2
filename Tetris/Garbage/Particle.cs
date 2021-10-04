@@ -9,7 +9,8 @@ namespace Tetris
     class Particle : ScalableSprite
     {
         public bool going;
-        public Vector2 speed { get; set; }
+        Vector2 moveSpeed;
+        Vector2 scaleSpeed;
         Timer fadeTime;
         Timer startTime;
         public bool faded;
@@ -20,12 +21,12 @@ namespace Tetris
         int fadeSpeed;
         int changeSpeed;
 
-        public Particle(Texture2D image, Vector2 location, Color color, Color nColor, float rotation, SpriteEffects effects, Vector2 origin, Vector2 Speed, int time, Vector2 scale, float depth = 1, float plebScale = 1, int timeTillStart = 0, bool willScale = true, float rSpeed = 0, int fadespeed = 3, int changespeed = 3, float mScale = float.PositiveInfinity)
-            : this(image, location, color, rotation, effects, origin, Speed, time, scale, depth, plebScale, timeTillStart, willScale, rSpeed, fadespeed, changespeed, mScale)
+        public Particle(Texture2D image, Vector2 location, Color color, Color nColor, float rotation, SpriteEffects effects, Vector2 origin, Vector2 mSpeed, float sSpeed, int time, Vector2 scale, float depth = 1, float plebScale = 1, int timeTillStart = 0, bool willScale = true, float rSpeed = 0, int fadespeed = 3, int changespeed = 3, float mScale = float.PositiveInfinity)
+            : this(image, location, color, rotation, effects, origin, mSpeed, sSpeed, time, scale, depth, plebScale, timeTillStart, willScale, rSpeed, fadespeed, changespeed, mScale)
         {
-            newColor = nColor;
+            newColor = nColor;            
         }
-        public Particle(Texture2D image, Vector2 location, Color color, float rotation, SpriteEffects effects, Vector2 origin, Vector2 Speed, int time, Vector2 scale, float depth = 1, float plebScale = 1, int timeTillStart = 0, bool willScale = true, float rSpeed = 0, int fadespeed = 3, int changespeed = 3, float mScale = float.PositiveInfinity)
+        public Particle(Texture2D image, Vector2 location, Color color, float rotation, SpriteEffects effects, Vector2 origin, Vector2 mSpeed, float sSpeed, int time, Vector2 scale, float depth = 1, float plebScale = 1, int timeTillStart = 0, bool willScale = true, float rSpeed = 0, int fadespeed = 3, int changespeed = 3, float mScale = float.PositiveInfinity)
             : base(image, location, color, rotation, effects, origin, scale, depth, plebScale)
         {
             changeSpeed = changespeed;
@@ -33,7 +34,8 @@ namespace Tetris
             fadeSpeed = fadespeed;
             noScale = !willScale;
             maxScale = mScale;
-            speed = Speed;
+            moveSpeed = mSpeed;
+            scaleSpeed = new Vector2(sSpeed);
             rotationSpeed = rSpeed;
             fadeTime = new Timer(time);
             startTime = new Timer(timeTillStart);
@@ -51,13 +53,13 @@ namespace Tetris
             }
         }
 
-        public void SetParticle(Texture2D image, Vector2 location, Color color, Color nColor, float rotation, SpriteEffects effects, Vector2 origin, Vector2 Speed, int time, Vector2 scale, float depth = 1, float plebScale = 1, int timeTillStart = 0, bool willScale = true, float rSpeed = 0, int fadespeed = 3, int changespeed = 3, float mScale = float.PositiveInfinity)
+        public void SetParticle(Texture2D image, Vector2 location, Color color, Color nColor, float rotation, SpriteEffects effects, Vector2 origin, Vector2 mSpeed, float sSpeed, int time, Vector2 scale, float depth = 1, float plebScale = 1, int timeTillStart = 0, bool willScale = true, float rSpeed = 0, int fadespeed = 3, int changespeed = 3, float mScale = float.PositiveInfinity)
         {
-            SetParticle(image, location, color, rotation, effects, origin, Speed, time, scale, depth, plebScale, timeTillStart, willScale, rSpeed, fadespeed, changespeed, mScale);
+            SetParticle(image, location, color, rotation, effects, origin, mSpeed, sSpeed, time, scale, depth, plebScale, timeTillStart, willScale, rSpeed, fadespeed, changespeed, mScale);
             newColor = nColor;
         }
 
-        public void SetParticle(Texture2D image, Vector2 location, Color color, float rotation, SpriteEffects effects, Vector2 origin, Vector2 Speed, int time, Vector2 scale, float depth = 1, float plebScale = 1, int timeTillStart = 0, bool willScale = true, float rSpeed = 0, int fadespeed = 3, int changespeed = 3, float mScale = float.PositiveInfinity)
+        public void SetParticle(Texture2D image, Vector2 location, Color color, float rotation, SpriteEffects effects, Vector2 origin, Vector2 mSpeed, float sSpeed, int time, Vector2 scale, float depth = 1, float plebScale = 1, int timeTillStart = 0, bool willScale = true, float rSpeed = 0, int fadespeed = 3, int changespeed = 3, float mScale = float.PositiveInfinity)
         {
             changeSpeed = changespeed;
             fadeSpeed = fadespeed;
@@ -75,7 +77,8 @@ namespace Tetris
             this.scale = scale;
             Depth = depth;
             Scale = plebScale;
-            speed = Speed;
+            moveSpeed = mSpeed;
+            scaleSpeed = new Vector2(Math.Abs(sSpeed));
             fadeTime = new Timer(time);
             startTime = new Timer(timeTillStart);
             if (timeTillStart == 0)
@@ -104,12 +107,17 @@ namespace Tetris
             }
             else
             {
+
+
                 fadeTime.Tick(gameTime);
                 if (!noScale && scale.X < maxScale && scale.Y < maxScale)
                 {
-                    scale += new Vector2(Math.Abs(speed.X), Math.Abs(speed.Y)) * Scale;
+                    scale += scaleSpeed * Scale;
                 }
-                Location += speed;
+
+                Location += moveSpeed;
+
+
                 if (fadeTime.Ready(false))
                 {
                     if (Fade(fadeSpeed))

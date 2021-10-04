@@ -17,7 +17,7 @@ namespace Tetris
         bool fullFaded;
         List<Particle> particles;
         Random random = new Random();
-        public ParticleEffect(EffectType type, Texture2D image, Vector2 origin, List<Color> colors, int amount, int time, List<double> speeds, List<int> scales, List<int> subsections = null, float scaleDown = 1, int zoneHeight = 0, int zoneWidth = 0, float directionX = 1, float directionY = 1, bool rando = true)
+        public ParticleEffect(EffectType type, Texture2D image, Vector2 origin, List<Color> colors, int amount, int time, List<double> speeds, List<float> scaleSpeeds, List<int> scales, List<int> subsections = null, float scaleDown = 1, int zoneHeight = 0, int zoneWidth = 0, float directionX = 1, float directionY = 1, bool rando = true)
         {
             fullFaded = false;
             particles = new List<Particle>();
@@ -46,7 +46,7 @@ namespace Tetris
                         scale = new Vector2(scales[j], scales[j]);
                     }
                     var tempPart = ObjectPool<Particle>.Instance.Borrow<Particle>();
-                    tempPart.SetParticle(image, origin, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), new Vector2((float)(Math.Cos(angle) * speeds[j]), (float)(Math.Sin(angle) * speeds[j])), time, scale, 1f - (.1f / amount * i), scales[j]);
+                    tempPart.SetParticle(image, origin, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), new Vector2((float)(Math.Cos(angle) * speeds[j]), (float)(Math.Sin(angle) * speeds[j])), scaleSpeeds[j], time, scale, 1f - (.1f / amount * i), scales[j]);
                     particles.Add(tempPart);
                 }
                 else if (type == EffectType.Ray)
@@ -67,12 +67,12 @@ namespace Tetris
                             }
                             var tempPart = ObjectPool<Particle>.Instance.Borrow<Particle>();
                             var location = new Vector2(X, Y) + origin;
-                            tempPart.SetParticle(image, location, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), new Vector2(directionX, directionY) * new Vector2((float)(speeds[j]), (float)speeds[j]), time, new Vector2(scales[j], scales[j]), 1, scales[j], e * 10, false);
+                            tempPart.SetParticle(image, location, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), new Vector2(directionX, directionY) * new Vector2((float)(speeds[j]), (float)speeds[j]), scaleSpeeds[j], time, new Vector2(scales[j], scales[j]), 1, scales[j], e * 10, false);
                             particles.Add(tempPart);
                             if (e % 2 == 0)
                             {
                                 tempPart = ObjectPool<Particle>.Instance.Borrow<Particle>();
-                                tempPart.SetParticle(image, location, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), Vector2.Transform(new Vector2(directionX, directionY), Matrix.CreateRotationZ(MathHelper.Pi)) * new Vector2((float)(speeds[j]), (float)speeds[j]), time, new Vector2(scales[j], scales[j]), 1, scales[j], e * 10, false);
+                                tempPart.SetParticle(image, location, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), Vector2.Transform(new Vector2(directionX, directionY), Matrix.CreateRotationZ(MathHelper.Pi)) * new Vector2((float)(speeds[j]), (float)speeds[j]), scaleSpeeds[j], time, new Vector2(scales[j], scales[j]), 1, scales[j], e * 10, false);
                                 particles.Add(tempPart);
                             }
                         }
