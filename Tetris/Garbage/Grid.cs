@@ -750,10 +750,7 @@ namespace Tetris
                             if (explosiveSpot.explosive > 0)
                             {
                                 explosives.Add(explosiveSpot.Explode(map));
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, explosiveSpot.image.Location, new List<Color> { Color.OrangeRed, Color.Crimson, Color.Black },
-                                                               100, (int)explosiveSpot.explosive - 2, new List<double> { .5 * explosiveSpot.explosive, explosiveSpot.explosive, 1.5 * explosiveSpot.explosive },
-                                                              new List<float> { .5f * explosiveSpot.explosive / explosiveImage.Width, explosiveSpot.explosive / pixel.Width, 1.5f * explosiveSpot.explosive / pixel.Width }
-                                                              , explosiveScales, null, 200));
+                                CreateExplosionParticles(explosiveSpot);
                             }
                             score += (int)(explosiveSpot.score * scoreFactor);
                             if (explosiveSpot.chonker <= 1)
@@ -912,22 +909,19 @@ namespace Tetris
                 {
                     for (int j = 0; j < size.X; j++)
                     {
-                        score += (int)(map[j][i].score * scoreFactor);
-                        if (map[j][i].chonker <= 1 || fullChonk)
+                        var currentSpot = map[j][i];
+
+                        score += (int)(currentSpot.score * scoreFactor);
+                        if (currentSpot.chonker <= 1 || fullChonk)
                         {
-                            if (map[j][i].explosive > 0)
+                            if (currentSpot.explosive > 0)
                             {
-                                var explosiveSpot = map[j][i];
+                                CreateExplosionParticles(currentSpot);
 
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, explosiveSpot.image.Location, 
-                                            new List<Color> { Color.OrangeRed, Color.Crimson, Color.Black }, 100, (int)explosiveSpot.explosive - 2,
-                                            new List<double> { .5 * explosiveSpot.explosive, explosiveSpot.explosive, 1.5 * explosiveSpot.explosive },
-                                            new List<float> { .5f * explosiveSpot.explosive / pixel.Width, explosiveSpot.explosive / pixel.Width, 1.5f * explosiveSpot.explosive / pixel.Width }, explosiveScales));
-
-                                var deads = explosiveSpot.Explode(map);
+                                var deads = currentSpot.Explode(map);
                                 explosives.Add(deads);
                             }
-                            else if (map[j][i].speed)
+                            else if (currentSpot.speed)
                             {
                                 zoom.Stop();
                                 speedAdd = 200;
@@ -936,11 +930,11 @@ namespace Tetris
                                 {
                                     zoom.Play();
                                 }
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, map[j][i].image.Location,
+                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, currentSpot.image.Location,
                                             new List<Color> { Color.White, Color.White }, 50, 5, new List<double> { 10, 10 }, 
                                             new List<float> { 10 / pixel.Width, 10 / pixel.Width }, new List<int> { 1, 1 }, null, 1, 30, 30, 1, 0));
                             }
-                            map[j][i].empty(empty);
+                            currentSpot.empty(empty);
                             for (int q = i; q > 0; q--)
                             {
                                 if (map[j][q - 1].isfull)
@@ -962,7 +956,7 @@ namespace Tetris
                         }
                         else
                         {
-                            map[j][i].reduceChonk();
+                            currentSpot.reduceChonk();
                         }
 
                     }
@@ -980,6 +974,14 @@ namespace Tetris
                 }
             }
             return true;
+        }
+
+        void CreateExplosionParticles(Coordinate explosiveSpot)
+        {            
+            effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, explosiveSpot.image.Location, new List<Color> { Color.OrangeRed, Color.Crimson, Color.Black },
+                               200, (int)explosiveSpot.explosive - 2, new List<double> { .5 * explosiveSpot.explosive, 1.5 * explosiveSpot.explosive, 2.5 * explosiveSpot.explosive },
+                               new List<float> { .5f * explosiveSpot.explosive / explosiveImage.Width, 1.2f * explosiveSpot.explosive / pixel.Width, 2f * explosiveSpot.explosive / pixel.Width }
+                               , explosiveScales, null, 200, 0, 0, 1, 1, true, 3, 3 + 3 * (int)(explosiveSpot.explosive) / 2));
         }
 
         void shadowPlace()

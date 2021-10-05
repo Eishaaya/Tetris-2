@@ -218,11 +218,11 @@ namespace Tetris
                 50,
                 50,
 
-                100,
-                100,
-                100,
-                100,
-                100,
+                120,
+                120,
+                120,
+                120,
+                120,
 
                 45,
                 65,
@@ -232,7 +232,7 @@ namespace Tetris
                 15,
                 15,
 
-                7,
+                4,
             };
 
             colors = new List<Color>
@@ -304,9 +304,9 @@ namespace Tetris
                 -1.75f,
 
                 -1.5f,
-                -1,
+                -.5f,
 
-                -1,
+                -.5f,
                 0,
                 0.15f,
                 0.15f,
@@ -353,7 +353,7 @@ namespace Tetris
             box = new Sprite(Content.Load<Texture2D>("Nexts"), new Vector2(400, 290), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .8f);
             loser = new Sprite(Content.Load<Texture2D>("Game Over Screen"), new Vector2(150, 198), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .95f);
             Gimage = new Sprite(Content.Load<Texture2D>("grid"), new Vector2(30, 30), Color.White, 0, SpriteEffects.None, new Vector2(30, 30), 0, 0);
-            grid = new Grid(new Vector2(10, 20), Gimage, locations, symmetry, colors, chances, vals, diffs, sizes, image, turnEffect, landEffect, boomEffect, speedEffect, bossEffect, Content.Load<Texture2D>("ShadowImage"), .6667f, false, Content.Load<Texture2D>("TileCover"), Content.Load<Texture2D>("Maybe Explosive"), Content.Load<Texture2D>("Speeder Tile"), Content.Load<Texture2D>("FlareS"), Content.Load<Texture2D>("Speed Particle"));
+            grid = new Grid(new Vector2(10, 20), Gimage, locations, symmetry, colors, chances, vals, diffs, sizes, image, turnEffect, landEffect, boomEffect, speedEffect, bossEffect, Content.Load<Texture2D>("ShadowImage"), .6667f, false, Content.Load<Texture2D>("TileCover"), Content.Load<Texture2D>("Maybe Explosive"), Content.Load<Texture2D>("Speeder Tile"), Content.Load<Texture2D>("BoomBit"), Content.Load<Texture2D>("Speed Particle"));
             butty = new Button(Content.Load<Texture2D>("Classic button"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 150, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             pauser = new Button(Content.Load<Texture2D>("Pause symbol alt"), new Vector2(435, 120), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             complexButty = new Button(Content.Load<Texture2D>("Power Unlimited Power"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 16, 60), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);

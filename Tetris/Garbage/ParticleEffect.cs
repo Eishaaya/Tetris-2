@@ -17,7 +17,7 @@ namespace Tetris
         bool fullFaded;
         List<Particle> particles;
         Random random = new Random();
-        public ParticleEffect(EffectType type, Texture2D image, Vector2 origin, List<Color> colors, int amount, int time, List<double> speeds, List<float> scaleSpeeds, List<int> scales, List<int> subsections = null, float scaleDown = 1, int zoneHeight = 0, int zoneWidth = 0, float directionX = 1, float directionY = 1, bool rando = true)
+        public ParticleEffect(EffectType type, Texture2D image, Vector2 origin, List<Color> colors, int amount, int time, List<double> speeds, List<float> scaleSpeeds, List<int> scales, List<int> subsections = null, float scaleDown = 1, int zoneHeight = 0, int zoneWidth = 0, float directionX = 1, float directionY = 1, bool rando = true, int rotationSpeed = 3, int fadeSpeed = 3)
         {
             fullFaded = false;
             particles = new List<Particle>();
@@ -45,8 +45,14 @@ namespace Tetris
                     {
                         scale = new Vector2(scales[j], scales[j]);
                     }
+
+
                     var tempPart = ObjectPool<Particle>.Instance.Borrow<Particle>();
-                    tempPart.SetParticle(image, origin, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2), new Vector2((float)(Math.Cos(angle) * speeds[j]), (float)(Math.Sin(angle) * speeds[j])), scaleSpeeds[j], time, scale, 1f - (.1f / amount * i), scales[j]);
+                    tempPart.SetParticle(image, origin, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2),
+                                        new Vector2((float)(Math.Cos(angle) * speeds[j]), (float)(Math.Sin(angle) * speeds[j])), scaleSpeeds[j], time, scale, 1f - (.1f / amount * i),
+                                        scales[j], 0, true, MathHelper.ToRadians(random.Next(-rotationSpeed, rotationSpeed + 1)), fadeSpeed);
+
+
                     particles.Add(tempPart);
                 }
                 else if (type == EffectType.Ray)
