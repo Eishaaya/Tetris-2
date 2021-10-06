@@ -197,11 +197,11 @@ namespace Tetris
                 return;
             }
             badFactor++;
-            var blah = savedPooey;
+            var savedPieceState = savedPooey;
             if (switcher == 0)
             {
                 savedPooey = nextPooey;
-                if (blah == null)
+                if (savedPieceState == null)
                 {
                     nextPooey = lastPooey;
                     lastPooey = gen();
@@ -209,7 +209,7 @@ namespace Tetris
                 }
                 else
                 {
-                    nextPooey = blah;
+                    nextPooey = savedPieceState;
                 }
                 savedPooey.Display(new Vector2(450, 740), 140);
                 nextPooey.Display(new Vector2(450, 340), 140);
@@ -219,13 +219,13 @@ namespace Tetris
             if (switcher == 1)
             {
                 savedPooey = lastPooey;
-                if (blah == null)
+                if (savedPieceState == null)
                 {
                     lastPooey = gen();
                 }
                 else
                 {
-                    lastPooey = blah;
+                    lastPooey = savedPieceState;
                 }
                 savedPooey.Display(new Vector2(450, 740), 140);
                 lastPooey.Display(new Vector2(450, 540), 140);
@@ -979,9 +979,9 @@ namespace Tetris
         void CreateExplosionParticles(Coordinate explosiveSpot)
         {            
             effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, explosiveSpot.image.Location, new List<Color> { Color.OrangeRed, Color.Crimson, Color.Black },
-                               200, (int)explosiveSpot.explosive - 2, new List<double> { .5 * explosiveSpot.explosive, 1.5 * explosiveSpot.explosive, 2.5 * explosiveSpot.explosive },
-                               new List<float> { .5f * explosiveSpot.explosive / explosiveImage.Width, 1.2f * explosiveSpot.explosive / pixel.Width, 2f * explosiveSpot.explosive / pixel.Width }
-                               , explosiveScales, null, 200, 0, 0, 1, 1, true, 3, 3 + 3 * (int)(explosiveSpot.explosive) / 2));
+                               200, (int)explosiveSpot.explosive - 2, new List<double> { 1 * explosiveSpot.explosive, 2 * explosiveSpot.explosive, 3 * explosiveSpot.explosive },
+                               new List<float> { 1f * explosiveSpot.explosive / explosiveImage.Width, 2f * explosiveSpot.explosive / pixel.Width, 3f * explosiveSpot.explosive / pixel.Width }
+                               , explosiveScales, null, 200, 0, 0, 1, 1, true, 3, 3 + 3 * (int)(explosiveSpot.explosive / 2)));
         }
 
         void shadowPlace()

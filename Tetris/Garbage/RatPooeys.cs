@@ -141,6 +141,8 @@ namespace Tetris
                 boxes.Add(new Coordinate(new Sprite(noxes[i].image.Image, image.Location, noxes[i].image.Color, image.rotation, image.effect, image.Origin, image.Scale, image.Depth), spots[i], (int)image.Scale, chonkValue, noxes[i].explosive, speedUp));
                 Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
                 boxes[i].image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
+                boxes[i].chonkImage = noxes[i].chonkImage;
+
             }
             rotated = false;
             sideways = 0;
@@ -164,7 +166,7 @@ namespace Tetris
             {
                 boxes[i].image.Scale = tempScale;
                 boxes[i].image.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * tempScale), boxes[i].place.Y * (float)Math.Round(60 * tempScale)) + location + new Vector2(size / 2 - pieceSize.X / 2 * tempScale, size / 2 - pieceSize.Y / 2 * tempScale) + image.Origin * tempScale / 2;
-                if (boxes[i].Chonker() && boxes[i].chonkImage != null)
+                if (boxes[i].Chonker())
                 {
                     boxes[i].chonkImage.Scale = tempScale;
                     boxes[i].chonkImage.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * tempScale), boxes[i].place.Y * (float)Math.Round(60 * tempScale)) + location + new Vector2(size / 2 - pieceSize.X / 2 * tempScale, size / 2 - pieceSize.Y / 2 * tempScale) + image.Origin * tempScale / 2;
