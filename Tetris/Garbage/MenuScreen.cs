@@ -11,14 +11,14 @@ namespace Tetris
 {
     class MenuScreen : Screen
     {
-        Button chrisIsAPoopyHead;
-        Button Unlimited;
+        Button classic;
+        Button unlimited;
         Button setting;
-        public MenuScreen(Button poopMakerOfff, Button infinite, SoundEffect music, Button sett)
-            :base(music)
+        public MenuScreen(Button poopMakerOfff, Button infinite, SoundEffect music, Button sett, int number)
+            :base(music, number)
         {
-            chrisIsAPoopyHead = poopMakerOfff;            
-            Unlimited = infinite;
+            classic = poopMakerOfff;            
+            unlimited = infinite;
             setting = sett;
         }
         public override void Update(GameTime time, Screenmanager manny)
@@ -29,26 +29,26 @@ namespace Tetris
             {
                 return;
             }
-            if (Unlimited.check(mousy.Position.ToVector2(), nou))
+            if (unlimited.check(mousy.Position.ToVector2(), isMouseClicked))
             {
                 manny.next(1, true);
                 return;
             }
-            else if (chrisIsAPoopyHead.check(mousy.Position.ToVector2(), nou))
+            else if (classic.check(mousy.Position.ToVector2(), isMouseClicked))
             {
                 manny.next(2, true);
                 return;
             }
-            else if (setting.check(mousy.Position.ToVector2(), nou))
+            else if (setting.check(mousy.Position.ToVector2(), isMouseClicked))
             {
-                manny.next(5, true);
+                manny.next(5, true);                
                 return;
             }
         }
         public override void Draw(SpriteBatch batch)
         {
-            chrisIsAPoopyHead.Draw(batch);
-            Unlimited.Draw(batch);
+            classic.Draw(batch);
+            unlimited.Draw(batch);
             setting.Draw(batch);
         }
 

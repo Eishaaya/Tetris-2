@@ -35,10 +35,11 @@ namespace Tetris
         bool isClassic;
         bool colorChanged;
         int[] progressionPoints = new int[] { 1, 10, 20, 30, 45, 60, 80, 100 };
+        bool willClearBoard = true;
 
 
-        public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, Texture2D boxSprite, List<Vector2> boxLocations, SoundEffect mus, SoundEffect intro, Keys pauseK = Keys.Escape)
-            : base(mus, intro)
+        public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, Texture2D boxSprite, List<Vector2> boxLocations, SoundEffect mus, SoundEffect intro, int number, Keys pauseK = Keys.Escape)
+            : base(mus, intro, number)
         {
             colorChanged = false;
             pauseKey = pauseK;
@@ -72,8 +73,8 @@ namespace Tetris
             scoreX = new Label(laby.Font, Color.White, score.Location + new Vector2(score.Font.MeasureString(score.Text).X + 0, 0), "x1", TimeSpan.Zero, new Vector2(0, 0), 0, SpriteEffects.None, 1, .8f);
             bottom.Color = colors[0];
         }
-        public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, SoundEffect mus, SoundEffect intro, Keys pauseK = Keys.Escape)
-            : base(mus, intro)
+        public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, SoundEffect mus, SoundEffect intro, int number, Keys pauseK = Keys.Escape)
+            : base(mus, intro, number)
         {
             colorChanged = false;
             pauseKey = pauseK;
@@ -118,11 +119,15 @@ namespace Tetris
             grid.holdDown = bools[3];
             grid.holdSide = bools[4];
             grid.willProject = bools[5];
+            willClearBoard = bools[6];
         }
         public override void Reset()
         {
             colorChanged = false;
-            grid.Reset();
+            if (willClearBoard)
+            {
+                grid.Reset();
+            }
         }
         public override void Update(GameTime time, Screenmanager manny)
         {
@@ -242,7 +247,7 @@ namespace Tetris
             }
             for (int i = 0; i < boxes.Count; i++)
             {
-                if (boxes[i].check(mousy.Position.ToVector2(), nou))
+                if (boxes[i].check(mousy.Position.ToVector2(), isMouseClicked))
                 {
                     grid.Switch(i);
                     break;
@@ -253,7 +258,7 @@ namespace Tetris
                     break;
                 }
             }
-            if (pause.check(mousy.Position.ToVector2(), nou) || Maryland.IsKeyDown(pauseKey))
+            if (pause.check(mousy.Position.ToVector2(), isMouseClicked) || Maryland.IsKeyDown(pauseKey))
             {
                 manny.next(3, false);
                 return;

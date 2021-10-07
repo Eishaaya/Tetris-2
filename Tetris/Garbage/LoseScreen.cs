@@ -19,8 +19,8 @@ namespace Tetris
         List<int> scores;
         List<Label> topScores;
         SpriteFont font;
-        public LoseScreen(Sprite dark, Sprite Loser, Button menuButt, Button RestartButt, SpriteFont Font)
-            : base()
+        public LoseScreen(Sprite dark, Sprite Loser, Button menuButt, Button RestartButt, SpriteFont Font, int number)
+            : base(number)
         {
             tint = dark;
             lose = Loser;
@@ -72,7 +72,7 @@ namespace Tetris
             {
                 return;
             }
-            if (menu.check(mousy.Position.ToVector2(), nou))
+            if (menu.check(mousy.Position.ToVector2(), isMouseClicked))
             {
                 manny.next(0, true);
                 manny.previousScreens.Pop();
@@ -80,7 +80,7 @@ namespace Tetris
                 manny.clearMemory();
                 return;
             }
-            if (back.check(mousy.Position.ToVector2(), nou))
+            if (back.check(mousy.Position.ToVector2(), isMouseClicked))
             {
                 manny.back();
             }

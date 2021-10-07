@@ -9,29 +9,34 @@ namespace Tetris
 {
     class PauseScreen : Screen
     {
+        //Texture2D menu
         Button menu;
         Button back;
         Button restart;
+        Button setting;
+
         Sprite tint;
         Keys exit;
-        public PauseScreen(Sprite dark, Button menuButt, Button ReturnButt, Button restartButt, Keys Exit = Keys.Escape)
-            : base()
+        public PauseScreen(Sprite dark, Button menuButt, Button ReturnButt, Button restartButt, Button settingButt, int number, Keys Exit = Keys.Escape)
+            : base(number)
         {
             exit = Exit;
             tint = dark;
             menu = menuButt;
             restart = restartButt;
             back = ReturnButt;
+            setting = settingButt;
         }
 
         public override void Update(GameTime time, Screenmanager manny)
         {
+            var mousePos = mousy.Position.ToVector2();
             base.Update(time, manny);
             if (heldMouse || keysDown)
             {
                 return;
             }
-            if (menu.check(mousy.Position.ToVector2(), nou))
+            if (menu.check(mousePos, isMouseClicked))
             {
                 manny.next(0, true);
                 manny.previousScreens.Pop();
@@ -39,17 +44,23 @@ namespace Tetris
                 manny.clearMemory();
                 return;
             }
-            if (restart.check(mousy.Position.ToVector2(), nou))
+            else if (restart.check(mousePos, isMouseClicked))
             {
                 manny.back();
                 manny.peek().Reset();
                 return;
             }
-            if (back.check(mousy.Position.ToVector2(), nou) || Maryland.IsKeyDown(exit) || nou)
+            else if (setting.check(mousePos, isMouseClicked))
+            {
+                manny.next(5, false);
+                return;
+            }
+            if (back.check(mousePos, isMouseClicked) || Maryland.IsKeyDown(exit) || isMouseClicked)
             {
                 manny.back();
                 return;
             }
+
         }
 
         public override void Draw(SpriteBatch batch)
@@ -58,6 +69,7 @@ namespace Tetris
             back.Draw(batch);
             menu.Draw(batch);
             restart.Draw(batch);
+            setting.Draw(batch);
         }
     }
 }

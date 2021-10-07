@@ -11,31 +11,33 @@ namespace Tetris
 {
     class Screen
     {
+        public int ID { get; }
         public SoundEffectInstance introMusic;
         public SoundEffectInstance music;
         protected MouseState mousy;
         public List<Keys> binds;
-        protected bool nou;
+        protected bool isMouseClicked;
         protected bool uno;
         public bool heldMouse;
         bool introDone;
         protected bool keysDown = false;
         protected KeyboardState Maryland;
         protected bool playMusic;
-        public Screen()
-            : this(null, null) { }
-        public Screen(SoundEffect m)
-            : this(m, null) { }
-        public Screen(SoundEffect m, SoundEffect im)
+        public Screen(int num)
+            : this(null, null, num) { }
+        public Screen(SoundEffect m, int num)
+            : this(m, null, num) { }
+        public Screen(SoundEffect m, SoundEffect im, int number)
         {
+            ID = number;
             playMusic = true;
             Maryland = new KeyboardState();
             mousy = new MouseState();
-            nou = false;
+            isMouseClicked = false;
             uno = false;
             music = null;
             introMusic = null;
-            nou = false;
+            isMouseClicked = false;
             if (m != null)
             {
                 music = m.CreateInstance();
@@ -79,7 +81,7 @@ namespace Tetris
                 }
             }
         }
-        public virtual void Start()
+        public virtual void Start(int caller)
         {
             keysDown = true;
             heldMouse = true;
@@ -114,10 +116,10 @@ namespace Tetris
                 heldMouse = true;
             }
             mousy = Mouse.GetState();
-            nou = false;
+            isMouseClicked = false;
             if (mousy.LeftButton == ButtonState.Pressed)
             {
-                nou = true;
+                isMouseClicked = true;
             }
             else
             {

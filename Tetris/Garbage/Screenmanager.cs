@@ -19,7 +19,7 @@ namespace Tetris
             allScreens = screens;
             activeScreens.Push(allScreens[0]);
             previousScreens = new Stack<Screen>();
-            activeScreens.Peek().Start();
+            activeScreens.Peek().Start(-1);
         }
         public Screen peek()
         {
@@ -35,7 +35,9 @@ namespace Tetris
                     bindsChanged = false;
                 }
             }
-            activeScreens.Pop().StopMusic();
+            var callingScreen = activeScreens.Pop();
+
+            callingScreen.StopMusic();
             if (activeScreens.Count > 0)
             {
                 if (activeScreens.Peek() != previousScreens.Peek())
@@ -46,20 +48,24 @@ namespace Tetris
                 {
                     previousScreens.Pop();
                     activeScreens.Peek().heldMouse = true;
-                    activeScreens.Peek().Start();
+                    activeScreens.Peek().Start(callingScreen.ID);
                     return;
                 }
             }
             activeScreens.Push(previousScreens.Pop());
             activeScreens.Peek().heldMouse = true;
-            activeScreens.Peek().Start();
+            activeScreens.Peek().Start(callingScreen.ID);
         }
         public void next(int index, bool replace)
         {
+            var callingScreen = activeScreens.Peek();
             if (replace)
             {
-                activeScreens.Peek().StopMusic();
-                previousScreens.Push(activeScreens.Pop());
+                activeScreens.Pop();
+                
+                callingScreen.StopMusic();
+                previousScreens.Push(callingScreen);
+
                 if (activeScreens.Count > 0)
                 {
                     activeScreens.Peek().StopMusic();
@@ -73,7 +79,7 @@ namespace Tetris
                 activeScreens.Push(allScreens[index]);
             }
             activeScreens.Peek().heldMouse = true;
-            activeScreens.Peek().Start();
+            activeScreens.Peek().Start(callingScreen.ID);
         }
         public void clearMemory()
         {
