@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -29,15 +30,22 @@ namespace Tetris
             font = Font;
         }
 
-        public override void Transfer (int gamescore)
+        public override void Transfer(int gamescore)
         {
             score = new Label(font, Color.LightGray, new Vector2(240, 285), $"Your Score: {gamescore}", new TimeSpan(0, 0, 1));
 
             //Read
             topScores = new List<Label>();
             scores = new List<int>();
-            var dataJSON = File.ReadAllText("data.json");
-            scores = JsonSerializer.Deserialize<List<int>>(dataJSON);
+            if (caller == 1)
+            {
+                  scores = StorageObject.Instance.scores;
+            }
+            else
+            {
+                scores = StorageObject.Instance.classicScores;
+            }
+
             scores.Add(gamescore);
             scores.Sort();
             scores.Reverse();
@@ -60,9 +68,7 @@ namespace Tetris
                     }
                 }
             }
-
-            var stuffToWrite = JsonSerializer.Serialize(scores);
-            File.WriteAllText("data.json", stuffToWrite);
+            StorageObject.Instance.Write();
         }
 
         public override void Update(GameTime time, Screenmanager manny)
@@ -96,7 +102,7 @@ namespace Tetris
             for (int i = 0; i < topScores.Count; i++)
             {
                 topScores[i].Print(batch);
-            }    
+            }
         }
     }
 }

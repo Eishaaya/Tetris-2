@@ -11,7 +11,7 @@ namespace Tetris
 {
     class SettingsScreen : Screen
     {
-        int caller;
+
         Sprite backGround;
         Dictionary<int, Texture2D> backTextures;
         Button defaltButt;
@@ -26,7 +26,7 @@ namespace Tetris
         List<Keys> oldBinds;
         int index;
         public List<Toggler> toggles;
-        List<bool> toggOns;
+        public List<bool> ToggOns { get; private set; }
 
         public SettingsScreen(Button d, Button a, Button ap, Button menuButton, Texture2D b, List<Keys> dk, List<Keys> ak,
                               List<string> kt, List<bool> togs, Toggler template, SpriteFont font, SoundEffect effect, Texture2D otherBack, int number, GraphicsDevice graphicsDevice, Color backColor)
@@ -57,7 +57,7 @@ namespace Tetris
             keyTypes = kt;
             oldBinds = binds;
             index = -1;
-            toggOns = togs;
+            ToggOns = togs;
 
             backTextures = new Dictionary<int, Texture2D>() { [0] = menuButton.Image, [3] = otherBack };
             if (backGroundTxt != null)
@@ -89,7 +89,7 @@ namespace Tetris
                     }
                     offSet = new Vector2(offSet.X + finalRow, offSet.Y);
                 }
-                toggOns[i] = !toggOns[i];
+                ToggOns[i] = !ToggOns[i];
                 toggles.Add(new Toggler(template.Image, template.Location + offSet, template.Color, template.rotation, template.effect, template.Origin, template.Scale, template.Depth, template.HoverColor, template.ClickedColor,
                     new Sprite(template.ball.Image, template.ball.Location + offSet, template.ball.Color, template.ball.rotation, template.ball.effect, template.ball.Origin, template.ball.Scale, template.ball.Depth),
                     new Sprite(template.bottomColor.Image, template.bottomColor.Location + offSet, template.bottomColor.Color, template.bottomColor.rotation, template.bottomColor.effect, template.bottomColor.Origin, template.bottomColor.Scale, template.bottomColor.Depth),
@@ -113,14 +113,13 @@ namespace Tetris
             if (backTextures.ContainsKey(caller))
             {
                 backButt.Image = backTextures[caller];
-            }
-            this.caller = caller;
+            }            
 
 
             oldBinds = binds;
             for (int i = 0; i < toggles.Count; i++)
             {
-                toggOns[i] = !toggles[i].on;
+                ToggOns[i] = !toggles[i].on;
                 toggles[i].done = false;
             }
         }
@@ -174,7 +173,7 @@ namespace Tetris
                     manny.back();
                     for (int i = 0; i < toggles.Count; i++)
                     {
-                        toggles[i].on = !toggOns[i];
+                        toggles[i].on = !ToggOns[i];
                     }
                     return;
                 }

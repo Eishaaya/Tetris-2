@@ -12,6 +12,7 @@ namespace Tetris
     class Screen
     {
         public int ID { get; }
+        protected int caller;
         public SoundEffectInstance introMusic;
         public SoundEffectInstance music;
         protected MouseState mousy;
@@ -83,6 +84,7 @@ namespace Tetris
         }
         public virtual void Start(int caller)
         {
+            this.caller = caller;
             keysDown = true;
             heldMouse = true;
             if (playMusic)

@@ -89,11 +89,7 @@ namespace Tetris
         protected override void LoadContent()
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
-            if (!File.Exists("data.json"))
-            {
-                var stuffToWrite = JsonSerializer.Serialize(new List<int>());
-                File.WriteAllText("data.json", stuffToWrite);
-            }
+
 
             ObjectPool<Particle>.Instance.Populate(30, () => new Particle(null, Vector2.Zero, Color.White, 0, SpriteEffects.None, Vector2.Zero, Vector2.Zero, 0, 0, Vector2.Zero));
             ObjectPool<ParticleEffect>.Instance.Populate(3, () => new ParticleEffect());
@@ -529,6 +525,17 @@ namespace Tetris
                 true
             }, toggleMeUwu, Content.Load<SpriteFont>("File"), settingsMusic, resume.Image, 5, GraphicsDevice, Color.Black);
             destroyerOfKarens = new Screenmanager(new List<Screen> { menu, game, oldGame, pause, lose, settings });
+
+            if (!File.Exists("data.json"))
+            {
+                StorageObject.Instance.binds = settings.binds;
+                StorageObject.Instance.settings = settings.ToggOns;
+                StorageObject.Instance.Write();
+            }
+            else
+            {
+                StorageObject.Instance.Read();
+            }
         }
 
         protected override void Update(GameTime gameTime)
