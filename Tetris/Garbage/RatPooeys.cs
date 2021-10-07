@@ -138,7 +138,7 @@ namespace Tetris
             for (int i = 0; i < spots.Count; i++)
             {
                 locations.Add(spots[i] * (float)Math.Round(60 * scale));
-                boxes.Add(new Coordinate(new Sprite(noxes[i].image.Image, image.Location, noxes[i].image.Color, image.rotation, image.effect, image.Origin, image.Scale, image.Depth), spots[i], (int)image.Scale, chonkValue, noxes[i].explosive, speedUp));
+                boxes.Add(new Coordinate(new Sprite(noxes[i].image.Image, image.Location, noxes[i].image.Color, image.rotation, image.effect, image.Origin, image.Scale, image.Depth), spots[i], (int)image.Scale, chonkValue, noxes[i].explosive, noxes[i].speed));
                 Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
                 boxes[i].image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
                 boxes[i].chonkImage = noxes[i].chonkImage;

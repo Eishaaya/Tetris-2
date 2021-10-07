@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -32,7 +33,9 @@ namespace Tetris
         Color moveColor;
         Keys pauseKey;
         bool isClassic;
-        bool colorChanged;        
+        bool colorChanged;
+        int[] progressionPoints = new int[] { 1, 10, 20, 30, 45, 60, 80, 100 };
+
 
         public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, Texture2D boxSprite, List<Vector2> boxLocations, SoundEffect mus, SoundEffect intro, Keys pauseK = Keys.Escape)
             : base(mus, intro)
@@ -99,7 +102,7 @@ namespace Tetris
         }
         public override void changeBinds(List<Keys> newBinds, List<bool> bools)
         {
-            base.changeBinds(newBinds, bools); 
+            base.changeBinds(newBinds, bools);
             grid.downKey = newBinds[0];
             grid.turnKey = newBinds[1];
             grid.leftKey = newBinds[2];
@@ -123,7 +126,7 @@ namespace Tetris
         }
         public override void Update(GameTime time, Screenmanager manny)
         {
-           // grid.scale = (float)random.Next(0, 200) / 100;
+            // grid.scale = (float)random.Next(0, 200) / 100;
             bottom.FrameTime.SetTime(new TimeSpan(0, 0, 0, 0, (int)(baseSpeed - (grid.progression * (50 / baseSpeed)))));
             if (!isClassic)
             {
@@ -197,6 +200,8 @@ namespace Tetris
             {
                 colorChanged = grid.ChangeBackColor(Color.Lerp(colors[stage], Color.White, .0f));
             }
+
+
             if (grid.progression == 0)
             {
                 if (stage > 0)
@@ -206,78 +211,13 @@ namespace Tetris
                 }
                 stage = 0;
             }
-            else if (grid.progression == 1)
+            else if (grid.progression == progressionPoints[stage] && stage != progressionPoints.Length)
             {
-                if (stage == 0)
-                {
-                    fade = true;
-                    colorChanged = false;
-                }
-                stage = 1;
+                stage++;
+                fade = true;
+                colorChanged = false;
             }
-            else if (grid.progression == 10)
-            {
-                if (stage == 1)
-                {
-                    fade = true;
-                    colorChanged = false;
-                }
-                stage = 2;
-            }
-            else if (grid.progression == 20)
-            {
-                if (stage == 2)
-                {
-                    fade = true;
-                    colorChanged = false;
-                }
-                stage = 3;
-            }
-            else if (grid.progression == 30)
-            {
-                if (stage == 3)
-                {
-                    fade = true;
-                    colorChanged = false;
-                }
-                stage = 4;
-            }
-            else if (grid.progression == 45)
-            {
-                if (stage == 4)
-                {
-                    fade = true;
-                    colorChanged = false;
-                }
-                stage = 5;
-            }
-            else if (grid.progression == 60)
-            {
-                if (stage == 5)
-                {
-                    fade = true;
-                    colorChanged = false;
-                }
-                stage = 6;
-            }
-            else if (grid.progression == 80)
-            {
-                if (stage == 6)
-                {
-                    fade = true;
-                    colorChanged = false;
-                }
-                stage = 7;
-            }
-            else if (grid.progression == 100)
-            {
-                if (stage == 7)
-                {
-                    fade = true;
-                    colorChanged = false;
-                }
-                stage = 8;
-            }
+
             #endregion //The animated bar down low
 
             if (lost)
