@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+
 using System;
 using System.Collections.Generic;
 using System.IO;
@@ -374,8 +375,8 @@ namespace Tetris
             apply = new Button(Content.Load<Texture2D>("Applu"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 159, 750), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             defaults = new Button(Content.Load<Texture2D>("Default"), new Vector2(GraphicsDevice.Viewport.Width / 2 - 159, 75), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
             arrows = new Button(Content.Load<Texture2D>("Arrows"), new Vector2(GraphicsDevice.Viewport.Width / 2 + 29, 75), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1, Color.Gray, Color.DarkGray);
-            
-            
+
+
             toggleMeUwu = new Toggler(Content.Load<Texture2D>("Toggle Base"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .9f, Color.Gray, Color.Black,
             new Sprite(Content.Load<Texture2D>("Toggle Ball"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1),
             new Sprite(Content.Load<Texture2D>("Toggle Color"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .7f),
@@ -513,20 +514,22 @@ namespace Tetris
                 "Held Vertical",
                 "Held Horizontal",
                 "Piece Projection",
-                "Restart On Menu"
-            }, new List<bool> 
-            { 
-                true, 
-                true, 
-                true, 
+                "Restart On Menu",
+                "Store New Settings"
+            }, new List<bool>
+            {
                 true,
                 true,
                 true,
-                true
+                true,
+                true,
+                true,
+                true,
+                false,
             }, toggleMeUwu, Content.Load<SpriteFont>("File"), settingsMusic, resume.Image, 5, GraphicsDevice, Color.Black);
             destroyerOfKarens = new Screenmanager(new List<Screen> { menu, game, oldGame, pause, lose, settings });
 
-            if (!File.Exists("data.json"))
+            if (!File.Exists("data.json") || true)
             {
                 StorageObject.Instance.binds = settings.binds;
                 StorageObject.Instance.settings = settings.ToggOns;
@@ -543,14 +546,14 @@ namespace Tetris
             //toggleMeUwu.check(Mouse.GetState().Position.ToVector2(), Mouse.GetState().LeftButton == ButtonState.Pressed);
             //if (toggleMeUwu.on)
             //{
-                destroyerOfKarens.Update(gameTime);
+            destroyerOfKarens.Update(gameTime);
             //}
         }
 
         protected override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
-            _spriteBatch.Begin(sortMode : SpriteSortMode.FrontToBack);
+            _spriteBatch.Begin(sortMode: SpriteSortMode.FrontToBack);
             destroyerOfKarens.Draw(_spriteBatch);
             //toggleMeUwu.Draw(_spriteBatch);
             _spriteBatch.End();

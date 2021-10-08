@@ -11,7 +11,7 @@ namespace Tetris
 {
     class SettingsScreen : Screen
     {
-
+        bool firstOpen = true;
         Sprite backGround;
         Dictionary<int, Texture2D> backTextures;
         Button defaltButt;
@@ -105,6 +105,13 @@ namespace Tetris
         {
             base.Start(caller);
 
+            if (firstOpen)
+            {
+                binds = StorageObject.Instance.binds;
+                ToggOns = StorageObject.Instance.settings;
+                firstOpen = false;
+            }
+
             if (caller == 3)
             {
                 music.Stop();
@@ -159,11 +166,28 @@ namespace Tetris
                 }
                 else if (applyButt.check(mousy.Position.ToVector2(), isMouseClicked))
                 {
+
+                    if (toggles[7].on)
+                    {
+                        StorageObject.Instance.binds = binds;
+                        for (int i = 0; i < toggles.Count; i++)
+                        {
+                            StorageObject.Instance.settings[i] = toggles[i].on;
+                        }
+                    }
+                    else
+                    {
+                        StorageObject.Instance.settings[7] = false;
+                    }
+                    StorageObject.Instance.Write();
+
+
                     manny.bindsChanged = true;
                     for (int i = 0; i < toggles.Count; i++)
                     {
                         toggles[i].on = !toggles[i].on;
                     }
+
                     manny.back();
                     return;
                 }
