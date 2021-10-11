@@ -1,6 +1,7 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -25,6 +26,16 @@ namespace Tetris
         {
             return activeScreens.Peek();
         }
+
+        public void assignBinds()
+        {
+            for (int i = 0; i < allScreens.Count; i++)
+            {
+                allScreens[i].changeBinds(allScreens[5].binds, allScreens[5].GetBools());
+                bindsChanged = false;
+            }
+        }
+
         public void back()
         {
             if (bindsChanged)
@@ -62,7 +73,7 @@ namespace Tetris
             if (replace)
             {
                 activeScreens.Pop();
-                
+
                 callingScreen.StopMusic();
                 previousScreens.Push(callingScreen);
 

@@ -467,6 +467,33 @@ namespace Tetris
                 new Vector2(406, 696)
             };
 
+            bool[] toggleSettings;
+
+            if (!File.Exists("gameData.json"))
+            {
+                if (File.Exists("data.json"))
+                {
+                    StorageObject.Instance.OldRead();
+                }
+                StorageObject.Instance.binds = settings.binds;
+                StorageObject.Instance.settings = new List<bool>
+                {
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    true,
+                    false,
+                };
+                StorageObject.Instance.Write();
+            }
+            else
+            {
+                StorageObject.Instance.Read();
+            }
+
             pause = new PauseScreen(tint, toMenu, resume, restart2, pSetting, 3);
             game = new GameScreen(grid, laby, pauser, box, bottomScroll, Content.Load<Texture2D>("hoverBrick"), boxPlaces, unlimitedMusic, unlimitedIntro, 1);
             oldGame = new GameScreen(clasgrid, laby, pauser, box, bottomScroll, Content.Load<Texture2D>("hoverBrick"), boxPlaces, music, null, 2);
@@ -516,29 +543,10 @@ namespace Tetris
                 "Piece Projection",
                 "Restart On Menu",
                 "Store New Settings"
-            }, new List<bool>
-            {
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
-                true,
-                false,
-            }, toggleMeUwu, Content.Load<SpriteFont>("File"), settingsMusic, resume.Image, 5, GraphicsDevice, Color.Black);
+            }, StorageObject.Instance.settings, toggleMeUwu, Content.Load<SpriteFont>("File"), settingsMusic, resume.Image, 5, GraphicsDevice, Color.Black);
             destroyerOfKarens = new Screenmanager(new List<Screen> { menu, game, oldGame, pause, lose, settings });
 
-            if (!File.Exists("data.json") || true)
-            {
-                StorageObject.Instance.binds = settings.binds;
-                StorageObject.Instance.settings = settings.ToggOns;
-                StorageObject.Instance.Write();
-            }
-            else
-            {
-                StorageObject.Instance.Read();
-            }
+            destroyerOfKarens.assignBinds();
         }
 
         protected override void Update(GameTime gameTime)

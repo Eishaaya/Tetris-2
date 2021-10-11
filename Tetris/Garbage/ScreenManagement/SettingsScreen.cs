@@ -112,10 +112,6 @@ namespace Tetris
                 firstOpen = false;
             }
 
-            if (caller == 3)
-            {
-                music.Stop();
-            }
 
             if (backTextures.ContainsKey(caller))
             {
@@ -142,6 +138,10 @@ namespace Tetris
         public override void Update(GameTime time, Screenmanager manny)
         {
             base.Update(time, manny);
+            if (caller == 3)
+            {
+                StopMusic();
+            }
             if (heldMouse)
             {
                 return;

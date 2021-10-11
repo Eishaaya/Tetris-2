@@ -321,7 +321,6 @@ namespace Tetris
         public void forceSide(int power = 1)
         {
             sideways = power;
-            bool good = true;
             for (int i = 0; i < boxes.Count; i++)
             {
                 boxes[i].image.Location = new Vector2(boxes[i].image.Location.X + 60 * power * scale, boxes[i].image.Location.Y);

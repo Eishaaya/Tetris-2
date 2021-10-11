@@ -10,12 +10,12 @@ namespace Tetris
 {
     sealed class StorageObject
     {
-        public List<int> scores { get; private set; }
-        public List<int> classicScores { get; private set; }
+        public List<int> scores { get; set; }
+        public List<int> classicScores { get; set; }
         public List<Keys> binds { get; set; }
         public List<bool> settings { get; set; }
-        
-        private StorageObject() 
+
+        private StorageObject()
         {
             scores = new List<int>();
             classicScores = new List<int>();
@@ -27,7 +27,7 @@ namespace Tetris
 
         public void Read()
         {
-            var dataJSON = File.ReadAllText("data.json");
+            var dataJSON = File.ReadAllText("gameData.json");
 
             var readObject = JsonSerializer.Deserialize<StorageObject>(dataJSON);
             scores = readObject.scores;
@@ -39,7 +39,13 @@ namespace Tetris
         public void Write()
         {
             var stuffToWrite = JsonSerializer.Serialize(this);
-            File.WriteAllText("data.json", stuffToWrite);
+            File.WriteAllText("gameData.json", stuffToWrite);
+        }
+
+        public void OldRead()
+        {
+            var dataJSON = File.ReadAllText("data.json");
+            scores = JsonSerializer.Deserialize<List<int>>(dataJSON);
         }
     }
 }
