@@ -105,7 +105,7 @@ namespace Tetris
             }
             introDone = false;
         }
-        public virtual void Update(GameTime time, Screenmanager manny)
+        public virtual void Update(GameTime time, Screenmanager manny, bool isActiveWindow)
         {
             Play(time);
             Maryland = Keyboard.GetState();

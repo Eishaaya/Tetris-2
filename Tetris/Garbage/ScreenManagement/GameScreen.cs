@@ -129,7 +129,7 @@ namespace Tetris
                 grid.Reset();
             }
         }
-        public override void Update(GameTime time, Screenmanager manny)
+        public override void Update(GameTime time, Screenmanager manny, bool isActiveWindow)
         {
             // grid.scale = (float)random.Next(0, 200) / 100;
             bottom.FrameTime.SetTime(new TimeSpan(0, 0, 0, 0, (int)(baseSpeed - (grid.progression * (50 / baseSpeed)))));
@@ -185,6 +185,8 @@ namespace Tetris
                     }
                 }
             }
+         
+            #region Bottom 
             if (fade)
             {
                 if (bottom.FadeTo(1))
@@ -200,7 +202,6 @@ namespace Tetris
                     fill = false;
                 }
             }
-            #region Bottom
             if (!colorChanged)
             {
                 colorChanged = grid.ChangeBackColor(Color.Lerp(colors[stage], Color.White, .0f));
@@ -237,14 +238,15 @@ namespace Tetris
                 lost = true;
                 return;
             }
-            base.Update(time, manny);
+            base.Update(time, manny, isActiveWindow);
             grid.Update(time);
             scoreX.SetText($"x{Math.Round(grid.scoreFactor, 1)}");
             score.SetText($"Score: \n {grid.score}");
-            if (heldMouse || keysDown)
+            if (heldMouse || keysDown || !isActiveWindow)
             {
                 return;
             }
+
             for (int i = 0; i < boxes.Count; i++)
             {
                 if (boxes[i].check(mousy.Position.ToVector2(), isMouseClicked))

@@ -21,9 +21,12 @@ namespace Tetris
             unlimited = infinite;
             setting = sett;
         }
-        public override void Update(GameTime time, Screenmanager manny)
+        public override void Update(GameTime time, Screenmanager manny, bool isActiveWindow)
         {
-            base.Update(time, manny);
+            base.Update(time, manny, isActiveWindow);
+
+            if (!isActiveWindow) return;
+
             Play(time);
             if (heldMouse)
             {

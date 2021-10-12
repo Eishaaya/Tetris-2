@@ -71,6 +71,7 @@ namespace Tetris
         SoundEffect bossEffect;
         Toggler toggleMeUwu;
         Sprite betterTile;
+        Timer secTimer;
 
         public Game1()
         {
@@ -91,6 +92,7 @@ namespace Tetris
         {
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
+            secTimer = new Timer(1000);
 
             ObjectPool<Particle>.Instance.Populate(30, () => new Particle(null, Vector2.Zero, Color.White, 0, SpriteEffects.None, Vector2.Zero, Vector2.Zero, 0, 0, Vector2.Zero));
             ObjectPool<ParticleEffect>.Instance.Populate(3, () => new ParticleEffect());
@@ -471,11 +473,25 @@ namespace Tetris
 
             if (!File.Exists("gameData.json"))
             {
+                //backwards compatability/file creation
                 if (File.Exists("data.json"))
                 {
                     StorageObject.Instance.OldRead();
                 }
-                StorageObject.Instance.binds = settings.binds;
+                StorageObject.Instance.binds = new List<Keys>
+                {
+                    Keys.S,
+                    Keys.W,
+                    Keys.A,
+                    Keys.D,
+                    Keys.Space,
+                    Keys.D1,
+                    Keys.D2,
+                    Keys.D3,
+                    Keys.D4,
+                    Keys.Escape
+                };
+
                 StorageObject.Instance.settings = new List<bool>
                 {
                     true,
@@ -499,7 +515,7 @@ namespace Tetris
             oldGame = new GameScreen(clasgrid, laby, pauser, box, bottomScroll, Content.Load<Texture2D>("hoverBrick"), boxPlaces, music, null, 2);
             lose = new LoseScreen(tint, loser, toMenu2, restart, Content.Load<SpriteFont>("File"), 4);
             menu = new MenuScreen(butty, complexButty, menuMusic, setting, 0);
-            settings = new SettingsScreen(defaults, arrows, apply, toMenu3, Content.Load<Texture2D>("BindButt"), new List<Keys>
+            settings = new SettingsScreen(defaults, arrows, apply, toMenu3, Content.Load<Texture2D>("BindButt"), StorageObject.Instance.binds, new List<Keys>
             {
                 Keys.S,
                 Keys.W,
@@ -532,7 +548,7 @@ namespace Tetris
                 "Drop",
                 "Next",
                 "Last",
-                "Swap",
+                "Swap", 
                 "Queue",
                 "Pause",
                 "Music",
@@ -551,11 +567,13 @@ namespace Tetris
 
         protected override void Update(GameTime gameTime)
         {
-            //toggleMeUwu.check(Mouse.GetState().Position.ToVector2(), Mouse.GetState().LeftButton == ButtonState.Pressed);
-            //if (toggleMeUwu.on)
+            //debug condition IGNORE
+            //secTimer.Tick(gameTime);
+            //if (secTimer.Ready())
             //{
-            destroyerOfKarens.Update(gameTime);
+            //    System.Diagnostics.Debug.WriteLine($"{IsActive}");
             //}
+            destroyerOfKarens.Update(gameTime, IsActive);
         }
 
         protected override void Draw(GameTime gameTime)

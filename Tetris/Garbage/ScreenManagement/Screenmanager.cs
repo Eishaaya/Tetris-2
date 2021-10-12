@@ -96,7 +96,7 @@ namespace Tetris
         {
             previousScreens.Clear();
         }
-        public void Update(GameTime time)
+        public void Update(GameTime time, bool isActiveWindow)
         {
             Stack<Screen> drawScreens = new Stack<Screen>();
             while (activeScreens.Count > 0)
@@ -108,7 +108,7 @@ namespace Tetris
             {
                 activeScreens.Push(drawScreens.Pop());
             }
-            activeScreens.Peek().Update(time, this);
+            activeScreens.Peek().Update(time, this, isActiveWindow);
         }
 
         public void Draw(SpriteBatch batch)

@@ -28,10 +28,14 @@ namespace Tetris
             setting = settingButt;
         }
 
-        public override void Update(GameTime time, Screenmanager manny)
-        {
+        public override void Update(GameTime time, Screenmanager manny, bool isActiveWindow)
+        {           
+            base.Update(time, manny, isActiveWindow);
+
+            if (!isActiveWindow) return;
+
             var mousePos = mousy.Position.ToVector2();
-            base.Update(time, manny);
+
             if (heldMouse || keysDown)
             {
                 return;

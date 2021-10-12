@@ -14,7 +14,7 @@ namespace Tetris
         bool firstOpen = true;
         Sprite backGround;
         Dictionary<int, Texture2D> backTextures;
-        Button defaltButt;
+        Button defaultButt;
         Button arrowButt;
         Button applyButt;
         Button backButt;
@@ -28,9 +28,9 @@ namespace Tetris
         public List<Toggler> toggles;
         public List<bool> ToggOns { get; private set; }
 
-        public SettingsScreen(Button d, Button a, Button ap, Button menuButton, Texture2D b, List<Keys> dk, List<Keys> ak,
+        public SettingsScreen(Button d, Button a, Button ap, Button menuButton, Texture2D b, List<Keys> ck, List<Keys> dk, List<Keys> ak,
                               List<string> kt, List<bool> togs, Toggler template, SpriteFont font, SoundEffect effect, Texture2D otherBack, int number, GraphicsDevice graphicsDevice, Color backColor)
-            : this(d, a, ap, menuButton, b, dk, ak, kt, togs, template, font, effect, otherBack, number, null)
+            : this(d, a, ap, menuButton, b, ck, dk, ak, kt, togs, template, font, effect, otherBack, number, null)
         {
             var backTexture = new Texture2D(graphicsDevice, 1, 1);
             backTexture.SetData(new Color[] { backColor });
@@ -39,7 +39,7 @@ namespace Tetris
             backGround.Depth = 1;
         }
 
-        public SettingsScreen(Button d, Button a, Button ap, Button menuButton, Texture2D b, List<Keys> dk, List<Keys> ak,
+        public SettingsScreen(Button defaults, Button arrows, Button apply, Button menuButton, Texture2D backTxt, List<Keys> currentKeys, List<Keys> defaultKeys, List<Keys> arrowKeys,
                               List<string> kt, List<bool> togs, Toggler template, SpriteFont font, SoundEffect effect, Texture2D otherBack, int number, Texture2D backGroundTxt)
             : base(effect, number)
         {
@@ -47,13 +47,13 @@ namespace Tetris
             toggles = new List<Toggler>();
             bindLabels = new List<Label>();
             keyTypes = new List<string>();
-            applyButt = ap;
-            defaults = dk;
-            arrows = ak;
+            applyButt = apply;
+            this.defaults = defaultKeys;
+            this.arrows = arrowKeys;
             backButt = menuButton;
-            binds = defaults;
-            defaltButt = d;
-            arrowButt = a;
+            binds = currentKeys;
+            defaultButt = defaults;
+            arrowButt = arrows;
             keyTypes = kt;
             oldBinds = binds;
             index = -1;
@@ -66,15 +66,15 @@ namespace Tetris
             }
 
 
-            for (int i = 0; i < defaults.Count / 2; i++)
+            for (int i = 0; i < this.defaults.Count / 2; i++)
             {
                 bindLabels.Add(new Label(font, Color.White, new Vector2(150, i * 50 + 225), $"{keyTypes[i]} : {binds[i]}", TimeSpan.Zero));
-                bindButtons.Add(new Button(b, new Vector2(150, i * 50 + 250), Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .1f, Color.DarkGray, Color.Gray));
+                bindButtons.Add(new Button(backTxt, new Vector2(150, i * 50 + 250), Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .1f, Color.DarkGray, Color.Gray));
             }
-            for (int i = defaults.Count / 2; i < defaults.Count; i++)
+            for (int i = this.defaults.Count / 2; i < this.defaults.Count; i++)
             {
-                bindLabels.Add(new Label(font, Color.White, new Vector2(350, (i - defaults.Count / 2) * 50 + 225), $"{keyTypes[i]} : {binds[i]}", TimeSpan.Zero));
-                bindButtons.Add(new Button(b, new Vector2(350, (i - defaults.Count / 2) * 50 + 250), Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .1f, Color.DarkGray, Color.Gray));
+                bindLabels.Add(new Label(font, Color.White, new Vector2(350, (i - this.defaults.Count / 2) * 50 + 225), $"{keyTypes[i]} : {binds[i]}", TimeSpan.Zero));
+                bindButtons.Add(new Button(backTxt, new Vector2(350, (i - this.defaults.Count / 2) * 50 + 250), Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .1f, Color.DarkGray, Color.Gray));
             }
             int finalRow = 0;
             for (int i = 0; i < togs.Count; i++)
@@ -135,9 +135,10 @@ namespace Tetris
             }
             return allBools;
         }
-        public override void Update(GameTime time, Screenmanager manny)
+        public override void Update(GameTime time, Screenmanager manny, bool isActiveWindow)
         {
-            base.Update(time, manny);
+            base.Update(time, manny, isActiveWindow);
+            if (!isActiveWindow) return;
             if (caller == 3)
             {
                 StopMusic();
@@ -148,7 +149,7 @@ namespace Tetris
             }
             if (index < 0)
             {
-                if (defaltButt.check(mousy.Position.ToVector2(), isMouseClicked))
+                if (defaultButt.check(mousy.Position.ToVector2(), isMouseClicked))
                 {
                     binds = defaults;
                     for (int i = 0; i < binds.Count; i++)
@@ -254,7 +255,7 @@ namespace Tetris
             batch.Begin();
             base.Draw(batch);
             backGround.Draw(batch);
-            defaltButt.Draw(batch);
+            defaultButt.Draw(batch);
             arrowButt.Draw(batch);
             backButt.Draw(batch);
             applyButt.Draw(batch);
