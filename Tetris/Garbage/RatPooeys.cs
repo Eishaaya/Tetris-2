@@ -186,6 +186,7 @@ namespace Tetris
                     boxes[i].chonkImage.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * scale), boxes[i].place.Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
                 }
             }
+            forceSide((int)(5 - pieceSize.X  / 80));
         }
         public void Update(GameTime gameTime)
         {
@@ -323,8 +324,9 @@ namespace Tetris
             sideways = power;
             for (int i = 0; i < boxes.Count; i++)
             {
-                boxes[i].image.Location = new Vector2(boxes[i].image.Location.X + 60 * power * scale, boxes[i].image.Location.Y);
+                boxes[i].image.Location = new Vector2(boxes[i].image.Location.X + 60 * power * scale, boxes[i].image.Location.Y);                
                 boxes[i].place.X += power;
+                boxes[i].UpdateLinkedImage();
             }
         }
 
@@ -336,6 +338,7 @@ namespace Tetris
             {
                 boxes[i].image.Location = new Vector2(boxes[i].image.Location.X + 60 * power * scale, boxes[i].image.Location.Y);
                 boxes[i].place.X += power;
+                boxes[i].UpdateLinkedImage();
                 if (boxes[i].place.X < 0 || boxes[i].place.X >= dimensions.X)
                 {
                     good = false;
@@ -347,8 +350,10 @@ namespace Tetris
                 {
                     boxes[i].image.Location = new Vector2(boxes[i].image.Location.X - 60 * power * scale, boxes[i].image.Location.Y);
                     boxes[i].place.X -= power;
+                    boxes[i].UpdateLinkedImage();
                 }
             }
+
         }
         public void Animate()
         {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+
 using System;
 using System.Collections.Generic;
 using System.Text;
@@ -71,6 +72,13 @@ namespace Tetris
             isfull = true;
         }
 
+        public void UpdateLinkedImage()
+        {
+            if (chonkImage != null)
+            {
+                chonkImage.Location = image.Location;
+            }
+        }
         public List<Vector2> Explode(List<List<Coordinate>> coords)
         {
             float top = place.Y - explosive - 1;
@@ -106,7 +114,7 @@ namespace Tetris
                             {
                                 spots.Add(new Vector2(i, j));
                             }
-                        }  
+                        }
                         else
                         {
                             spots.Add(new Vector2(i, j));

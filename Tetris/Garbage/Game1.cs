@@ -90,6 +90,9 @@ namespace Tetris
 
         protected override void LoadContent()
         {
+            var dataExists = File.Exists("gameData.json");
+            var oldDataExists = File.Exists("data.json");
+
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
             secTimer = new Timer(1000);
@@ -469,12 +472,11 @@ namespace Tetris
                 new Vector2(406, 696)
             };
 
-            bool[] toggleSettings;
 
-            if (!File.Exists("gameData.json"))
+            if (!dataExists)
             {
                 //backwards compatability/file creation
-                if (File.Exists("data.json"))
+                if (oldDataExists)
                 {
                     StorageObject.Instance.OldRead();
                 }

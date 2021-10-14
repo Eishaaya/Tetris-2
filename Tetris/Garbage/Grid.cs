@@ -49,7 +49,7 @@ namespace Tetris
         public int progression;
         int hold;
         public bool isClassic;
-        float tempScale;
+       // float tempScale;
         bool saveGo = false;
         TimeSpan lifitime;
         float badFactor;
@@ -517,16 +517,16 @@ namespace Tetris
         {
             int ex = 0;
             bool sp = false;
-            int blah;
+            int newPieceIndex;
             int chonk = 0;
             hold--;
             while (true)
             {
-                blah = random.Next(0, locations.Count);
+                newPieceIndex = random.Next(0, locations.Count);
                 float size = random.Next(0, 100);
                 var diffTemp = progression;
-                var diffAdd = badFactor * difficulty[blah] / Math.Abs(difficulty[blah]);
-                if (difficulty[blah] == 0)
+                var diffAdd = badFactor * difficulty[newPieceIndex] / Math.Abs(difficulty[newPieceIndex]);
+                if (difficulty[newPieceIndex] == 0)
                 {
                     diffAdd = 0;
                 }
@@ -534,22 +534,22 @@ namespace Tetris
                 {
                     badFactor = 0;
                 }
-                float diffFactor = (100 + difficulty[blah] * diffTemp) / 100;
-                float helpFactor = (100 - difficulty[blah] * ((hold - 22) * (4 - progression / 25))) / 100;
+                float diffFactor = (100 + difficulty[newPieceIndex] * diffTemp) / 100;
+                float helpFactor = (100 - difficulty[newPieceIndex] * ((hold - 22) * (4 - progression / 25))) / 100;
                 if (hold <= 15)
                 {
                     helpFactor = 1;
                 }
-                if (!isClassic && blah == spawnChances.Count - 1)
+                if (!isClassic && newPieceIndex == spawnChances.Count - 1)
                 {
-                    if (hold <= 0 && (spawnChances[blah] * diffFactor) + diffAdd >= size)
+                    if (hold <= 0 && (spawnChances[newPieceIndex] * diffFactor) + diffAdd >= size)
                     {
                         hold = 35;
                         freeMoves += 10;
                         break;
                     }
                 }
-                else if ((spawnChances[blah] * diffFactor * helpFactor) >= size - diffAdd)
+                else if ((spawnChances[newPieceIndex] * diffFactor * helpFactor) >= size - diffAdd)
                 {
                     if (!isClassic && size <= 2 * (progression / 10 + 1) && helpFactor == 1 && hold <= 5)
                     {
@@ -571,28 +571,26 @@ namespace Tetris
                 }
             }
 
-            //blah = 4;
-            var temp = progression * 5;
-            var currentSpeed = temp;
+            var currentSpeed = progression * 5;
             if (speedAdd != 1)
             {
-                temp += speedAdd;
+                currentSpeed += speedAdd;
             }
-            if (temp > 325)
+            if (currentSpeed > 325)
             {
                 if (speedAdd != 1)
                 {
-                    if (temp > 375)
+                    if (currentSpeed > 375)
                     {
-                        temp = 375;
+                        currentSpeed = 375;
                     }
                 }
                 else
                 {
-                    temp = 325;
+                    currentSpeed = 325;
                 }
             }
-            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[blah], sizes[blah], colors[blah], values[blah], (float)scale, symmetry[blah], 650 - temp, chonk, chonkImage, sp, speedImage, ex, explosiveImage);
+            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[newPieceIndex], sizes[newPieceIndex], colors[newPieceIndex], values[newPieceIndex], (float)scale, symmetry[newPieceIndex], 650 - currentSpeed, chonk, chonkImage, sp, speedImage, ex, explosiveImage);
         }
         public void Update(GameTime gameTime)
         {
