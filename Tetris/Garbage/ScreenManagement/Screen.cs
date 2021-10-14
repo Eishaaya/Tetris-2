@@ -23,7 +23,7 @@ namespace Tetris
         bool introDone;
         protected bool keysDown = false;
         protected KeyboardState Maryland;
-        protected bool playMusic;
+        public bool WillPlayMusic { get; set; }
         public Screen(int num)
             : this(null, null, num) { }
         public Screen(SoundEffect m, int num)
@@ -31,7 +31,7 @@ namespace Tetris
         public Screen(SoundEffect m, SoundEffect im, int number)
         {
             ID = number;
-            playMusic = true;
+            WillPlayMusic = true;
             Maryland = new KeyboardState();
             mousy = new MouseState();
             isMouseClicked = false;
@@ -60,8 +60,8 @@ namespace Tetris
         }
         public virtual void changeBinds(List<Keys> newBinds, List<bool> bools)
         {
-            playMusic = bools[0];
-            if (!playMusic)
+            WillPlayMusic = bools[0];
+            if (!WillPlayMusic)
             {
                 StopMusic();
             }
@@ -87,7 +87,7 @@ namespace Tetris
             this.caller = caller;
             keysDown = true;
             heldMouse = true;
-            if (playMusic)
+            if (WillPlayMusic)
             {
                 if (introMusic == null)
                 {
@@ -136,7 +136,7 @@ namespace Tetris
 
         public void PlayMusic()
         {
-            if (!introDone && playMusic && (introMusic == null || introMusic.State == SoundState.Stopped))
+            if (!introDone && WillPlayMusic && (introMusic == null || introMusic.State == SoundState.Stopped))
             {
                 music.Play();
                 introDone = true;

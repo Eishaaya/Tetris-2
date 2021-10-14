@@ -36,9 +36,10 @@ namespace Tetris
         bool colorChanged;
         int[] progressionPoints = new int[] { 1, 10, 20, 30, 45, 60, 80, 100 };
         bool willClearBoard = true;
+        AnimatingSprite canDrop;
 
 
-        public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, Texture2D boxSprite, List<Vector2> boxLocations, SoundEffect mus, SoundEffect intro, int number, Keys pauseK = Keys.Escape)
+        public GameScreen(Grid newgrid, Label laby, Button pauser, Sprite box, AnimatingSprite down, Texture2D boxSprite, AnimatingSprite swapLight, List<Vector2> boxLocations, SoundEffect mus, SoundEffect intro, int number, Keys pauseK = Keys.Escape)
             : base(mus, intro, number)
         {
             colorChanged = false;
@@ -51,6 +52,7 @@ namespace Tetris
             lost = false;
             nextBox = box;
             bottom = down;
+            canDrop = swapLight;
             baseSpeed = down.FrameTime.GetMillies();
             colors = new List<Color>
             {
@@ -260,6 +262,14 @@ namespace Tetris
                     break;
                 }
             }
+            if (grid.CanSwap())
+            {
+                canDrop.currentframe = 1;
+            }
+            else
+            {
+                canDrop.currentframe = 0;
+            }
             if (pause.check(mousy.Position.ToVector2(), isMouseClicked) || Maryland.IsKeyDown(pauseKey))
             {
                 manny.next(3, false);
@@ -287,9 +297,12 @@ namespace Tetris
             }
             if (!isClassic)
             {
-                moveLabel.Print(batch);
-            }
+                moveLabel.Print(batch);   
+                canDrop.Draw(batch);
+            }         
+
             grid.Draw(batch);
+
         }
     }
 }

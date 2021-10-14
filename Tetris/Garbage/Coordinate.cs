@@ -9,8 +9,10 @@ namespace Tetris
 {
     class Coordinate
     {
-        public Sprite image;
-        public Vector2 place;
+        public Sprite Image { get; set; }
+        public Vector2 GridSpot { 
+            get; 
+            set; }
         public bool isfull;
         public int score;
         public float chonker;
@@ -21,8 +23,8 @@ namespace Tetris
         public Sprite chonkImage;
         public Coordinate(Sprite I, Vector2 P, int s, float c, float e, bool sp, Texture2D ci = null)
         {
-            image = I;
-            place = P;
+            Image = I;
+            GridSpot = P;
             score = s;
             chonker = c;
             isfull = false;
@@ -32,7 +34,7 @@ namespace Tetris
             totalChonk = c;
             if (ci != null)
             {
-                chonkImage = new Sprite(ci, image.Location, Color.White, 0, SpriteEffects.None, new Vector2(ci.Width / 2, ci.Height / 2), image.Scale, image.Depth + .01f);
+                chonkImage = new Sprite(ci, Image.Location, Color.White, 0, SpriteEffects.None, new Vector2(ci.Width / 2, ci.Height / 2), Image.Scale, Image.Depth + .01f);
             }
             // - image.Origin * image.Scale - new Vector2(ci.Width, ci.Height) * image.Scale
         }
@@ -49,7 +51,7 @@ namespace Tetris
             chonker--;
             if (chonkImage == null)
             {
-                image.Color = Color.FromNonPremultiplied((int)(chonkColor.R * ((totalChonk - chonker) / totalChonk)), (int)(chonkColor.G * ((totalChonk - chonker) / totalChonk)), (int)(chonkColor.B * ((totalChonk - chonker) / totalChonk)), 255);
+                Image.Color = Color.FromNonPremultiplied((int)(chonkColor.R * ((totalChonk - chonker) / totalChonk)), (int)(chonkColor.G * ((totalChonk - chonker) / totalChonk)), (int)(chonkColor.B * ((totalChonk - chonker) / totalChonk)), 255);
             }
             else
             {
@@ -58,12 +60,12 @@ namespace Tetris
         }
         public void fill(Coordinate pooey)
         {
-            image.Image = pooey.image.Image;
+            Image.Image = pooey.Image.Image;
             chonkImage = pooey.chonkImage;
-            image.Color = pooey.image.Color;
+            Image.Color = pooey.Image.Color;
             chonkColor = pooey.chonkColor;
             score = pooey.score;
-            image.Depth = pooey.image.Depth;
+            Image.Depth = pooey.Image.Depth;
             totalChonk = pooey.chonker;
             chonker = pooey.chonker;
             explosive = pooey.explosive;
@@ -76,27 +78,27 @@ namespace Tetris
         {
             if (chonkImage != null)
             {
-                chonkImage.Location = image.Location;
+                chonkImage.Location = Image.Location;
             }
         }
         public List<Vector2> Explode(List<List<Coordinate>> coords)
         {
-            float top = place.Y - explosive - 1;
+            float top = GridSpot.Y - explosive - 1;
             if (top < 0)
             {
                 top = 0;
             }
-            float bottom = place.Y + explosive + 1;
+            float bottom = GridSpot.Y + explosive + 1;
             if (bottom > coords[0].Count)
             {
                 bottom = coords[0].Count;
             }
-            float left = place.X - explosive - 1;
+            float left = GridSpot.X - explosive - 1;
             if (left < 0)
             {
                 left = 0;
             }
-            float right = place.X + explosive + 1;
+            float right = GridSpot.X + explosive + 1;
             if (right > coords.Count)
             {
                 right = coords.Count;
@@ -106,11 +108,11 @@ namespace Tetris
             {
                 for (int j = (int)top; j < bottom; j++)
                 {
-                    if (Vector2.Distance(new Vector2(i, j), place) <= explosive + .01f)
+                    if (Vector2.Distance(new Vector2(i, j), GridSpot) <= explosive + .01f)
                     {
                         if (coords[i][j].chonker > 0)
                         {
-                            for (int e = 0; e < Vector2.Distance(new Vector2(i, j), place) + .01f; e++)
+                            for (int e = 0; e < Vector2.Distance(new Vector2(i, j), GridSpot) + .01f; e++)
                             {
                                 spots.Add(new Vector2(i, j));
                             }
@@ -128,21 +130,21 @@ namespace Tetris
         {
             if (Chonker() && chonkImage != null)
             {
-                chonkImage.Location = image.Location;
+                chonkImage.Location = Image.Location;
             }
             if (explosive == 2)
             {
-                image.Pulsate(20, .05f);
+                Image.Pulsate(20, .05f);
             }
             else if (explosive == 3)
             {
-                image.Pulsate(35, .1f);
-                image.Vibrate(12, .1f);
+                Image.Pulsate(35, .1f);
+                Image.Vibrate(12, .1f);
             }
         }
         public void empty(Sprite empty)
         {
-            image = new Sprite(empty.Image, image.Location, empty.Color, empty.rotation, empty.effect, empty.Origin, image.Scale, empty.Depth);
+            Image = new Sprite(empty.Image, Image.Location, empty.Color, empty.rotation, empty.effect, empty.Origin, Image.Scale, empty.Depth);
             chonkImage = null;
             isfull = false;
             explosive = 0;
@@ -151,7 +153,7 @@ namespace Tetris
         }
         public void Draw(SpriteBatch bath)
         {
-            image.Draw(bath);
+            Image.Draw(bath);
             if (Chonker() && chonkImage != null)
             {
                 chonkImage.Draw(bath);

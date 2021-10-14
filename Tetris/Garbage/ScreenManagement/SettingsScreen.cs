@@ -135,6 +135,17 @@ namespace Tetris
             }
             return allBools;
         }
+
+        Screen getGame(Screenmanager manny)
+        {
+            var prevScreens = new Stack<Screen>(manny.previousScreens);
+            Screen gameScreen = this;
+            while (!(gameScreen is GameScreen))
+            {
+                gameScreen = prevScreens.Pop();
+            }
+            return gameScreen;
+        }
         public override void Update(GameTime time, Screenmanager manny, bool isActiveWindow)
         {
             base.Update(time, manny, isActiveWindow);
@@ -220,12 +231,26 @@ namespace Tetris
                             if (toggles[i].on)
                             {
                                 StopMusic();
-                                playMusic = false;
+                                WillPlayMusic = false;
+                                if (caller == 3)
+                                {
+                                    var gameScreen = getGame(manny);
+                                    gameScreen.StopMusic();
+                                    gameScreen.WillPlayMusic = false;
+                                }
                             }
                             else
                             {
-                                playMusic = true;
-                                music.Resume();
+                                WillPlayMusic = true;
+                                if (caller != 3)
+                                {
+                                    music.Resume();
+                                }
+                                else
+                                {
+                                    var gameScreen = getGame(manny);
+                                    gameScreen.WillPlayMusic = true;
+                                }
                             }
                         }
                     }

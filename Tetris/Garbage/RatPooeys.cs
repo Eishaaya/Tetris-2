@@ -42,11 +42,11 @@ namespace Tetris
             {
                 if (old.boxes[i].chonkImage != null)
                 {
-                    newBoxes.Add(new Coordinate(new Sprite(old.boxes[i].image.Image, old.boxes[i].image.Location, old.boxes[i].image.Color, old.boxes[i].image.rotation, old.boxes[i].image.effect, old.boxes[i].image.Origin, old.boxes[i].image.Scale, old.boxes[i].image.Depth), old.boxes[i].place, old.boxes[i].score, old.boxes[i].chonker, old.boxes[i].explosive, old.boxes[i].speed, old.boxes[i].chonkImage.Image));
+                    newBoxes.Add(new Coordinate(new Sprite(old.boxes[i].Image.Image, old.boxes[i].Image.Location, old.boxes[i].Image.Color, old.boxes[i].Image.rotation, old.boxes[i].Image.effect, old.boxes[i].Image.Origin, old.boxes[i].Image.Scale, old.boxes[i].Image.Depth), old.boxes[i].GridSpot, old.boxes[i].score, old.boxes[i].chonker, old.boxes[i].explosive, old.boxes[i].speed, old.boxes[i].chonkImage.Image));
                 }
                 else
                 {
-                    newBoxes.Add(new Coordinate(new Sprite(old.boxes[i].image.Image, old.boxes[i].image.Location, old.boxes[i].image.Color, old.boxes[i].image.rotation, old.boxes[i].image.effect, old.boxes[i].image.Origin, old.boxes[i].image.Scale, old.boxes[i].image.Depth), old.boxes[i].place, old.boxes[i].score, old.boxes[i].chonker, old.boxes[i].explosive, old.boxes[i].speed));
+                    newBoxes.Add(new Coordinate(new Sprite(old.boxes[i].Image.Image, old.boxes[i].Image.Location, old.boxes[i].Image.Color, old.boxes[i].Image.rotation, old.boxes[i].Image.effect, old.boxes[i].Image.Origin, old.boxes[i].Image.Scale, old.boxes[i].Image.Depth), old.boxes[i].GridSpot, old.boxes[i].score, old.boxes[i].chonker, old.boxes[i].explosive, old.boxes[i].speed));
                 }
             }
             boxes = newBoxes;
@@ -124,7 +124,7 @@ namespace Tetris
                     boxes.Add(new Coordinate(new Sprite(tempImage, image.Location, tempColor, image.rotation, image.effect, image.Origin, image.Scale, image.Depth + depthFactor), spots[i], se, ch, explosive, speedUp));
                 }
                 Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
-                boxes[i].image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (o * (float)Math.Round(60 * scale))) + oragami;
+                boxes[i].Image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (o * (float)Math.Round(60 * scale))) + oragami;
             }
             score *= se * ((int)Math.Sqrt(boxes.Count) + 1);
             explosive = ex;
@@ -138,9 +138,9 @@ namespace Tetris
             for (int i = 0; i < spots.Count; i++)
             {
                 locations.Add(spots[i] * (float)Math.Round(60 * scale));
-                boxes.Add(new Coordinate(new Sprite(noxes[i].image.Image, image.Location, noxes[i].image.Color, image.rotation, image.effect, image.Origin, image.Scale, image.Depth), spots[i], (int)image.Scale, chonkValue, noxes[i].explosive, noxes[i].speed));
+                boxes.Add(new Coordinate(new Sprite(noxes[i].Image.Image, image.Location, noxes[i].Image.Color, image.rotation, image.effect, image.Origin, image.Scale, image.Depth), spots[i], (int)image.Scale, chonkValue, noxes[i].explosive, noxes[i].speed));
                 Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
-                boxes[i].image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
+                boxes[i].Image.Location = new Vector2(spots[i].X * (float)Math.Round(60 * scale), spots[i].Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
                 boxes[i].chonkImage = noxes[i].chonkImage;
 
             }
@@ -164,12 +164,12 @@ namespace Tetris
             }
             for (int i = 0; i < boxes.Count; i++)
             {
-                boxes[i].image.Scale = tempScale;
-                boxes[i].image.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * tempScale), boxes[i].place.Y * (float)Math.Round(60 * tempScale)) + location + new Vector2(size / 2 - pieceSize.X / 2 * tempScale, size / 2 - pieceSize.Y / 2 * tempScale) + image.Origin * tempScale / 2;
+                boxes[i].Image.Scale = tempScale;
+                boxes[i].Image.Location = new Vector2(boxes[i].GridSpot.X * (float)Math.Round(60 * tempScale), boxes[i].GridSpot.Y * (float)Math.Round(60 * tempScale)) + location + new Vector2(size / 2 - pieceSize.X / 2 * tempScale, size / 2 - pieceSize.Y / 2 * tempScale) + image.Origin * tempScale / 2;
                 if (boxes[i].Chonker())
                 {
                     boxes[i].chonkImage.Scale = tempScale;
-                    boxes[i].chonkImage.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * tempScale), boxes[i].place.Y * (float)Math.Round(60 * tempScale)) + location + new Vector2(size / 2 - pieceSize.X / 2 * tempScale, size / 2 - pieceSize.Y / 2 * tempScale) + image.Origin * tempScale / 2;
+                    boxes[i].chonkImage.Location = new Vector2(boxes[i].GridSpot.X * (float)Math.Round(60 * tempScale), boxes[i].GridSpot.Y * (float)Math.Round(60 * tempScale)) + location + new Vector2(size / 2 - pieceSize.X / 2 * tempScale, size / 2 - pieceSize.Y / 2 * tempScale) + image.Origin * tempScale / 2;
                 }
             }
         }
@@ -177,22 +177,22 @@ namespace Tetris
         {
             for (int i = 0; i < boxes.Count; i++)
             {
-                boxes[i].image.Scale = image.Scale;
+                boxes[i].Image.Scale = image.Scale;
                 Vector2 oragami = new Vector2(image.Origin.X * (float)scale, image.Origin.Y * (float)scale);
-                boxes[i].image.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * scale), boxes[i].place.Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
+                boxes[i].Image.Location = new Vector2(boxes[i].GridSpot.X * (float)Math.Round(60 * scale), boxes[i].GridSpot.Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
                 if (boxes[i].Chonker() && boxes[i].chonkImage != null)
                 {
                     boxes[i].chonkImage.Scale = image.Scale;
-                    boxes[i].chonkImage.Location = new Vector2(boxes[i].place.X * (float)Math.Round(60 * scale), boxes[i].place.Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
+                    boxes[i].chonkImage.Location = new Vector2(boxes[i].GridSpot.X * (float)Math.Round(60 * scale), boxes[i].GridSpot.Y * (float)Math.Round(60 * scale) - (6 * (float)Math.Round(60 * scale))) + oragami;
                 }
             }
-            forceSide((int)(5 - pieceSize.X  / 80));
+             ForceSide((int)Math.Round(5 - pieceSize.X  / 120), true);
         }
         public void Update(GameTime gameTime)
         {
             if (goDown)
             {
-                moveDown();                
+                MoveDown();                
                 goDown = false;
             }
             downtime.Tick(gameTime);
@@ -203,16 +203,16 @@ namespace Tetris
             Animate();
         }
 
-        public bool rotate()
+        public bool Rotate()
         {
             rotated = true;
-            return rotate(1);
+            return Rotate(1);
         }
-        public bool rotate(int direction)
+        public bool Rotate(int direction)
         {
             for (int i = 0; i < boxes.Count; i++)
             {
-                if (boxes[i].place.Y < biggerSide / 120)
+                if (boxes[i].GridSpot.Y < biggerSide / 120)
                 {
                     return false;
                 }
@@ -222,16 +222,16 @@ namespace Tetris
             {
                 for (int i = 0; i < boxes.Count; i++)
                 {
-                    var offset = Vector2.Transform(boxes[i].image.Location - boxes[0].image.Location, Matrix.CreateRotationZ(rotation));
+                    var offset = Vector2.Transform(boxes[i].Image.Location - boxes[0].Image.Location, Matrix.CreateRotationZ(rotation));
                     var newPoint = offset;
-                    offset = Vector2.Transform(boxes[i].place - boxes[0].place, Matrix.CreateRotationZ(rotation));
+                    offset = Vector2.Transform(boxes[i].GridSpot - boxes[0].GridSpot, Matrix.CreateRotationZ(rotation));
                     var smallPoint = offset;
 
                     newPoint = new Vector2((float)Math.Round(newPoint.X), (float)Math.Round(newPoint.Y));
                     smallPoint = new Vector2((float)Math.Round(smallPoint.X), (float)Math.Round(smallPoint.Y));
 
-                    boxes[i].image.Location = newPoint + boxes[0].image.Location;
-                    boxes[i].place = smallPoint + boxes[0].place;
+                    boxes[i].Image.Location = newPoint + boxes[0].Image.Location;
+                    boxes[i].GridSpot = smallPoint + boxes[0].GridSpot;
                 }
 
                 bool good = true;
@@ -241,13 +241,13 @@ namespace Tetris
                     good = true;
                     for (int i = 0; i < boxes.Count; i++)
                     {
-                        if (boxes[i].place.X >= dimensions.X)
+                        if (boxes[i].GridSpot.X >= dimensions.X)
                         {
                             good = false;
                             bigDumb = -1;
                             break;
                         }
-                        if (boxes[i].place.X < 0)
+                        if (boxes[i].GridSpot.X < 0)
                         {
                             good = false;
                             bigDumb = 1;
@@ -258,7 +258,7 @@ namespace Tetris
                     {
                         break;
                     }
-                    forceSide(bigDumb);
+                    ForceSide(bigDumb);
                 }
                 while (true);
             }
@@ -288,14 +288,15 @@ namespace Tetris
 
         #endregion
 
-        public void moveDown()
-        {            
+        public void MoveDown()
+        {
+            var one = new Vector2(0, 1);
             bool good = true;
             for (int i = 0; i < boxes.Count; i++)
             {
-                boxes[i].image.Location = new Vector2(boxes[i].image.Location.X, boxes[i].image.Location.Y + (float)Math.Round(60 * scale));
-                boxes[i].place.Y += 1;
-                if (boxes[i].place.Y >= dimensions.Y)
+                boxes[i].Image.Location = new Vector2(boxes[i].Image.Location.X, boxes[i].Image.Location.Y + (float)Math.Round(60 * scale));
+                boxes[i].GridSpot += one;
+                if (boxes[i].GridSpot.Y >= dimensions.Y)
                 {
                     good = false;
                 }
@@ -304,42 +305,47 @@ namespace Tetris
             {
                 for (int i = 0; i < boxes.Count; i++)
                 {
-                    boxes[i].image.Location = new Vector2(boxes[i].image.Location.X, boxes[i].image.Location.Y - (float)Math.Round(60 * scale));
-                    boxes[i].place.Y -= 1;
+                    boxes[i].Image.Location = new Vector2(boxes[i].Image.Location.X, boxes[i].Image.Location.Y - (float)Math.Round(60 * scale));
+                    boxes[i].GridSpot -= one;
                 }
             }
         }
 
-        public void forceUp()
+        public void ForceUp()
         {
             for (int i = 0; i < boxes.Count; i++)
             {
-                boxes[i].image.Location = new Vector2(boxes[i].image.Location.X, boxes[i].image.Location.Y - (float)Math.Round(60 * scale));
-                boxes[i].place.Y -= 1;
+                boxes[i].Image.Location = new Vector2(boxes[i].Image.Location.X, boxes[i].Image.Location.Y - (float)Math.Round(60 * scale));
+                boxes[i].GridSpot -= new Vector2(0, 1);
             }
         }
 
-        public void forceSide(int power = 1)
+        public void ForceSide(int power = 1, bool spawning = false)
         {
-            sideways = power;
+            if (!spawning)
+            {
+                sideways = power;
+            }
             for (int i = 0; i < boxes.Count; i++)
             {
-                boxes[i].image.Location = new Vector2(boxes[i].image.Location.X + 60 * power * scale, boxes[i].image.Location.Y);                
-                boxes[i].place.X += power;
+                boxes[i].Image.Location = new Vector2(boxes[i].Image.Location.X + 60 * power * scale, boxes[i].Image.Location.Y);                
+                boxes[i].GridSpot += new Vector2(power, 0);
                 boxes[i].UpdateLinkedImage();
             }
         }
 
-        public void moveSide(int power = 1)
+        public void MoveSide(int power = 1)
         {
             sideways = power;
+            var powerVector = new Vector2(power, 0);
+
             bool good = true;
             for (int i = 0; i < boxes.Count; i++)
             {
-                boxes[i].image.Location = new Vector2(boxes[i].image.Location.X + 60 * power * scale, boxes[i].image.Location.Y);
-                boxes[i].place.X += power;
+                boxes[i].Image.Location = new Vector2(boxes[i].Image.Location.X + 60 * power * scale, boxes[i].Image.Location.Y);
+                boxes[i].GridSpot += powerVector;
                 boxes[i].UpdateLinkedImage();
-                if (boxes[i].place.X < 0 || boxes[i].place.X >= dimensions.X)
+                if (boxes[i].GridSpot.X < 0 || boxes[i].GridSpot.X >= dimensions.X)
                 {
                     good = false;
                 }
@@ -348,8 +354,8 @@ namespace Tetris
             {
                 for (int i = 0; i < boxes.Count; i++)
                 {
-                    boxes[i].image.Location = new Vector2(boxes[i].image.Location.X - 60 * power * scale, boxes[i].image.Location.Y);
-                    boxes[i].place.X -= power;
+                    boxes[i].Image.Location = new Vector2(boxes[i].Image.Location.X - 60 * power * scale, boxes[i].Image.Location.Y);
+                    boxes[i].GridSpot -= powerVector;
                     boxes[i].UpdateLinkedImage();
                 }
             }

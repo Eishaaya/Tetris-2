@@ -49,7 +49,7 @@ namespace Tetris
         public int progression;
         int hold;
         public bool isClassic;
-       // float tempScale;
+        float tempScale;
         bool saveGo = false;
         TimeSpan lifitime;
         float badFactor;
@@ -80,6 +80,33 @@ namespace Tetris
         int changeDone;
         int finishedColors;
         public bool willProject = true;
+        float swapSpotCutOff
+        {
+            get
+            {
+                float tempProg;
+                tempProg = (30 - progression) / 6;
+                if (tempProg <= 0)
+                {
+                    tempProg = 0;
+                }
+
+                return tempProg;
+            }
+        }
+        float swapTimeCutoff {
+            get
+            {
+                float tempProg2;
+                tempProg2 = progression / 30;
+                if (tempProg2 >= 1)
+                {
+                    tempProg2 /= 5;
+                }
+                return tempProg2;
+            }
+        }
+
 
         List<int> explosiveScales = new List<int> { 15, 20, 25 };
         public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, List<Vector2> ss, Sprite im, SoundEffect ro, SoundEffect la, SoundEffect b, SoundEffect sp, SoundEffect bs, Texture2D spi, float sc = 1, bool ic = false, Texture2D chi = null, Texture2D ei = null, Texture2D si = null, Texture2D pi = null, Texture2D spp = null, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space, Keys s1 = Keys.D1, Keys s2 = Keys.D2, Keys s3 = Keys.D3, Keys s4 = Keys.D4)
@@ -145,8 +172,8 @@ namespace Tetris
                 for (int j = 0; j < size.Y; j++)
                 {
                     map[i].Add(new Coordinate(new Sprite(empty.Image, empty.Location, Color.White, empty.rotation, empty.effect, empty.Origin, (float)scale, empty.Depth), new Vector2(i, j), 0, 0, 0, false));
-                    Vector2 oragami = new Vector2(map[i][j].image.Origin.X * (float)scale, map[i][j].image.Origin.Y * (float)scale);
-                    map[i][j].image.Location = new Vector2(i * (float)Math.Round(60 * scale), j * (float)Math.Round(60 * scale) - (float)Math.Round(360 * scale)) + oragami;
+                    Vector2 oragami = new Vector2(map[i][j].Image.Origin.X * (float)scale, map[i][j].Image.Origin.Y * (float)scale);
+                    map[i][j].Image.Location = new Vector2(i * (float)Math.Round(60 * scale), j * (float)Math.Round(60 * scale) - (float)Math.Round(360 * scale)) + oragami;
                 }
             }
             generate(4);
@@ -180,8 +207,8 @@ namespace Tetris
                 for (int j = 0; j < size.Y; j++)
                 {
                     map[i].Add(new Coordinate(new Sprite(empty.Image, empty.Location, Color.White, empty.rotation, empty.effect, empty.Origin, (float)scale, empty.Depth), new Vector2(i, j), 0, 0, 0, false));
-                    Vector2 oragami = new Vector2(map[i][j].image.Origin.X * (float)scale, map[i][j].image.Origin.Y * (float)scale);
-                    map[i][j].image.Location = new Vector2(i * (float)Math.Round(60 * scale), j * (float)Math.Round(60 * scale) - (float)Math.Round(360 * scale)) + oragami;
+                    Vector2 oragami = new Vector2(map[i][j].Image.Origin.X * (float)scale, map[i][j].Image.Origin.Y * (float)scale);
+                    map[i][j].Image.Location = new Vector2(i * (float)Math.Round(60 * scale), j * (float)Math.Round(60 * scale) - (float)Math.Round(360 * scale)) + oragami;
                 }
             }
             generate(3);
@@ -189,6 +216,11 @@ namespace Tetris
             {
                 shadowPlace();
             }
+        }
+
+        public bool CanSwap ()
+        {            
+            return lifitime.Seconds <= 2 - swapTimeCutoff && pooey.boxes[0].GridSpot.Y - 5 <= 5 + swapSpotCutOff && freeMoves >= 5 && !overused;
         }
 
         public void Switch(int switcher)
@@ -237,21 +269,9 @@ namespace Tetris
             }
             if (switcher == 2)
             {
-                float tempProg;
-                tempProg = (30 - progression) / 6;
-                if (tempProg <= 0)
-                {
-                    tempProg = 0;
-                }
-                float tempProg2;
-                tempProg2 = progression / 30;
-                if (tempProg2 >= 1)
-                {
-                    tempProg2 /= 5;
-                }
                 if (savedPooey == null)
                 {
-                    if (lifitime.Seconds <= 2 - tempProg2 && pooey.boxes[0].place.Y - 5 <= 5 + tempProg && freeMoves >= 5)
+                    if (CanSwap())
                     {
                         freeMoves -= 5;
                         pooey.Revert();
@@ -262,7 +282,7 @@ namespace Tetris
                     }
                     return;
                 }
-                else if (lifitime.Seconds <= 2 - tempProg2 && pooey.boxes[0].place.Y - 5 <= 5 + tempProg && freeMoves >= 5)
+                else if (CanSwap())
                 {
                     bossInstance.Stop();
                     freeMoves -= 5;
@@ -383,18 +403,18 @@ namespace Tetris
                 {
                     if (!map[i][j].isfull)
                     {
-                        if (map[i][j].image.Color == newColor || i <= finishedColors && j <= finishedColors + 6)
+                        if (map[i][j].Image.Color == newColor || i <= finishedColors && j <= finishedColors + 6)
                         {
                             if (i > finishedColors || j > finishedColors + 6)
                             {
                                 doneUP = true;
                                 //Console.WriteLine($"{i}  {j - 6}");
                             }
-                            map[i][j].image.ChangeColor(empty.Color, .05f);
+                            map[i][j].Image.ChangeColor(empty.Color, .05f);
                         }
                         else
                         {
-                            map[i][j].image.ChangeColor(newColor, .05f);
+                            map[i][j].Image.ChangeColor(newColor, .05f);
                             allTouched = false;
                         }
                     }
@@ -413,7 +433,7 @@ namespace Tetris
                     {
                         if (!map[q][e].isfull)
                         {
-                            if (map[q][e].image.Color != Color.White)
+                            if (map[q][e].Image.Color != Color.White)
                             {
                                 done = false;
                                 break;
@@ -517,16 +537,16 @@ namespace Tetris
         {
             int ex = 0;
             bool sp = false;
-            int newPieceIndex;
+            int blah;
             int chonk = 0;
             hold--;
             while (true)
             {
-                newPieceIndex = random.Next(0, locations.Count);
+                blah = random.Next(0, locations.Count);
                 float size = random.Next(0, 100);
                 var diffTemp = progression;
-                var diffAdd = badFactor * difficulty[newPieceIndex] / Math.Abs(difficulty[newPieceIndex]);
-                if (difficulty[newPieceIndex] == 0)
+                var diffAdd = badFactor * difficulty[blah] / Math.Abs(difficulty[blah]);
+                if (difficulty[blah] == 0)
                 {
                     diffAdd = 0;
                 }
@@ -534,22 +554,22 @@ namespace Tetris
                 {
                     badFactor = 0;
                 }
-                float diffFactor = (100 + difficulty[newPieceIndex] * diffTemp) / 100;
-                float helpFactor = (100 - difficulty[newPieceIndex] * ((hold - 22) * (4 - progression / 25))) / 100;
+                float diffFactor = (100 + difficulty[blah] * diffTemp) / 100;
+                float helpFactor = (100 - difficulty[blah] * ((hold - 22) * (4 - progression / 25))) / 100;
                 if (hold <= 15)
                 {
                     helpFactor = 1;
                 }
-                if (!isClassic && newPieceIndex == spawnChances.Count - 1)
+                if (!isClassic && blah == spawnChances.Count - 1)
                 {
-                    if (hold <= 0 && (spawnChances[newPieceIndex] * diffFactor) + diffAdd >= size)
+                    if (hold <= 0 && (spawnChances[blah] * diffFactor) + diffAdd >= size)
                     {
                         hold = 35;
                         freeMoves += 10;
                         break;
                     }
                 }
-                else if ((spawnChances[newPieceIndex] * diffFactor * helpFactor) >= size - diffAdd)
+                else if ((spawnChances[blah] * diffFactor * helpFactor) >= size - diffAdd)
                 {
                     if (!isClassic && size <= 2 * (progression / 10 + 1) && helpFactor == 1 && hold <= 5)
                     {
@@ -571,26 +591,28 @@ namespace Tetris
                 }
             }
 
-            var currentSpeed = progression * 5;
+            //blah = 4;
+            var temp = progression * 5;
+            var currentSpeed = temp;
             if (speedAdd != 1)
             {
-                currentSpeed += speedAdd;
+                temp += speedAdd;
             }
-            if (currentSpeed > 325)
+            if (temp > 325)
             {
                 if (speedAdd != 1)
                 {
-                    if (currentSpeed > 375)
+                    if (temp > 375)
                     {
-                        currentSpeed = 375;
+                        temp = 375;
                     }
                 }
                 else
                 {
-                    currentSpeed = 325;
+                    temp = 325;
                 }
             }
-            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[newPieceIndex], sizes[newPieceIndex], colors[newPieceIndex], values[newPieceIndex], (float)scale, symmetry[newPieceIndex], 650 - currentSpeed, chonk, chonkImage, sp, speedImage, ex, explosiveImage);
+            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[blah], sizes[blah], colors[blah], values[blah], (float)scale, symmetry[blah], 650 - temp, chonk, chonkImage, sp, speedImage, ex, explosiveImage);
         }
         public void Update(GameTime gameTime)
         {
@@ -628,7 +650,7 @@ namespace Tetris
             {
                 dangerUse = false;
             }
-            if (pooey.boxes[0].place.Y + pooey.pieceSize.Y / 120 >= 6)
+            if (pooey.boxes[0].GridSpot.Y + pooey.pieceSize.Y / 120 >= 6)
             {
                 lifitime += gameTime.ElapsedGameTime;
             }
@@ -647,14 +669,14 @@ namespace Tetris
                 {
                     if (NevadaCheck.Ready())
                     {
-                        pooey.moveDown();
+                        pooey.MoveDown();
                     }
                 }
                 else if (California.IsKeyDown(turnKey) && (holdTurn || !tempTexas.IsKeyDown(turnKey)))
                 {
                     if (NevadaCheck.Ready())
                     {
-                        if (pooey.rotate())
+                        if (pooey.Rotate())
                         {
                             if (willProject)
                             {
@@ -672,7 +694,7 @@ namespace Tetris
                 {
                     if (NevadaCheck.Ready())
                     {
-                        pooey.moveSide(-1);
+                        pooey.MoveSide(-1);
                         if (willProject)
                         {
                             shadowPooey = new RatPooeys(pooey);
@@ -684,7 +706,7 @@ namespace Tetris
                 {
                     if (NevadaCheck.Ready())
                     {
-                        pooey.moveSide();
+                        pooey.MoveSide();
                         if (willProject)
                         {
                             shadowPooey = new RatPooeys(pooey);
@@ -717,7 +739,7 @@ namespace Tetris
             }
             if (fullDown)
             {
-                pooey.moveDown();
+                pooey.MoveDown();
                 pooey.Animate();
             }
 
@@ -758,7 +780,7 @@ namespace Tetris
                             if (explosiveSpot.chonker <= 1)
                             {
                                 explosiveSpot.empty(empty);
-                                explosiveSpot.image.Scale = (float)scale;
+                                explosiveSpot.Image.Scale = (float)scale;
                             }
                             else
                             {
@@ -779,9 +801,9 @@ namespace Tetris
                     {
                         for (int j = 0; j < map[i].Count; j++)
                         {
-                            if (map[i][j].image.Scale > scale && map[i][j].explosive == 0)
+                            if (map[i][j].Image.Scale > scale && map[i][j].explosive == 0)
                             {
-                                map[i][j].image.Scale = (float)scale;
+                                map[i][j].Image.Scale = (float)scale;
                             }
                         }
                     }
@@ -805,13 +827,13 @@ namespace Tetris
         {
             for (int i = 0; i < piece.boxes.Count; i++)
             {
-                if (piece.boxes[i].place.Y >= size.Y || map[(int)piece.boxes[i].place.X][(int)piece.boxes[i].place.Y].isfull)
+                if (piece.boxes[i].GridSpot.Y >= size.Y || map[(int)piece.boxes[i].GridSpot.X][(int)piece.boxes[i].GridSpot.Y].isfull)
                 {
                     bool good = true;
                     if (piece.rotated)
                     {
                         good = false;
-                        piece.rotate(-1);
+                        piece.Rotate(-1);
                         if (willProject)
                         {
                             shadowPooey = new RatPooeys(piece);
@@ -821,7 +843,7 @@ namespace Tetris
                     }
                     if (piece.sideways != 0)
                     {
-                        piece.forceSide(-piece.sideways);
+                        piece.ForceSide(-piece.sideways);
                         if (willProject)
                         {
                             shadowPooey = new RatPooeys(piece);
@@ -834,30 +856,30 @@ namespace Tetris
                     {
                         return 0;
                     }
-                    if (piece.boxes[i].place.Y - 1 < 0)
+                    if (piece.boxes[i].GridSpot.Y - 1 < 0)
                     {
                         return 2;
                     }
-                    if (piece.boxes[i].place.Y >= size.Y || !fullDown && map[(int)piece.boxes[i].place.X][(int)piece.boxes[i].place.Y - 1].isfull)
+                    if (piece.boxes[i].GridSpot.Y >= size.Y || !fullDown && map[(int)piece.boxes[i].GridSpot.X][(int)piece.boxes[i].GridSpot.Y - 1].isfull)
                     {
                         for (int j = 0; j < piece.boxes.Count; j++)
                         {
-                            if (piece.boxes[j].place.Y - 1 < 0)
+                            if (piece.boxes[j].GridSpot.Y - 1 < 0)
                             {
                                 return 2;
                             }
-                            map[(int)piece.boxes[j].place.X][(int)piece.boxes[j].place.Y - 1].fill(piece.boxes[j]);
+                            map[(int)piece.boxes[j].GridSpot.X][(int)piece.boxes[j].GridSpot.Y - 1].fill(piece.boxes[j]);
                         }
                     }
                     else
                     {
                         for (int j = 0; j < piece.boxes.Count; j++)
                         {
-                            if (piece.boxes[j].place.Y - 1 < 0)
+                            if (piece.boxes[j].GridSpot.Y - 1 < 0)
                             {
                                 return 2;
                             }
-                            map[(int)piece.boxes[j].place.X][(int)piece.boxes[j].place.Y - 1].fill(piece.boxes[j]);
+                            map[(int)piece.boxes[j].GridSpot.X][(int)piece.boxes[j].GridSpot.Y - 1].fill(piece.boxes[j]);
                         }
                     }
                     return 1;
@@ -865,21 +887,21 @@ namespace Tetris
             }
             for (int i = 0; i < piece.boxes.Count; i++)
             {
-                if (piece.goDown && (piece.boxes[i].place.Y + 1 >= size.Y || !fullDown && map[(int)piece.boxes[i].place.X][(int)piece.boxes[i].place.Y + 1].isfull))
+                if (piece.goDown && (piece.boxes[i].GridSpot.Y + 1 >= size.Y || !fullDown && map[(int)piece.boxes[i].GridSpot.X][(int)piece.boxes[i].GridSpot.Y + 1].isfull))
                 {
                     if (piece.sideways != 0)
                     {
-                        piece.moveSide(-piece.sideways);
+                        piece.MoveSide(-piece.sideways);
                         piece.sideways = 0;
                         return 0;
                     }
                     for (int j = 0; j < piece.boxes.Count; j++)
                     {
-                        if (piece.boxes[j].place.Y < 0)
+                        if (piece.boxes[j].GridSpot.Y < 0)
                         {
                             return 2;
                         }
-                        map[(int)piece.boxes[j].place.X][(int)piece.boxes[j].place.Y].fill(piece.boxes[j]);
+                        map[(int)piece.boxes[j].GridSpot.X][(int)piece.boxes[j].GridSpot.Y].fill(piece.boxes[j]);
                     }
                     return 1;
                 }
@@ -930,7 +952,7 @@ namespace Tetris
                                 {
                                     zoom.Play();
                                 }
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, currentSpot.image.Location,
+                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, currentSpot.Image.Location,
                                             new List<Color> { Color.White, Color.White }, 50, 5, new List<double> { 10, 10 },
                                             new List<float> { 10 / pixel.Width, 10 / pixel.Width }, new List<int> { 1, 1 }, null, 1, 30, 30, 1, 0));
                             }
@@ -939,8 +961,8 @@ namespace Tetris
                             {
                                 if (map[j][q - 1].isfull)
                                 {
-                                    map[j][q - 1].image.Scale = (float)scale;
-                                    map[j][q - 1].image.offset = Vector2.Zero;
+                                    map[j][q - 1].Image.Scale = (float)scale;
+                                    map[j][q - 1].Image.offset = Vector2.Zero;
                                     map[j][q].fill(map[j][q - 1]);
                                 }
                                 else
@@ -951,8 +973,8 @@ namespace Tetris
                             }
 
                             map[j][0] = new Coordinate(new Sprite(empty.Image, empty.Location, Color.White, empty.rotation, empty.effect, empty.Origin, (float)scale, empty.Depth), new Vector2(j, 0), map[j][0].score, 0, 0, false);
-                            Vector2 oragami = new Vector2(map[j][0].image.Origin.X * (float)scale, map[j][0].image.Origin.Y * (float)scale);
-                            map[j][0].image.Location = new Vector2(j * (float)Math.Round(60 * scale), 0 * (float)Math.Round(60 * scale) - (float)Math.Round(360 * scale)) + oragami;
+                            Vector2 oragami = new Vector2(map[j][0].Image.Origin.X * (float)scale, map[j][0].Image.Origin.Y * (float)scale);
+                            map[j][0].Image.Location = new Vector2(j * (float)Math.Round(60 * scale), 0 * (float)Math.Round(60 * scale) - (float)Math.Round(360 * scale)) + oragami;
                         }
                         else
                         {
@@ -978,7 +1000,7 @@ namespace Tetris
 
         void CreateExplosionParticles(Coordinate explosiveSpot)
         {
-            effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, explosiveSpot.image.Location, new List<Color> { Color.OrangeRed, Color.Crimson, Color.Black },
+            effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, explosiveSpot.Image.Location, new List<Color> { Color.OrangeRed, Color.Crimson, Color.Black },
                                200, (int)explosiveSpot.explosive - 2, new List<double> { 1 * explosiveSpot.explosive, 2 * explosiveSpot.explosive, 3 * explosiveSpot.explosive },
                                new List<float> { 1f * explosiveSpot.explosive / explosiveImage.Width, 2f * explosiveSpot.explosive / pixel.Width, 3f * explosiveSpot.explosive / pixel.Width }
                                , explosiveScales, null, 200, 0, 0, 1, 1, true, 3, 3 + 3 * (int)(explosiveSpot.explosive / 2)));
@@ -990,38 +1012,38 @@ namespace Tetris
             {
                 if (shadowPooey.boxes[i].explosive > 0)
                 {
-                    shadowPooey.boxes[i].image.Color = Color.Red;
+                    shadowPooey.boxes[i].Image.Color = Color.Red;
                 }
                 else if (shadowPooey.boxes[i].speed)
                 {
-                    shadowPooey.boxes[i].image.Color = Color.Cyan;
+                    shadowPooey.boxes[i].Image.Color = Color.Cyan;
                 }
                 else if (shadowPooey.boxes[i].Chonker())
                 {
                     shadowPooey.boxes[i].chonkImage = null;
-                    shadowPooey.boxes[i].image.Color = Color.Black;
+                    shadowPooey.boxes[i].Image.Color = Color.Black;
                 }
                 else
                 {
-                    shadowPooey.boxes[i].image.Color = Color.DarkSlateGray;
+                    shadowPooey.boxes[i].Image.Color = Color.DarkSlateGray;
                 }
-                shadowPooey.boxes[i].image.Image = projectionImage;
-                shadowPooey.boxes[i].image.Depth -= .01f;
+                shadowPooey.boxes[i].Image.Image = projectionImage;
+                shadowPooey.boxes[i].Image.Depth -= .01f;
             }
             while (true)
             {
-                shadowPooey.moveDown();
+                shadowPooey.MoveDown();
                 for (int i = 0; i < shadowPooey.boxes.Count; i++)
                 {
-                    if ((int)shadowPooey.boxes[i].place.Y >= map[0].Count || map[(int)shadowPooey.boxes[i].place.X][(int)shadowPooey.boxes[i].place.Y].isfull)
+                    if ((int)shadowPooey.boxes[i].GridSpot.Y >= map[0].Count || map[(int)shadowPooey.boxes[i].GridSpot.X][(int)shadowPooey.boxes[i].GridSpot.Y].isfull)
                     {
-                        shadowPooey.forceUp();
+                        shadowPooey.ForceUp();
                         return;
                     }
                 }
                 for (int i = 0; i < shadowPooey.boxes.Count; i++)
                 {
-                    if (shadowPooey.boxes[i].place.Y >= size.Y - 1)
+                    if (shadowPooey.boxes[i].GridSpot.Y >= size.Y - 1)
                     {
                         return;
                     }
@@ -1041,7 +1063,7 @@ namespace Tetris
             {
                 effects[i].Draw(bunch);
             }
-            if (shadowPooey.boxes[0].place == pooey.boxes[0].place)
+            if (shadowPooey.boxes[0].GridSpot == pooey.boxes[0].GridSpot)
             {
                 ;
             }

@@ -90,8 +90,7 @@ namespace Tetris
 
         protected override void LoadContent()
         {
-            var dataExists = File.Exists("gameData.json");
-            var oldDataExists = File.Exists("data.json");
+
 
             _spriteBatch = new SpriteBatch(GraphicsDevice);
 
@@ -111,6 +110,8 @@ namespace Tetris
             speedEffect = Content.Load<SoundEffect>("Zoom");
             settingsMusic = Content.Load<SoundEffect>("Settings");
             bossEffect = Content.Load<SoundEffect>("Boss");
+
+            #region gridData
 
             locations = new List<List<Vector2>>
             {
@@ -330,7 +331,10 @@ namespace Tetris
                 3
             };
 
-            bottomScroll = new AnimatingSprite(Content.Load<Texture2D>("bottom"), new Vector2(0, 800), Color.White, 0, SpriteEffects.None, new Rectangle(0, 0, 0, 0), new Vector2(0, 0), 1, .025f, new RectangleFrame[]
+            #endregion
+
+            bottomScroll = new AnimatingSprite(Content.Load<Texture2D>("bottom"), new Vector2(0, 800), Color.White, 0, SpriteEffects.None, new Rectangle(0, 0, 0, 0), new Vector2(0, 0), 1, .025f,
+            new RectangleFrame[]
             {
                 new Rectangle(0, 0, 600, 90),
                 new Rectangle(0, 91, 600, 90),
@@ -386,6 +390,9 @@ namespace Tetris
             new Sprite(Content.Load<Texture2D>("Toggle Ball"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, 1),
             new Sprite(Content.Load<Texture2D>("Toggle Color"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), 1, .7f),
             new ScalableSprite(Content.Load<Texture2D>("ToggleBaseColor"), new Vector2(0, 0), Color.White, 0, SpriteEffects.None, new Vector2(0, 0), new Vector2(0, 1), .8f));
+
+            #region classicData
+
             clasgrid = new Grid(
             new Vector2(10, 20), Gimage, new List<List<Vector2>>
             {
@@ -465,6 +472,8 @@ namespace Tetris
             },
             image, turnEffect, landEffect, boomEffect, null, null, Content.Load<Texture2D>("ShadowImage"), .6667f, true);
 
+            #endregion
+
             var boxPlaces = new List<Vector2>
             {
                 new Vector2(406, 296),
@@ -472,7 +481,8 @@ namespace Tetris
                 new Vector2(406, 696)
             };
 
-
+            var dataExists = File.Exists("gameData.json");
+            var oldDataExists = File.Exists("data.json");
             if (!dataExists)
             {
                 //backwards compatability/file creation
@@ -512,9 +522,16 @@ namespace Tetris
                 StorageObject.Instance.Read();
             }
 
+            var swapLight = new AnimatingSprite(Content.Load<Texture2D>("CanSwap"), new Vector2(GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height), 
+                                                Color.White, 0, SpriteEffects.None, Rectangle.Empty, new Vector2(50), 1, 1, new RectangleFrame[] 
+                                                {
+                                                    new Rectangle(0, 0, 50, 50), 
+                                                    new Rectangle(50, 0, 50, 50) },
+                                                0);
+
             pause = new PauseScreen(tint, toMenu, resume, restart2, pSetting, 3);
-            game = new GameScreen(grid, laby, pauser, box, bottomScroll, Content.Load<Texture2D>("hoverBrick"), boxPlaces, unlimitedMusic, unlimitedIntro, 1);
-            oldGame = new GameScreen(clasgrid, laby, pauser, box, bottomScroll, Content.Load<Texture2D>("hoverBrick"), boxPlaces, music, null, 2);
+            game = new GameScreen(grid, laby, pauser, box, bottomScroll, Content.Load<Texture2D>("hoverBrick"), swapLight, boxPlaces, unlimitedMusic, unlimitedIntro, 1);
+            oldGame = new GameScreen(clasgrid, laby, pauser, box, bottomScroll, Content.Load<Texture2D>("hoverBrick"), null, boxPlaces, unlimitedMusic, unlimitedIntro, 2);
             lose = new LoseScreen(tint, loser, toMenu2, restart, Content.Load<SpriteFont>("File"), 4);
             menu = new MenuScreen(butty, complexButty, menuMusic, setting, 0);
             settings = new SettingsScreen(defaults, arrows, apply, toMenu3, Content.Load<Texture2D>("BindButt"), StorageObject.Instance.binds, new List<Keys>
