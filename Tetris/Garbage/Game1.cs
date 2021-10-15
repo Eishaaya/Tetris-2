@@ -77,11 +77,12 @@ namespace Tetris
         {
             _graphics = new GraphicsDeviceManager(this);
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
+            IsMouseVisible = true;           
         }
 
         protected override void Initialize()
         {
+            Window.Title = "Tetris Boogaloo";
             _graphics.PreferredBackBufferWidth = 600;
             _graphics.PreferredBackBufferHeight = 890;
             _graphics.ApplyChanges();
@@ -526,7 +527,7 @@ namespace Tetris
                                                 Color.White, 0, SpriteEffects.None, Rectangle.Empty, new Vector2(50), 1, 1, new RectangleFrame[] 
                                                 {
                                                     new Rectangle(0, 0, 50, 50), 
-                                                    new Rectangle(50, 0, 50, 50) },
+                                                    new Rectangle(51, 0, 50, 50) },
                                                 0);
 
             pause = new PauseScreen(tint, toMenu, resume, restart2, pSetting, 3);

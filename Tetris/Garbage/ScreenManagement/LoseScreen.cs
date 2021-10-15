@@ -67,6 +67,10 @@ namespace Tetris
                     }
                 }
             }
+            if (StorageObject.Instance.settings[0] == false)
+            {
+                ;
+            }
             StorageObject.Instance.Write();
         }
 
