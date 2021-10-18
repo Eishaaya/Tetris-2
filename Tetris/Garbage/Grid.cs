@@ -537,16 +537,16 @@ namespace Tetris
         {
             int ex = 0;
             bool sp = false;
-            int blah;
+            int spawnIndex;
             int chonk = 0;
             hold--;
             while (true)
             {
-                blah = random.Next(0, locations.Count);
-                float size = random.Next(0, 100);
+                spawnIndex = random.Next(0, locations.Count);
+                float spawnRoll = random.Next(0, 100);
                 var diffTemp = progression;
-                var diffAdd = badFactor * difficulty[blah] / Math.Abs(difficulty[blah]);
-                if (difficulty[blah] == 0)
+                var diffAdd = badFactor * difficulty[spawnIndex] / Math.Abs(difficulty[spawnIndex]);
+                if (difficulty[spawnIndex] == 0)
                 {
                     diffAdd = 0;
                 }
@@ -554,36 +554,36 @@ namespace Tetris
                 {
                     badFactor = 0;
                 }
-                float diffFactor = (100 + difficulty[blah] * diffTemp) / 100;
-                float helpFactor = (100 - difficulty[blah] * ((hold - 22) * (4 - progression / 25))) / 100;
+                float diffFactor = (100 + difficulty[spawnIndex] * diffTemp) / 100;
+                float helpFactor = (100 - difficulty[spawnIndex] * ((hold - 22) * (4 - progression / 25))) / 100;
                 if (hold <= 15)
                 {
                     helpFactor = 1;
                 }
-                if (!isClassic && blah == spawnChances.Count - 1)
+                if (!isClassic && spawnIndex == spawnChances.Count - 1)
                 {
-                    if (hold <= 0 && (spawnChances[blah] * diffFactor) + diffAdd >= size)
+                    if (hold <= 0 && (spawnChances[spawnIndex] * diffFactor) + diffAdd >= spawnRoll)
                     {
                         hold = 35;
                         freeMoves += 10;
                         break;
                     }
                 }
-                else if ((spawnChances[blah] * diffFactor * helpFactor) >= size - diffAdd)
+                else if ((spawnChances[spawnIndex] * diffFactor * helpFactor) >= spawnRoll - diffAdd)
                 {
-                    if (!isClassic && size <= 2 * (progression / 10 + 1) && helpFactor == 1 && hold <= 5)
+                    if (!isClassic && spawnRoll <= (Math.Sqrt(progression) + 1) && helpFactor == 1 && hold <= 5)
                     {
-                        chonk = 3 + progression / 10;
+                        chonk = 3 + (int)Math.Pow(progression, );
                         break;
                     }
-                    size = random.Next(1000);
-                    if (!isClassic && size <= 51)
+                    spawnRoll = random.Next(1000);
+                    if (!isClassic && spawnRoll <= 51)
                     {
-                        ex = (int)(size - 1) / 17 + 1;
+                        ex = (int)(spawnRoll - 1) / 17 + 1;
                         break;
                     }
-                    size = random.Next(1000);
-                    if (!isClassic && size <= 45 * (progression / 10 + 1) && helpFactor == 1 && hold <= 5)
+                    spawnRoll = random.Next(1000);
+                    if (!isClassic && spawnRoll <= 45 * (progression / 10 + 1) && helpFactor == 1 && hold <= 5)
                     {
                         sp = true;
                     }
@@ -612,7 +612,7 @@ namespace Tetris
                     temp = 325;
                 }
             }
-            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[blah], sizes[blah], colors[blah], values[blah], (float)scale, symmetry[blah], 650 - temp, chonk, chonkImage, sp, speedImage, ex, explosiveImage);
+            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[spawnIndex], sizes[spawnIndex], colors[spawnIndex], values[spawnIndex], (float)scale, symmetry[spawnIndex], 650 - temp, chonk, chonkImage, sp, speedImage, ex, explosiveImage);
         }
         public void Update(GameTime gameTime)
         {

@@ -186,6 +186,14 @@ namespace Tetris
                         labelFade = false;
                     }
                 }
+                if (grid.CanSwap())
+                {
+                    canDrop.currentframe = 1;
+                }
+                else
+                {
+                    canDrop.currentframe = 0;
+                }
             }
          
             #region Bottom 
@@ -209,7 +217,6 @@ namespace Tetris
                 colorChanged = grid.ChangeBackColor(Color.Lerp(colors[stage], Color.White, .0f));
             }
 
-
             if (grid.progression == 0)
             {
                 if (stage > 0)
@@ -219,7 +226,7 @@ namespace Tetris
                 }
                 stage = 0;
             }
-            else if (grid.progression == progressionPoints[stage] && stage != progressionPoints.Length)
+            else if (stage != progressionPoints.Length && grid.progression >= progressionPoints[stage])
             {
                 stage++;
                 fade = true;
@@ -262,14 +269,7 @@ namespace Tetris
                     break;
                 }
             }
-            if (grid.CanSwap())
-            {
-                canDrop.currentframe = 1;
-            }
-            else
-            {
-                canDrop.currentframe = 0;
-            }
+
             if (pause.check(mousy.Position.ToVector2(), isMouseClicked) || Maryland.IsKeyDown(pauseKey))
             {
                 manny.next(3, false);
