@@ -573,7 +573,7 @@ namespace Tetris
                 {
                     if (!isClassic && spawnRoll <= (Math.Sqrt(progression) + 1) && helpFactor == 1 && hold <= 5)
                     {
-                        chonk = 3 + (int)Math.Pow(progression, );
+                        chonk = 3 + (int)Math.Pow(progression, .42);
                         break;
                     }
                     spawnRoll = random.Next(1000);

@@ -116,7 +116,7 @@ namespace Tetris
             if (backTextures.ContainsKey(caller))
             {
                 backButt.Image = backTextures[caller];
-            }            
+            }
 
 
             oldBinds = binds;
