@@ -38,10 +38,6 @@ namespace Tetris
 
         public void Write()
         {
-            if (settings[0] == false)
-            {
-                ;
-            }
             var stuffToWrite = JsonSerializer.Serialize(this);
             File.WriteAllText("gameData.json", stuffToWrite);
         }

@@ -51,13 +51,13 @@ namespace Tetris
             this.defaults = defaultKeys;
             this.arrows = arrowKeys;
             backButt = menuButton;
-            binds = currentKeys;
+            binds = new List<Keys>(currentKeys);
             defaultButt = defaults;
             arrowButt = arrows;
             keyTypes = kt;
             oldBinds = binds;
             index = -1;
-            ToggOns = togs;
+            ToggOns = new List<bool>(togs);
 
             backTextures = new Dictionary<int, Texture2D>() { [0] = menuButton.Image, [3] = otherBack };
             if (backGroundTxt != null)
@@ -77,23 +77,22 @@ namespace Tetris
                 bindButtons.Add(new Button(backTxt, new Vector2(350, (i - this.defaults.Count / 2) * 50 + 250), Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .1f, Color.DarkGray, Color.Gray));
             }
             int finalRow = 0;
-            for (int i = 0; i < togs.Count; i++)
+            for (int i = 0; i < ToggOns.Count; i++)
             {
                 int j = i / 3;
                 Vector2 offSet = new Vector2(100 + i * 150 - j * 450, j * 75 + 500);
-                if (i % 3 == 0 && togs.Count - i < 3 || finalRow != 0)
+                if (i % 3 == 0 && ToggOns.Count - i < 3 || finalRow != 0)
                 {
                     if (finalRow == 0)
                     {
-                        finalRow = 75 * (3 - (togs.Count - i));
+                        finalRow = 75 * (3 - (ToggOns.Count - i));
                     }
                     offSet = new Vector2(offSet.X + finalRow, offSet.Y);
                 }
-                ToggOns[i] = !ToggOns[i];
                 toggles.Add(new Toggler(template.Image, template.Location + offSet, template.Color, template.rotation, template.effect, template.Origin, template.Scale, template.Depth, template.HoverColor, template.ClickedColor,
                     new Sprite(template.ball.Image, template.ball.Location + offSet, template.ball.Color, template.ball.rotation, template.ball.effect, template.ball.Origin, template.ball.Scale, template.ball.Depth),
                     new Sprite(template.bottomColor.Image, template.bottomColor.Location + offSet, template.bottomColor.Color, template.bottomColor.rotation, template.bottomColor.effect, template.bottomColor.Origin, template.bottomColor.Scale, template.bottomColor.Depth),
-                    new ScalableSprite(template.MovingColor.Image, template.MovingColor.Location + offSet, template.MovingColor.Color, template.MovingColor.rotation, template.MovingColor.effect, template.MovingColor.Origin, template.MovingColor.scale, template.MovingColor.Depth, template.MovingColor.Scale), font, keyTypes[i + binds.Count], 50, 0, 0, togs[i]));
+                    new ScalableSprite(template.MovingColor.Image, template.MovingColor.Location + offSet, template.MovingColor.Color, template.MovingColor.rotation, template.MovingColor.effect, template.MovingColor.Origin, template.MovingColor.scale, template.MovingColor.Depth, template.MovingColor.Scale), font, keyTypes[i + binds.Count], 50, 0, 0, !ToggOns[i]));
             }
         }
         public void setTexture(int i)
@@ -109,6 +108,7 @@ namespace Tetris
             {
                 binds = StorageObject.Instance.binds;
                 ToggOns = StorageObject.Instance.settings;
+
                 firstOpen = false;
             }
 
