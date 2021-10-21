@@ -69,12 +69,12 @@ namespace Tetris
             for (int i = 0; i < this.defaults.Count / 2; i++)
             {
                 bindLabels.Add(new Label(font, Color.White, new Vector2(150, i * 50 + 225), $"{keyTypes[i]} : {binds[i]}", TimeSpan.Zero));
-                bindButtons.Add(new Button(backTxt, new Vector2(150, i * 50 + 250), Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .1f, Color.DarkGray, Color.Gray));
+                bindButtons.Add(new Button(backTxt, new Vector2(150, i * 50 + 215), Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .1f, Color.DarkGray, Color.Gray));
             }
             for (int i = this.defaults.Count / 2; i < this.defaults.Count; i++)
             {
                 bindLabels.Add(new Label(font, Color.White, new Vector2(350, (i - this.defaults.Count / 2) * 50 + 225), $"{keyTypes[i]} : {binds[i]}", TimeSpan.Zero));
-                bindButtons.Add(new Button(backTxt, new Vector2(350, (i - this.defaults.Count / 2) * 50 + 250), Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .1f, Color.DarkGray, Color.Gray));
+                bindButtons.Add(new Button(backTxt, new Vector2(350, (i - this.defaults.Count / 2) * 50 + 215), Color.Black, 0, SpriteEffects.None, new Vector2(0, 0), 1, .1f, Color.DarkGray, Color.Gray));
             }
             int finalRow = 0;
             for (int i = 0; i < ToggOns.Count; i++)
