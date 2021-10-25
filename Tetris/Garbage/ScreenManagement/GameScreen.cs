@@ -251,6 +251,14 @@ namespace Tetris
             grid.Update(time);
             scoreX.SetText($"x{Math.Round(grid.scoreFactor, 1)}");
             score.SetText($"Score: \n {grid.score}");
+            if (grid.SpeedTime > 0)
+            {
+                nextBox.ChangeColor(Color.Cyan, .05f);
+            }
+            else
+            {
+                nextBox.ChangeColor(Color.White, .025f);
+            }
             if (heldMouse || keysDown || !isActiveWindow)
             {
                 return;

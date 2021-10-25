@@ -101,7 +101,7 @@ namespace Tetris
             ObjectPool<ParticleEffect>.Instance.Populate(3, () => new ParticleEffect());
 
             //music = Content.Load<Song>("Rick Astley - Never Gonna Give You Up [HQ]");
-            music = Content.Load<SoundEffect>("Original Tetris theme (Tetris Soundtrack)-[AudioTrimmer.com]");
+            //music = Content.Load<SoundEffect>("Original Tetris theme (Tetris Soundtrack)-[AudioTrimmer.com]");
             unlimitedMusic = Content.Load<SoundEffect>("UnlimitedMusic");
             unlimitedIntro = Content.Load<SoundEffect>("UnlimitedIntro");
             menuMusic = Content.Load<SoundEffect>("MenuMusic");
