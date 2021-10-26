@@ -66,11 +66,13 @@ namespace Tetris
         Texture2D explosiveImage;
         Texture2D chonkImage;
         Texture2D speedImage;
-        Texture2D pixel;
+        Texture2D particleImage;
         Texture2D speedParticle;
         Texture2D projectionImage;
+        Texture2D ReppelentImage;
+        Texture2D RepellentSubstance;
         public bool playSounds;
-        public bool holdTurn;
+        public bool holdTurn; 
         public bool holdDown;
         public bool holdSide;
         public int rowBonus;
@@ -109,7 +111,10 @@ namespace Tetris
 
 
         List<int> explosiveScales = new List<int> { 15, 20, 25 };
-        public Grid(Vector2 s, Sprite e, List<List<Vector2>> ln, List<bool> sy, List<Color> c, List<int> ch, List<int> va, List<float> ds, List<Vector2> ss, Sprite im, SoundEffect ro, SoundEffect la, SoundEffect b, SoundEffect sp, SoundEffect bs, Texture2D spi, float sc = 1, bool ic = false, Texture2D chi = null, Texture2D ei = null, Texture2D si = null, Texture2D pi = null, Texture2D spp = null, int n = 100, Keys d = Keys.S, Keys t = Keys.W, Keys l = Keys.A, Keys r = Keys.D, Keys D = Keys.Space, Keys s1 = Keys.D1, Keys s2 = Keys.D2, Keys s3 = Keys.D3, Keys s4 = Keys.D4)
+        public Grid(Vector2 gridSize, Sprite emptyCoord, List<List<Vector2>> pieceStructures, List<bool> pieceSymmetry, List<Color> pieceColors, List<int> spawningChances, List<int> pieceValues, List<float> pieceDifficulty,
+                    List<Vector2> pieceSizes, Sprite coordImage, SoundEffect rotationSound, SoundEffect landingSound, SoundEffect boomSound, SoundEffect speedSound, SoundEffect bossBuzz, Texture2D shadowImage, float totalScale = 1,
+                    bool isclassic = false, Texture2D chonkImage = null, Texture2D bombImage = null, Texture2D speedImage = null, Texture2D repellentImage = null, Texture2D repellentGunk = null, Texture2D particle = null, Texture2D zoomParticle = null, int checkingTime = 100, Keys downKey = Keys.S, 
+                    Keys turnKey = Keys.W, Keys leftKey = Keys.A, Keys rightKey = Keys.D, Keys dropKey = Keys.Space, Keys sidebar1 = Keys.D1, Keys sidebar2 = Keys.D2, Keys sidebar3 = Keys.D3, Keys sidebar4 = Keys.D4)
         {
             SpeedTime = 0;
             finishedColors = -1;
@@ -120,51 +125,51 @@ namespace Tetris
             holdDown = true;
             holdSide = true;
             holdTurn = true;
-            pixel = pi;
-            speedParticle = spp;
+            particleImage = particle;
+            speedParticle = zoomParticle;
             switchKeys = new List<Keys>();
-            rotate = ro;
-            land = la;
-            if (!ic)
+            rotate = rotationSound;
+            land = landingSound;
+            if (!isclassic)
             {
-                zoom = sp;
-                boom = b;
-                boss = bs;
+                zoom = speedSound;
+                boom = boomSound;
+                boss = bossBuzz;
                 bossInstance = boss.CreateInstance();
                 bossInstance.IsLooped = true;
             }
             effects = new List<ParticleEffect>();
             lose = false;
-            nevadaready = n;
+            nevadaready = checkingTime;
             score = 0;
             random = new Random();
-            NevadaCheck = new Timer(new TimeSpan(0, 0, 0, 0, n));
-            downKey = d;
-            image = im;
-            leftKey = l;
-            rightKey = r;
-            turnKey = t;
-            TeleKey = D;
-            switchKeys.Add(s1);
-            switchKeys.Add(s2);
-            switchKeys.Add(s3);
-            switchKeys.Add(s4);
-            scale = sc;
-            size = new Vector2(s.X, s.Y + 6);
-            empty = e;
-            locations = ln;
-            symmetry = sy;
-            colors = c;
-            values = va;
-            sizes = ss;
-            spawnChances = ch;
-            difficulty = ds;
-            isClassic = ic;
+            NevadaCheck = new Timer(new TimeSpan(0, 0, 0, 0, nevadaready));
+            this.downKey = downKey;
+            image = coordImage;
+            this.leftKey = leftKey;
+            this.rightKey = rightKey;
+            this.turnKey = turnKey;
+            TeleKey = dropKey;
+            switchKeys.Add(sidebar1);
+            switchKeys.Add(sidebar2);
+            switchKeys.Add(sidebar3);
+            switchKeys.Add(sidebar4);
+            scale = totalScale;
+            size = new Vector2(gridSize.X, gridSize.Y + 6);
+            empty = emptyCoord;
+            locations = pieceStructures;
+            symmetry = pieceSymmetry;
+            colors = pieceColors;
+            values = pieceValues;
+            sizes = pieceSizes;
+            spawnChances = spawningChances;
+            difficulty = pieceDifficulty;
+            isClassic = isclassic;
             badFactor = 0;
-            explosiveImage = ei;
-            chonkImage = chi;
-            speedImage = si;
-            projectionImage = spi;
+            explosiveImage = bombImage;
+            this.chonkImage = chonkImage;
+            this.speedImage = speedImage;
+            projectionImage = shadowImage;
             map = new List<List<Coordinate>>();
             for (int i = 0; i < size.X; i++)
             {
@@ -954,7 +959,7 @@ namespace Tetris
                                 }
                                 effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, currentSpot.Image.Location,
                                             new List<Color> { Color.White, Color.White }, 50, 5, new List<double> { 10, 10 },
-                                            new List<float> { 10 / pixel.Width, 10 / pixel.Width }, new List<int> { 1, 1 }, null, 1, 30, 30, 1, 0));
+                                            new List<float> { 10 / particleImage.Width, 10 / particleImage.Width }, new List<int> { 1, 1 }, null, 1, 30, 30, 1, 0));
                             }
                             currentSpot.empty(empty);
                             for (int q = i; q > 0; q--)
@@ -1000,9 +1005,9 @@ namespace Tetris
 
         void CreateExplosionParticles(Coordinate explosiveSpot)
         {
-            effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, pixel, explosiveSpot.Image.Location, new List<Color> { Color.OrangeRed, Color.Crimson, Color.Black },
+            effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, particleImage, explosiveSpot.Image.Location, new List<Color> { Color.OrangeRed, Color.Crimson, Color.Black },
                                200, (int)explosiveSpot.Explosive - 2, new List<double> { 1 * explosiveSpot.Explosive, 2 * explosiveSpot.Explosive, 3 * explosiveSpot.Explosive },
-                               new List<float> { 1f * explosiveSpot.Explosive / explosiveImage.Width, 2f * explosiveSpot.Explosive / pixel.Width, 3f * explosiveSpot.Explosive / pixel.Width }
+                               new List<float> { 1f * explosiveSpot.Explosive / explosiveImage.Width, 2f * explosiveSpot.Explosive / particleImage.Width, 3f * explosiveSpot.Explosive / particleImage.Width }
                                , explosiveScales, null, 200, 0, 0, 1, 1, true, 3, 3 + 3 * (int)(explosiveSpot.Explosive / 2)));
         }
 

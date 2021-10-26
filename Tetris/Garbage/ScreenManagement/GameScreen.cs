@@ -254,10 +254,12 @@ namespace Tetris
             if (grid.SpeedTime > 0)
             {
                 nextBox.ChangeColor(Color.Cyan, .05f);
+                scoreX.ChangeColor(Color.Cyan, .05f);
             }
             else
             {
                 nextBox.ChangeColor(Color.White, .025f);
+                scoreX.ChangeColor(Color.White, .01f);
             }
             if (heldMouse || keysDown || !isActiveWindow)
             {
@@ -265,7 +267,7 @@ namespace Tetris
             }
 
             for (int i = 0; i < boxes.Count; i++)
-            {
+            {                
                 if (boxes[i].check(mousy.Position.ToVector2(), isMouseClicked))
                 {
                     grid.Switch(i);

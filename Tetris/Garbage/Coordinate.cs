@@ -44,7 +44,7 @@ namespace Tetris
             Explosive = explosiveLevel;
             Speed = isSpeed;
             totalChonk = chonkLevel;
-            if (sImage != null || chonkLevel > 0)
+            if (sImage != null)
             {
                 var depthOffset = .01f;
                 if (displayStyle == DisplayStyle.DrawBelow)
@@ -146,7 +146,7 @@ namespace Tetris
             {
                 SecondaryImage.Location = Image.Location;
             }
-            if (Explosive == 2)
+            else if (Explosive == 2)
             {
                 Image.Pulsate(20, .05f);
             }
@@ -154,6 +154,19 @@ namespace Tetris
             {
                 Image.Pulsate(35, .1f);
                 Image.Vibrate(12, .1f);
+            }
+            else if (Reppellent == 1)
+            {
+                SecondaryImage.rotation += 3;
+            }
+            else if (Reppellent == 2)
+            {
+                SecondaryImage.Rotate(180, 3, false);
+            }
+            else if (Reppellent == 3)
+            {
+                SecondaryImage.Rotate(360, 10, false);
+                SecondaryImage.Pulsate(150, 3, false);
             }
         }
         public void empty(Sprite empty)
