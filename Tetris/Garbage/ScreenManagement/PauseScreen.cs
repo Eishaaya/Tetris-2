@@ -51,7 +51,7 @@ namespace Tetris
             else if (restart.check(mousePos, isMouseClicked))
             {
                 manny.back();
-                manny.peek().Reset();
+                manny.peek().Reset(true);
                 return;
             }
             else if (setting.check(mousePos, isMouseClicked))

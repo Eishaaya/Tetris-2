@@ -123,10 +123,10 @@ namespace Tetris
             grid.willProject = bools[5];
             willClearBoard = bools[6];
         }
-        public override void Reset()
+        public override void Reset(bool hardReset = false)
         {
             colorChanged = false;
-            if (willClearBoard)
+            if (willClearBoard || hardReset)
             {
                 grid.Reset();
             }

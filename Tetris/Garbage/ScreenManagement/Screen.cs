@@ -154,7 +154,7 @@ namespace Tetris
         {
 
         }
-        public virtual void Reset()
+        public virtual void Reset(bool hardReset = false)
         {
 
         }
