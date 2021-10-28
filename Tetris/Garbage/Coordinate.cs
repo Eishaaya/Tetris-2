@@ -44,6 +44,7 @@ namespace Tetris
             Explosive = explosiveLevel;
             Speed = isSpeed;
             totalChonk = chonkLevel;
+            Reppellent = repellingLevel;
             if (sImage != null)
             {
                 var depthOffset = .01f;
@@ -52,6 +53,10 @@ namespace Tetris
                     depthOffset *= -1;
                 }
                 SecondaryImage = new Sprite(sImage, this.Image.Location, Color.White, 0, SpriteEffects.None, new Vector2(sImage.Width / 2, sImage.Height / 2), this.Image.Scale, this.Image.Depth + depthOffset);
+            }
+            if (SecondaryImage != null && SecondaryImage.Depth == Image.Depth)
+            {
+                ;
             }
         }
         public bool Chonker()
@@ -74,6 +79,7 @@ namespace Tetris
         }
         public void fill(Coordinate pooey)
         {
+            Reppellent = pooey.Reppellent;
             Image.Image = pooey.Image.Image;
             SecondaryImage = pooey.SecondaryImage;
             Image.Color = pooey.Image.Color;
@@ -140,11 +146,30 @@ namespace Tetris
             }
             return spots;
         }
-        public void Animate(bool testBool = false)
+        public bool Animate(bool testBool = false)
         {
-            if (Chonker() && SecondaryImage != null)
+            if (SecondaryImage != null)
             {
                 SecondaryImage.Location = Image.Location;
+                if (Reppellent == 1)
+                {
+                    SecondaryImage.rotation += MathHelper.ToRadians(1);
+                }
+                else if (Reppellent == 2)
+                {
+                    SecondaryImage.Rotate(-180, .1f, false);
+                }
+                else if (Reppellent == 3)
+                {
+                    SecondaryImage.Rotate(720, .2f);
+                    SecondaryImage.Pulsate(50, .1f, false);                    
+                   // SecondaryImage.Depth = 1;
+                }
+
+                if (Extensions.random.Next(2, 100) <= Reppellent)
+                {
+                    return true;
+                }
             }
             else if (Explosive == 2)
             {
@@ -155,19 +180,8 @@ namespace Tetris
                 Image.Pulsate(35, .1f);
                 Image.Vibrate(12, .1f);
             }
-            else if (Reppellent == 1)
-            {
-                SecondaryImage.rotation += 3;
-            }
-            else if (Reppellent == 2)
-            {
-                SecondaryImage.Rotate(180, 3, false);
-            }
-            else if (Reppellent == 3)
-            {
-                SecondaryImage.Rotate(360, 10, false);
-                SecondaryImage.Pulsate(150, 3, false);
-            }
+
+            return false;
         }
         public void empty(Sprite empty)
         {
@@ -180,8 +194,9 @@ namespace Tetris
         }
         public void Draw(SpriteBatch bath)
         {
+
             Image.Draw(bath);
-            if (Chonker() && SecondaryImage != null || Reppellent > 0)
+            if (SecondaryImage != null)
             {
                 SecondaryImage.Draw(bath);
             }

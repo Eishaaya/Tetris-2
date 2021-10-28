@@ -168,15 +168,15 @@ namespace Tetris
             }
             if (!rotated)
             {
-                var temp = Vector2.Lerp(new Vector2(rotation, 0), new Vector2(oldRotation, 0), sped);
-                if (Vector2.Distance(temp, new Vector2(oldRotation, 0)) <= .01f)
+                var temp = MathHelper.Lerp(rotation, oldRotation, sped);
+                if (MathHelper.Distance(temp, oldRotation) <= .01f)
                 {
                     rotation = degreeSet;
                     rotated = true;
                 }
                 else
                 {
-                    rotation = temp.X;
+                    rotation = temp;
                 }
             }
             else

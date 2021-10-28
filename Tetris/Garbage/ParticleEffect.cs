@@ -14,12 +14,12 @@ namespace Tetris
             Ray,
             Exhaust
         }
-        bool fullFaded;
+        public bool FullFaded { get; private set; }
         List<Particle> particles;
         Random random = new Random();
         public ParticleEffect(EffectType type, Texture2D image, Vector2 origin, List<Color> colors, int amount, int time, List<double> speeds, List<float> scaleSpeeds, List<int> scales, List<int> subsections = null, float scaleDown = 1, int zoneHeight = 0, int zoneWidth = 0, float directionX = 1, float directionY = 1, bool rando = true, int rotationSpeed = 3, int fadeSpeed = 3)
         {
-            fullFaded = false;
+            FullFaded = false;
             particles = new List<Particle>();
             if (subsections == null)
             {
@@ -109,7 +109,7 @@ namespace Tetris
         {
             if (particles.Count == 0)
             {
-                fullFaded = true;
+                FullFaded = true;
                 return;
             }
             for (int i = particles.Count - 1; i >= 0; i--)

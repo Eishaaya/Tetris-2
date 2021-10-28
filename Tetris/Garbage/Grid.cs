@@ -72,7 +72,7 @@ namespace Tetris
         Texture2D ReppelentImage;
         Texture2D RepellentSubstance;
         public bool playSounds;
-        public bool holdTurn; 
+        public bool holdTurn;
         public bool holdDown;
         public bool holdSide;
         public int rowBonus;
@@ -82,6 +82,9 @@ namespace Tetris
         int changeDone;
         int finishedColors;
         public bool willProject = true;
+
+        ParticleEffect leaks;
+
         float swapSpotCutOff
         {
             get
@@ -96,7 +99,8 @@ namespace Tetris
                 return tempProg;
             }
         }
-        float swapTimeCutoff {
+        float swapTimeCutoff
+        {
             get
             {
                 float tempProg2;
@@ -113,7 +117,7 @@ namespace Tetris
         List<int> explosiveScales = new List<int> { 15, 20, 25 };
         public Grid(Vector2 gridSize, Sprite emptyCoord, List<List<Vector2>> pieceStructures, List<bool> pieceSymmetry, List<Color> pieceColors, List<int> spawningChances, List<int> pieceValues, List<float> pieceDifficulty,
                     List<Vector2> pieceSizes, Sprite coordImage, SoundEffect rotationSound, SoundEffect landingSound, SoundEffect boomSound, SoundEffect speedSound, SoundEffect bossBuzz, Texture2D shadowImage, float totalScale = 1,
-                    bool isclassic = false, Texture2D chonkImage = null, Texture2D bombImage = null, Texture2D speedImage = null, Texture2D repellentImage = null, Texture2D repellentGunk = null, Texture2D particle = null, Texture2D zoomParticle = null, int checkingTime = 100, Keys downKey = Keys.S, 
+                    bool isclassic = false, Texture2D chonkImage = null, Texture2D bombImage = null, Texture2D speedImage = null, Texture2D repellentImage = null, Texture2D repellentGunk = null, Texture2D particle = null, Texture2D zoomParticle = null, int checkingTime = 100, Keys downKey = Keys.S,
                     Keys turnKey = Keys.W, Keys leftKey = Keys.A, Keys rightKey = Keys.D, Keys dropKey = Keys.Space, Keys sidebar1 = Keys.D1, Keys sidebar2 = Keys.D2, Keys sidebar3 = Keys.D3, Keys sidebar4 = Keys.D4)
         {
             SpeedTime = 0;
@@ -167,6 +171,8 @@ namespace Tetris
             isClassic = isclassic;
             badFactor = 0;
             explosiveImage = bombImage;
+            ReppelentImage = repellentImage;
+            RepellentSubstance = repellentGunk;
             this.chonkImage = chonkImage;
             this.speedImage = speedImage;
             projectionImage = shadowImage;
@@ -186,6 +192,8 @@ namespace Tetris
             {
                 shadowPlace();
             }
+            leaks = new ParticleEffect();
+            effects.Add(leaks);
         }
 
         public void Reset()
@@ -223,8 +231,8 @@ namespace Tetris
             }
         }
 
-        public bool CanSwap ()
-        {            
+        public bool CanSwap()
+        {
             return lifitime.Seconds <= 2 - swapTimeCutoff && pooey.boxes[0].GridSpot.Y - 5 <= 5 + swapSpotCutOff && freeMoves >= 5 && !overused;
         }
 
@@ -541,6 +549,7 @@ namespace Tetris
         public RatPooeys gen()
         {
             int ex = 0;
+            int rep = 0;
             bool sp = false;
             int spawnIndex;
             int chonk = 0;
@@ -565,9 +574,11 @@ namespace Tetris
                 {
                     helpFactor = 1;
                 }
-                if (!isClassic && spawnIndex == spawnChances.Count - 1)
+
+                //special pieces
+                if (spawnIndex == spawnChances.Count - 1 && !isClassic)
                 {
-                    if (hold <= 0 && (spawnChances[spawnIndex] * diffFactor) + diffAdd >= spawnRoll)
+                    if (hold <= 0 && (spawnChances[spawnIndex] * diffFactor) >= spawnRoll - diffAdd)
                     {
                         hold = 35;
                         freeMoves += 10;
@@ -576,21 +587,31 @@ namespace Tetris
                 }
                 else if ((spawnChances[spawnIndex] * diffFactor * helpFactor) >= spawnRoll - diffAdd)
                 {
-                    if (!isClassic && spawnRoll <= (Math.Sqrt(progression) + 1) && helpFactor == 1 && hold <= 5)
+                    if (!isClassic)
                     {
-                        chonk = 3 + (int)Math.Pow(progression, .42);
-                        break;
-                    }
-                    spawnRoll = random.Next(1000);
-                    if (!isClassic && spawnRoll <= 51)
-                    {
-                        ex = (int)(spawnRoll - 1) / 17 + 1;
-                        break;
-                    }
-                    spawnRoll = random.Next(1000);
-                    if (!isClassic && spawnRoll <= 45 * (progression / 10 + 1) && helpFactor == 1 && hold <= 5)
-                    {
-                        sp = true;
+                        if (spawnRoll <= (Math.Sqrt(progression) + 1) && hold <= 5)
+                        {
+                            chonk = 3 + (int)Math.Pow(progression, .42);
+                            break;
+                        }
+                        spawnRoll = random.Next(1000);
+                        if (spawnRoll <= 45 + progression / 5)
+                        {
+                            ex = (int)(spawnRoll - 1) / 17 + 1;
+                            break;
+                        }
+                        spawnRoll = random.Next(60);
+
+                        if (spawnRoll <= 60 + progression / 4)
+                        {
+                            rep = (int)(spawnRoll - 1) / 20 + 1;
+                            break;
+                        }
+                        spawnRoll = random.Next(1000);
+                        if (spawnRoll <= 45 * (progression / 10 + 1) && hold <= 5)
+                        {
+                            sp = true;
+                        }
                     }
                     break;
                 }
@@ -617,11 +638,11 @@ namespace Tetris
                     temp = 325;
                 }
             }
-            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[spawnIndex], sizes[spawnIndex], colors[spawnIndex], values[spawnIndex], (float)scale, symmetry[spawnIndex], 650 - temp, chonk, chonkImage, sp, speedImage, ex, explosiveImage);
+            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[spawnIndex], sizes[spawnIndex], colors[spawnIndex], values[spawnIndex], (float)scale, symmetry[spawnIndex], 650 - temp, chonk, chonkImage, sp, speedImage, ex, explosiveImage, rep, ReppelentImage, RepellentSubstance);
         }
         public void Update(GameTime gameTime)
         {
-            if (pooey.explosive > 0 && willProject)
+            if (pooey.Explosive > 0 && willProject)
             {
                 shadowPooey = new RatPooeys(pooey);
                 shadowPlace();
@@ -635,6 +656,10 @@ namespace Tetris
             for (int i = 0; i < effects.Count; i++)
             {
                 effects[i].Update(gameTime);
+                if (effects[i] != leaks && effects[i].FullFaded)
+                {
+                    effects.RemoveAt(i);
+                }
             }
             for (int i = 0; i < map.Count; i++)
             {
@@ -1011,6 +1036,11 @@ namespace Tetris
                                , explosiveScales, null, 200, 0, 0, 1, 1, true, 3, 3 + 3 * (int)(explosiveSpot.Explosive / 2)));
         }
 
+        void AddLeakParticle(Coordinate leaker)
+        {
+
+        }
+
         void shadowPlace()
         {
             for (int i = 0; i < shadowPooey.boxes.Count; i++)
@@ -1027,6 +1057,11 @@ namespace Tetris
                 {
                     shadowPooey.boxes[i].SecondaryImage = null;
                     shadowPooey.boxes[i].Image.Color = Color.Black;
+                }
+                else if (shadowPooey.boxes[i].Reppellent > 0)
+                {
+                    shadowPooey.boxes[i].Image.Color = Color.LimeGreen;
+                    shadowPooey.boxes[i].SecondaryImage = null;
                 }
                 else
                 {
