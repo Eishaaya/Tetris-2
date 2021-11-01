@@ -665,7 +665,10 @@ namespace Tetris
             {
                 for (int j = 0; j < map[i].Count; j++)
                 {
-                    map[i][j].Animate();
+                    if (map[i][j].Animate())
+                    {
+                        AddLeakParticle(map[i][j]);
+                    }
                 }
             }
             if (freeMoves <= 0)
@@ -747,11 +750,19 @@ namespace Tetris
                 shadowPooey.Animate();
                 if (!(California.IsKeyDown(downKey) && (holdDown || !tempTexas.IsKeyDown(downKey))))
                 {
-                    pooey.Update(gameTime);
+                    Coordinate leakCoord = pooey.Update(gameTime);
+                    if (leakCoord != null)
+                    {
+                        AddLeakParticle(leakCoord);
+                    }
                 }
                 else
                 {
-                    pooey.Animate();
+                    Coordinate leakCoord = pooey.Animate();
+                    if (leakCoord != null)
+                    {
+                        AddLeakParticle(leakCoord);
+                    }
                 }
             }
             if (California.IsKeyDown(TeleKey))
@@ -770,7 +781,11 @@ namespace Tetris
             if (fullDown)
             {
                 pooey.MoveDown();
-                pooey.Animate();
+                Coordinate leakCoord =  pooey.Animate();
+                if (leakCoord != null)
+                {
+                    AddLeakParticle(leakCoord);
+                }
             }
 
             NevadaCheck.Tick(gameTime);
@@ -1038,7 +1053,12 @@ namespace Tetris
 
         void AddLeakParticle(Coordinate leaker)
         {
+            var spawnLocation = new Vector2(random.Next((int)(leaker.Image.Location.X - leaker.Image.Origin.X / 2), (int)(leaker.Image.Location.X + leaker.Image.Origin.Y)),
+                                random.Next((int)(leaker.Image.Location.Y - leaker.Image.Origin.Y / 2), (int)(leaker.Image.Location.Y + leaker.Image.Origin.Y)));
+            var fallSpeed = (leaker.Reppellent - 1) * (leaker.Reppellent - 1);
 
+            leaks.AddParticle(new Particle(particleImage, spawnLocation, Color.Lime, Color.LimeGreen, 0, SpriteEffects.None, new Vector2(particleImage.Width / 2, particleImage.Height / 2), new Vector2(random.Next(-500, 500) / 1000, fallSpeed),
+                                          .1f, (int)(170 * fallSpeed), new Vector2(0), .2f, 1, 0, true, 0, 3, 1));
         }
 
         void shadowPlace()

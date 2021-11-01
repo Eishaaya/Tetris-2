@@ -197,7 +197,7 @@ namespace Tetris
             }
             ForceSide((int)Math.Round(5 - pieceSize.X / 120), true);
         }
-        public void Update(GameTime gameTime)
+        public Coordinate Update(GameTime gameTime)
         {
             if (goDown)
             {
@@ -209,7 +209,7 @@ namespace Tetris
             {
                 goDown = true;
             }
-            Animate();
+            return Animate();
         }
 
         public bool Rotate()
@@ -370,14 +370,14 @@ namespace Tetris
             }
 
         }
-        public bool Animate()
+        public Coordinate Animate()
         {
-            bool willLeak = false;
+            Coordinate willLeak = null;
             for (int i = 0; i < boxes.Count; i++)
             {
                 if (boxes[i].Animate())
                 {
-                    willLeak = true;
+                    willLeak = boxes[i];
                 }
             }
 
