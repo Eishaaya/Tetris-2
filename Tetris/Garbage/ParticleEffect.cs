@@ -17,7 +17,9 @@ namespace Tetris
         public bool FullFaded { get; private set; }
         List<Particle> particles;
         Random random = new Random();
-        public ParticleEffect(EffectType type, Texture2D image, Vector2 origin, List<Color> colors, int amount, int time, List<double> speeds, List<float> scaleSpeeds, List<int> scales, List<int> subsections = null, float scaleDown = 1, int zoneHeight = 0, int zoneWidth = 0, float directionX = 1, float directionY = 1, bool rando = true, int rotationSpeed = 3, int fadeSpeed = 3)
+        public ParticleEffect(EffectType type, Texture2D image, Vector2 origin, List<Color> colors, int amount, int time, List<double> speeds, List<float> scaleSpeeds, List<int> scales,
+                              List<int> subsections = null, float scaleDown = 1, int zoneHeight = 0, int zoneWidth = 0, float directionX = 1, float directionY = 1, bool rando = true,
+                              int rotationSpeed = 3, int fadeSpeed = 3, float maxScale = float.PositiveInfinity)
         {
             FullFaded = false;
             particles = new List<Particle>();
@@ -40,17 +42,22 @@ namespace Tetris
                 {
                     float distance = (360 * (subsections.Count + 1)) / amount;
                     float angle = MathHelper.ToRadians(distance * i);
-                    var scale = new Vector2(random.Next(scales[j]), random.Next(scales[j])) / scaleDown;
+                    Vector2 scale;
                     if (!rando)
                     {
-                        scale = new Vector2(scales[j], scales[j]);
+                        scale = new Vector2(scales[j]);                        
+                    }
+                    else
+                    {
+                        scale = new Vector2(random.Next(scales[j]), random.Next(scales[j]));
                     }
 
+                    scale /= scaleDown;
 
                     var tempPart = ObjectPool<Particle>.Instance.Borrow<Particle>();
                     tempPart.SetParticle(image, origin, colors[j], 0, SpriteEffects.None, new Vector2(image.Width / 2, image.Height / 2),
                                         new Vector2((float)(Math.Cos(angle) * speeds[j]), (float)(Math.Sin(angle) * speeds[j])), scaleSpeeds[j], time, scale, 1f - (.1f / amount * i),
-                                        scales[j], 0, true, MathHelper.ToRadians(random.Next(-rotationSpeed, rotationSpeed + 1)), fadeSpeed);
+                                        scales[j], 0, true, MathHelper.ToRadians(random.Next(-rotationSpeed, rotationSpeed + 1)), fadeSpeed, 3, maxScale);
 
 
                     particles.Add(tempPart);

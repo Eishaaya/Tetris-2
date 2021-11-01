@@ -600,7 +600,7 @@ namespace Tetris
                             ex = (int)(spawnRoll - 1) / 17 + 1;
                             break;
                         }
-                        spawnRoll = random.Next(60);
+                        spawnRoll = random.Next(200);
 
                         if (spawnRoll <= 60 + progression / 4)
                         {
@@ -608,7 +608,7 @@ namespace Tetris
                             break;
                         }
                         spawnRoll = random.Next(1000);
-                        if (spawnRoll <= 45 * (progression / 10 + 1) && hold <= 5)
+                        if (spawnRoll <= 30 * (progression / 10 + 1) && hold <= 5)
                         {
                             sp = true;
                         }
@@ -628,9 +628,9 @@ namespace Tetris
             {
                 if (speedAdd != 1)
                 {
-                    if (temp > 375)
+                    if (temp > 400)
                     {
-                        temp = 375;
+                        temp = 400;
                     }
                 }
                 else
@@ -980,26 +980,34 @@ namespace Tetris
                         var currentSpot = map[j][i];
 
                         score += (int)(currentSpot.Score * scoreFactor);
-                        if (currentSpot.Chonk <= 1 || fullChonk)
+                        if (currentSpot.Chonk == 0 || fullChonk)
                         {
-                            if (currentSpot.Explosive > 0)
+                            if (!fullChonk)
                             {
-                                CreateExplosionParticles(currentSpot);
-
-                                var deads = currentSpot.Explode(map);
-                                explosives.Add(deads);
-                            }
-                            else if (currentSpot.Speed)
-                            {
-                                speedAdd = 200;
-                                SpeedTime = 10;
-                                if (playSounds)
+                                //special piece conditions
+                                if (currentSpot.Explosive > 0)
                                 {
-                                    zoom.Play();
+                                    CreateExplosionParticles(currentSpot);
+
+                                    var deads = currentSpot.Explode(map);
+                                    explosives.Add(deads);
                                 }
-                                effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, currentSpot.Image.Location,
-                                            new List<Color> { Color.White, Color.White }, 50, 5, new List<double> { 10, 10 },
-                                            new List<float> { 10 / particleImage.Width, 10 / particleImage.Width }, new List<int> { 1, 1 }, null, 1, 30, 30, 1, 0));
+                                else if (currentSpot.Speed)
+                                {
+                                    speedAdd = 200;
+                                    SpeedTime = 10;
+                                    if (playSounds)
+                                    {
+                                        zoom.Play();
+                                    }
+                                    effects.Add(new ParticleEffect(ParticleEffect.EffectType.Ray, speedParticle, currentSpot.Image.Location,
+                                                new List<Color> { Color.White, Color.White }, 50, 5, new List<double> { 10, 10 },
+                                                new List<float> { 10 / particleImage.Width, 10 / particleImage.Width }, new List<int> { 1, 1 }, null, 1, 30, 30, 1, 0));
+                                }
+                                else if (currentSpot.Reppellent > 0)
+                                {
+                                    ReleaseReppellingParticles(currentSpot);
+                                }
                             }
                             currentSpot.empty(empty);
                             for (int q = i; q > 0; q--)
@@ -1051,13 +1059,23 @@ namespace Tetris
                                , explosiveScales, null, 200, 0, 0, 1, 1, true, 3, 3 + 3 * (int)(explosiveSpot.Explosive / 2)));
         }
 
+        void ReleaseReppellingParticles(Coordinate repellingSpot)
+        {
+            float maxScale = (2 * repellingSpot.Reppellent + 1) * empty.Image.Width * (float)scale / particleImage.Width;           
+
+            effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, particleImage, repellingSpot.Image.Location, new List<Color> { Color.Lime },
+                   1, (int)repellingSpot.Reppellent * 300, new List<double> { 0 },
+                   new List<float> { repellingSpot.Reppellent * 5 / particleImage.Width }, new List<int>() { 50 }, null, 300, 0, 0, 1, 1, false, 3, 3 + 3 * (int)(4 - repellingSpot.Reppellent), maxScale));
+        }
+
         void AddLeakParticle(Coordinate leaker)
         {
+            return;
             var spawnLocation = new Vector2(random.Next((int)(leaker.Image.Location.X - leaker.Image.Origin.X / 2), (int)(leaker.Image.Location.X + leaker.Image.Origin.Y)),
                                 random.Next((int)(leaker.Image.Location.Y - leaker.Image.Origin.Y / 2), (int)(leaker.Image.Location.Y + leaker.Image.Origin.Y)));
             var fallSpeed = (leaker.Reppellent - 1) * (leaker.Reppellent - 1);
 
-            leaks.AddParticle(new Particle(particleImage, spawnLocation, Color.Lime, Color.LimeGreen, 0, SpriteEffects.None, new Vector2(particleImage.Width / 2, particleImage.Height / 2), new Vector2(random.Next(-500, 500) / 1000, fallSpeed),
+            leaks.AddParticle(new Particle(particleImage, spawnLocation, Color.Lime, Color.DarkOliveGreen, 0, SpriteEffects.None, new Vector2(particleImage.Width / 2, particleImage.Height / 2), new Vector2(random.Next(-500, 500) / 1000, fallSpeed),
                                           .1f, (int)(170 * fallSpeed), new Vector2(0), .2f, 1, 0, true, 0, 3, 1));
         }
 
