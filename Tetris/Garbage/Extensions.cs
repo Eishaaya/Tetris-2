@@ -116,6 +116,8 @@ namespace Tetris
             return (location - offset) / scale;
         }
 
+
+
         #region behaviors
 
         //public static void Idle(this Enemy enemy)

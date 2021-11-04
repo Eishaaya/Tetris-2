@@ -9,7 +9,7 @@ namespace Tetris
 {
     struct PushController
     {
-        float angleFromPush;
+        double angleFromPush;
         int distanceToPush;
         int distanceTravelled;
         public bool IsPushing { get; set; }
@@ -19,13 +19,13 @@ namespace Tetris
             return new PushController(0, 0, false);
         }
 
-        public PushController(float pushAngle, int pushDistance, bool push = true)
+        public PushController(double pushAngle, int pushDistance, bool push = true)
         {
             angleFromPush = pushAngle;
             distanceToPush = pushDistance;
             distanceTravelled = 0;
             IsPushing = push;
-        }        
+        }
 
         public PushController(PushController hitter)
         {
@@ -120,6 +120,16 @@ namespace Tetris
 
             Pusher = PushController.None();
         }
+
+        public static Coordinate Clone(Coordinate coord)
+        {
+            Coordinate newCoord = new Coordinate(coord.Image, coord.GridSpot, coord.Score, coord.totalChonk, coord.Explosive, coord.Reppellent, coord.Speed, null);
+            newCoord.SecondaryImage = coord.SecondaryImage;
+            newCoord.Chonk = coord.Chonk;
+            newCoord.IsFull = coord.IsFull;
+
+            return newCoord;
+        }
         public bool Chonker()
         {
             if (Chonk > 0)
@@ -184,16 +194,19 @@ namespace Tetris
             {
                 right = coords.Count;
             }
+
+
             List<Vector2> spots = new List<Vector2>();
             for (int i = (int)left; i < right; i++)
             {
                 for (int j = (int)top; j < bottom; j++)
-                {
-                    if (Vector2.Distance(new Vector2(i, j), GridSpot) <= Explosive + .01f)
+                {                    
+                    var distance = Vector2.Distance(new Vector2(i, j), GridSpot);
+                    if (distance <= Explosive + .01f)
                     {
                         if (coords[i][j].Chonk > 0)
                         {
-                            for (int e = 0; e < Vector2.Distance(new Vector2(i, j), GridSpot) + .01f; e++)
+                            for (int e = 0; e < distance + 1.01f; e++)
                             {
                                 spots.Add(new Vector2(i, j));
                             }
@@ -206,6 +219,47 @@ namespace Tetris
                 }
             }
             return spots;
+        }
+
+        public void Repel(List<List<Coordinate>> coords)
+        {
+            float top = GridSpot.Y - Reppellent - 1;
+            if (top < 0)
+            {
+                top = 0;
+            }
+            float bottom = GridSpot.Y + Reppellent + 1;
+            if (bottom > coords[0].Count)
+            {
+                bottom = coords[0].Count;
+            }
+            float left = GridSpot.X - Reppellent - 1;
+            if (left < 0)
+            {
+                left = 0;
+            }
+            float right = GridSpot.X + Reppellent + 1;
+            if (right > coords.Count)
+            {
+                right = coords.Count;
+            }
+
+
+            for (int i = (int)left; i < right; i++)
+            {
+                for (int j = (int)top; j < bottom; j++)
+                {
+                    if (coords[i][j].IsFull)
+                    {
+                        var distance = Vector2.Distance(new Vector2(i, j), GridSpot);
+                        if (distance <= Reppellent + .01f)
+                        {
+                            var angle = Math.Atan2(j - GridSpot.Y, i - GridSpot.X);
+                            coords[i][j].Pusher = new PushController(angle, (int)Math.Round(distance));
+                        }
+                    }
+                }
+            }
         }
         public bool Animate(bool testBool = false)
         {
@@ -223,8 +277,8 @@ namespace Tetris
                 else if (Reppellent == 3)
                 {
                     SecondaryImage.Rotate(720, .2f);
-                    SecondaryImage.Pulsate(50, .1f, false);                    
-                   // SecondaryImage.Depth = 1;
+                    SecondaryImage.Pulsate(50, .1f, false);
+                    // SecondaryImage.Depth = 1;
                 }
 
                 if (Extensions.random.Next(2, 100) <= Reppellent)
@@ -252,6 +306,8 @@ namespace Tetris
             Explosive = 0;
             Chonk = 0;
             Speed = false;
+            Reppellent = 0;
+            Pusher = PushController.None();
         }
         public void Draw(SpriteBatch bath)
         {

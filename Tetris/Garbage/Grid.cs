@@ -827,7 +827,7 @@ namespace Tetris
                             {
                                 explosives.Add(explosiveSpot.Explode(map));
                                 CreateExplosionParticles(explosiveSpot);
-                            }
+                            }                            
                             score += (int)(explosiveSpot.Score * scoreFactor);
                             if (explosiveSpot.Chonk <= 1)
                             {
@@ -1014,6 +1014,7 @@ namespace Tetris
                                 else if (currentSpot.Reppellent > 0)
                                 {
                                     ReleaseReppellingParticles(currentSpot);
+                                    currentSpot.Repel(map);
                                 }
                             }
                             currentSpot.empty(empty);
@@ -1091,6 +1092,8 @@ namespace Tetris
             {
                 var newSpot = currentCoord.Pusher.GetNewSpot(x, y);
                 var nextSpot = map[newSpot.Item1][newSpot.Item2];
+                map[x][y] = Coordinate.Clone(currentCoord);
+                map[x][y].empty(empty);
 
                 if (nextSpot.IsFull)
                 {
