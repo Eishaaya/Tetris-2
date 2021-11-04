@@ -665,9 +665,16 @@ namespace Tetris
             {
                 for (int j = 0; j < map[i].Count; j++)
                 {
-                    if (map[i][j].Animate())
+                    var currentCoord = map[i][j];
+
+                    if (currentCoord.Animate())
                     {
-                        AddLeakParticle(map[i][j]);
+                        AddLeakParticle(currentCoord);
+                    }
+
+                    if (currentCoord.Pusher.IsPushing)
+                    {
+                        Push(i, j, currentCoord);
                     }
                 }
             }
@@ -1064,19 +1071,33 @@ namespace Tetris
             float maxScale = (2 * repellingSpot.Reppellent + 1) * empty.Image.Width * (float)scale / particleImage.Width;           
 
             effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, particleImage, repellingSpot.Image.Location, new List<Color> { Color.Lime },
-                   1, (int)repellingSpot.Reppellent * 300, new List<double> { 0 },
-                   new List<float> { repellingSpot.Reppellent * 5 / particleImage.Width }, new List<int>() { 50 }, null, 300, 0, 0, 1, 1, false, 3, 3 + 3 * (int)(4 - repellingSpot.Reppellent), maxScale));
+                   1, (int)repellingSpot.Reppellent * 150, new List<double> { 0 },
+                   new List<float> { repellingSpot.Reppellent * repellingSpot.Reppellent * 5 / particleImage.Width }, new List<int>() { 50 }, null, 300, 0, 0, 1, 1, false, 3, 3 + 3 * (int)(4 - repellingSpot.Reppellent), maxScale));
         }
 
         void AddLeakParticle(Coordinate leaker)
-        {
-            return;
+        {            
             var spawnLocation = new Vector2(random.Next((int)(leaker.Image.Location.X - leaker.Image.Origin.X / 2), (int)(leaker.Image.Location.X + leaker.Image.Origin.Y)),
                                 random.Next((int)(leaker.Image.Location.Y - leaker.Image.Origin.Y / 2), (int)(leaker.Image.Location.Y + leaker.Image.Origin.Y)));
             var fallSpeed = (leaker.Reppellent - 1) * (leaker.Reppellent - 1);
 
             leaks.AddParticle(new Particle(particleImage, spawnLocation, Color.Lime, Color.DarkOliveGreen, 0, SpriteEffects.None, new Vector2(particleImage.Width / 2, particleImage.Height / 2), new Vector2(random.Next(-500, 500) / 1000, fallSpeed),
                                           .1f, (int)(170 * fallSpeed), new Vector2(0), .2f, 1, 0, true, 0, 3, 1));
+        }
+
+        void Push(int x, int y, Coordinate currentCoord)
+        {
+            if (currentCoord.Pusher.CanMove(x, y, map))
+            {
+                var newSpot = currentCoord.Pusher.GetNewSpot(x, y);
+                var nextSpot = map[newSpot.Item1][newSpot.Item2];
+
+                if (nextSpot.IsFull)
+                {
+                    Push(newSpot.Item1, newSpot.Item2, nextSpot);
+                }
+                map[newSpot.Item1][newSpot.Item2] = currentCoord;
+            }
         }
 
         void shadowPlace()

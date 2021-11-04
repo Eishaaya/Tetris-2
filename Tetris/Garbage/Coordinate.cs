@@ -7,6 +7,68 @@ using System.Text;
 
 namespace Tetris
 {
+    struct PushController
+    {
+        float angleFromPush;
+        int distanceToPush;
+        int distanceTravelled;
+        public bool IsPushing { get; set; }
+
+        public static PushController None()
+        {
+            return new PushController(0, 0, false);
+        }
+
+        public PushController(float pushAngle, int pushDistance, bool push = true)
+        {
+            angleFromPush = pushAngle;
+            distanceToPush = pushDistance;
+            distanceTravelled = 0;
+            IsPushing = push;
+        }        
+
+        public PushController(PushController hitter)
+        {
+            angleFromPush = hitter.angleFromPush;
+            distanceToPush = 1;
+            distanceTravelled = 0;
+            IsPushing = true;
+        }
+
+        public bool CanMove(int x, int y, List<List<Coordinate>> coords)
+        {
+            bool emptySpace = false;
+            while (emptySpace == false)
+            {
+                x += (int)Math.Round(Math.Cos(angleFromPush));
+                y += (int)Math.Round(Math.Sin(angleFromPush));
+                if (x < 0 || x >= coords.Count || y < 0 || y >= coords[x].Count)
+                {
+                    return false;
+                }
+                if (!coords[x][y].IsFull)
+                {
+                    emptySpace = true;
+                }
+            }
+            return true;
+        }
+
+        public Tuple<int, int> GetNewSpot(int x, int y)
+        {
+            x += (int)Math.Round(Math.Cos(angleFromPush));
+            y += (int)Math.Round(Math.Sin(angleFromPush));
+            distanceTravelled++;
+
+            if (distanceTravelled == distanceToPush)
+            {
+                IsPushing = false;
+            }
+
+            return new Tuple<int, int>(x, y);
+        }
+    }
+
     class Coordinate
     {
         public enum DisplayStyle
@@ -26,11 +88,12 @@ namespace Tetris
         public float Chonk;
         public float Explosive { get; private set; }
         public bool Speed { get; private set; }
-
         public float Reppellent { get; private set; }
 
         Color chonkColor;
         float totalChonk;
+
+        public PushController Pusher { get; set; }
 
         public Sprite SecondaryImage { get; set; }
         public Coordinate(Sprite Image, Vector2 place, int value, float chonkLevel, float explosiveLevel, float repellingLevel, bool isSpeed, Texture2D sImage = null, DisplayStyle displayStyle = DisplayStyle.DrawAbove)
@@ -54,10 +117,8 @@ namespace Tetris
                 }
                 SecondaryImage = new Sprite(sImage, this.Image.Location, Color.White, 0, SpriteEffects.None, new Vector2(sImage.Width / 2, sImage.Height / 2), this.Image.Scale, this.Image.Depth + depthOffset);
             }
-            if (SecondaryImage != null && SecondaryImage.Depth == Image.Depth)
-            {
-                ;
-            }
+
+            Pusher = PushController.None();
         }
         public bool Chonker()
         {
