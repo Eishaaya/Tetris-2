@@ -83,6 +83,9 @@ namespace Tetris
         int finishedColors;
         public bool willProject = true;
 
+        Vector2 topOffset = new Vector2(0, 6);
+        int boxSize = 60;
+
         ParticleEffect leaks;
 
         float swapSpotCutOff
@@ -595,16 +598,16 @@ namespace Tetris
                             break;
                         }
                         spawnRoll = random.Next(1000);
-                        if (spawnRoll <= 45 + progression / 5)
+                        if (spawnRoll <= 50 + progression / 5)
                         {
                             ex = (int)(spawnRoll - 1) / 17 + 1;
                             break;
                         }
-                        spawnRoll = random.Next(200);
+                        spawnRoll = random.Next(1000);
 
-                        if (spawnRoll <= 60 + progression / 4)
+                        if (spawnRoll <= 42 + progression / 4)
                         {
-                            rep = (int)(spawnRoll - 1) / 20 + 1;
+                            rep = (int)(spawnRoll - 1) / 14 + 1;
                             break;
                         }
                         spawnRoll = random.Next(1000);
@@ -638,7 +641,9 @@ namespace Tetris
                     temp = 325;
                 }
             }
-            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[spawnIndex], sizes[spawnIndex], colors[spawnIndex], values[spawnIndex], (float)scale, symmetry[spawnIndex], 650 - temp, chonk, chonkImage, sp, speedImage, ex, explosiveImage, rep, ReppelentImage, RepellentSubstance);
+            return new RatPooeys(new Sprite(image.Image, image.Location, image.Color, image.rotation, image.effect, image.Origin, (float)scale, image.Depth), locations[spawnIndex], sizes[spawnIndex],
+                                            colors[spawnIndex], values[spawnIndex], (float)scale, symmetry[spawnIndex], 650 - temp, chonk, chonkImage, sp, speedImage, ex, explosiveImage, rep,
+                                            ReppelentImage, RepellentSubstance);
         }
         public void Update(GameTime gameTime)
         {
@@ -755,6 +760,17 @@ namespace Tetris
                     }
                 }
                 shadowPooey.Animate();
+                foreach (var shadowBox in shadowPooey.boxes)
+                {
+                    if (shadowBox.Reppellent == 2)
+                    {
+                        shadowBox.Image.rotation += MathHelper.ToDegrees(3);
+                    }
+                    else if (shadowBox.Reppellent == 3)
+                    {
+                        shadowBox.Image.Rotate(-180, .1f, false);
+                    }
+                }
                 if (!(California.IsKeyDown(downKey) && (holdDown || !tempTexas.IsKeyDown(downKey))))
                 {
                     Coordinate leakCoord = pooey.Update(gameTime);
@@ -788,7 +804,7 @@ namespace Tetris
             if (fullDown)
             {
                 pooey.MoveDown();
-                Coordinate leakCoord =  pooey.Animate();
+                Coordinate leakCoord = pooey.Animate();
                 if (leakCoord != null)
                 {
                     AddLeakParticle(leakCoord);
@@ -827,7 +843,7 @@ namespace Tetris
                             {
                                 explosives.Add(explosiveSpot.Explode(map));
                                 CreateExplosionParticles(explosiveSpot);
-                            }                            
+                            }
                             score += (int)(explosiveSpot.Score * scoreFactor);
                             if (explosiveSpot.Chonk <= 1)
                             {
@@ -1069,7 +1085,7 @@ namespace Tetris
 
         void ReleaseReppellingParticles(Coordinate repellingSpot)
         {
-            float maxScale = (2 * repellingSpot.Reppellent + 1) * empty.Image.Width * (float)scale / particleImage.Width;           
+            float maxScale = (2 * repellingSpot.Reppellent + 1) * empty.Image.Width * (float)scale / particleImage.Width;
 
             effects.Add(new ParticleEffect(ParticleEffect.EffectType.Explosion, particleImage, repellingSpot.Image.Location, new List<Color> { Color.Lime },
                    1, (int)repellingSpot.Reppellent * 150, new List<double> { 0 },
@@ -1077,7 +1093,7 @@ namespace Tetris
         }
 
         void AddLeakParticle(Coordinate leaker)
-        {            
+        {
             var spawnLocation = new Vector2(random.Next((int)(leaker.Image.Location.X - leaker.Image.Origin.X / 2), (int)(leaker.Image.Location.X + leaker.Image.Origin.Y)),
                                 random.Next((int)(leaker.Image.Location.Y - leaker.Image.Origin.Y / 2), (int)(leaker.Image.Location.Y + leaker.Image.Origin.Y)));
             var fallSpeed = (leaker.Reppellent - 1) * (leaker.Reppellent - 1);
@@ -1091,14 +1107,23 @@ namespace Tetris
             if (currentCoord.Pusher.CanMove(x, y, map))
             {
                 var newSpot = currentCoord.Pusher.GetNewSpot(x, y);
+                var newPlace = new Vector2(newSpot.Item1, newSpot.Item2);
                 var nextSpot = map[newSpot.Item1][newSpot.Item2];
+
                 map[x][y] = Coordinate.Clone(currentCoord);
                 map[x][y].empty(empty);
 
                 if (nextSpot.IsFull)
                 {
+                    nextSpot.Pusher = new PushController(currentCoord.Pusher);
                     Push(newSpot.Item1, newSpot.Item2, nextSpot);
                 }
+                if (!currentCoord.Pusher.IsPushing)
+                {
+                    currentCoord.Pusher = PushController.None();
+                }
+                currentCoord.GridSpot = newPlace;
+                currentCoord.Image.Location = ((newPlace - topOffset) * boxSize + currentCoord.Image.Origin) * (float)scale;
                 map[newSpot.Item1][newSpot.Item2] = currentCoord;
             }
         }
@@ -1107,30 +1132,32 @@ namespace Tetris
         {
             for (int i = 0; i < shadowPooey.boxes.Count; i++)
             {
-                if (shadowPooey.boxes[i].Explosive > 0)
+                var shadowBox = shadowPooey.boxes[i];
+
+                if (shadowBox.Explosive > 0)
                 {
-                    shadowPooey.boxes[i].Image.Color = Color.Red;
+                    shadowBox.Image.Color = Color.Red;
                 }
-                else if (shadowPooey.boxes[i].Speed)
+                else if (shadowBox.Speed)
                 {
-                    shadowPooey.boxes[i].Image.Color = Color.Cyan;
+                    shadowBox.Image.Color = Color.Cyan;
                 }
-                else if (shadowPooey.boxes[i].Chonker())
+                else if (shadowBox.Chonker())
                 {
-                    shadowPooey.boxes[i].SecondaryImage = null;
-                    shadowPooey.boxes[i].Image.Color = Color.Black;
+                    shadowBox.SecondaryImage = null;
+                    shadowBox.Image.Color = Color.Black;
                 }
-                else if (shadowPooey.boxes[i].Reppellent > 0)
+                else if (shadowBox.Reppellent > 0)
                 {
-                    shadowPooey.boxes[i].Image.Color = Color.LimeGreen;
-                    shadowPooey.boxes[i].SecondaryImage = null;
+                    shadowBox.Image.Color = Color.LimeGreen;
+                    shadowBox.SecondaryImage = null;
                 }
                 else
                 {
-                    shadowPooey.boxes[i].Image.Color = Color.DarkSlateGray;
+                    shadowBox.Image.Color = Color.DarkSlateGray;
                 }
-                shadowPooey.boxes[i].Image.Image = projectionImage;
-                shadowPooey.boxes[i].Image.Depth -= .01f;
+                shadowBox.Image.Image = projectionImage;
+                shadowBox.Image.Depth -= .01f;
             }
             while (true)
             {

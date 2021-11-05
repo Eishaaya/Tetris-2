@@ -93,7 +93,8 @@ namespace Tetris
         Color chonkColor;
         float totalChonk;
 
-        public PushController Pusher { get; set; }
+        private PushController pusher;
+        public ref PushController Pusher => ref pusher;
 
         public Sprite SecondaryImage { get; set; }
         public Coordinate(Sprite Image, Vector2 place, int value, float chonkLevel, float explosiveLevel, float repellingLevel, bool isSpeed, Texture2D sImage = null, DisplayStyle displayStyle = DisplayStyle.DrawAbove)
@@ -118,7 +119,7 @@ namespace Tetris
                 SecondaryImage = new Sprite(sImage, this.Image.Location, Color.White, 0, SpriteEffects.None, new Vector2(sImage.Width / 2, sImage.Height / 2), this.Image.Scale, this.Image.Depth + depthOffset);
             }
 
-            Pusher = PushController.None();
+            pusher = PushController.None();
         }
 
         public static Coordinate Clone(Coordinate coord)
