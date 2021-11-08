@@ -12,19 +12,25 @@ namespace Tetris
         double angleFromPush;
         int distanceToPush;
         int distanceTravelled;
+        Vector2 visualSpot;
+        public bool Moved { get; private set; }
+        float speed;
         public bool IsPushing { get; set; }
 
         public static PushController None()
         {
-            return new PushController(0, 0, false);
+            return new PushController(0, 0, Vector2.Zero, 0, false);
         }
 
-        public PushController(double pushAngle, int pushDistance, bool push = true)
+        public PushController(double pushAngle, int pushDistance, Vector2 drawnSpot, float power, bool push = true)
         {
             angleFromPush = pushAngle;
             distanceToPush = pushDistance;
             distanceTravelled = 0;
             IsPushing = push;
+            visualSpot = drawnSpot;
+            speed = power / 3;
+            Moved = true;
         }
 
         public PushController(PushController hitter)
@@ -33,8 +39,12 @@ namespace Tetris
             distanceToPush = 1;
             distanceTravelled = 0;
             IsPushing = true;
+            visualSpot = hitter.visualSpot;
+            speed = hitter.speed;
+            Moved = true;
         }
 
+        //checks to see if grid-movement is possible
         public bool CanMove(int x, int y, List<List<Coordinate>> coords)
         {
             bool emptySpace = false;
@@ -53,13 +63,15 @@ namespace Tetris
             }
             return true;
         }
-
-        public Tuple<int, int> GetNewSpot(int x, int y)
+        
+        //Locates the next position for the piece to move to on the grid
+        public Tuple<int, int> GetNewSpot(int x, int y, float multiplier)
         {
             x += (int)Math.Round(Math.Cos(angleFromPush));
             y += (int)Math.Round(Math.Sin(angleFromPush));
             distanceTravelled++;
 
+            visualSpot = new Vector2(x, y) * multiplier;
             if (distanceTravelled == distanceToPush)
             {
                 IsPushing = false;
@@ -67,7 +79,30 @@ namespace Tetris
 
             return new Tuple<int, int>(x, y);
         }
+
+        //Visual movement
+        public void Update(ref Vector2 location)
+        {
+            if (!Moved)
+            {
+                if (location != visualSpot)
+                {
+                    var tempSpeed = Vector2.Distance(location, visualSpot);
+                    if (tempSpeed >= speed)
+                    {
+                        tempSpeed = speed;
+                        Moved = true;
+                    }
+
+                    var actualSpeed = new Vector2((float)Math.Cos(tempSpeed), (float)Math.Sin(tempSpeed));
+                    location += actualSpeed;
+                }
+            }
+        }
     }
+
+    // SUBCLASS ^
+    // MAIN BELOW
 
     class Coordinate
     {
@@ -222,7 +257,7 @@ namespace Tetris
             return spots;
         }
 
-        public void Repel(List<List<Coordinate>> coords)
+        public void Repel(List<List<Coordinate>> coords, float multiplier)
         {
             float top = GridSpot.Y - Reppellent - 1;
             if (top < 0)
@@ -256,7 +291,7 @@ namespace Tetris
                         if (distance <= Reppellent + .01f)
                         {
                             var angle = Math.Atan2(j - GridSpot.Y, i - GridSpot.X);
-                            coords[i][j].Pusher = new PushController(angle, (int)Math.Round(distance));
+                            coords[i][j].Pusher = new PushController(angle, (int)Math.Round(distance), new Vector2(i, j) * multiplier, Reppellent);
                         }
                     }
                 }
@@ -264,6 +299,8 @@ namespace Tetris
         }
         public bool Animate(bool testBool = false)
         {
+            pusher.Update(ref Image.Location);
+
             if (SecondaryImage != null)
             {
                 SecondaryImage.Location = Image.Location;

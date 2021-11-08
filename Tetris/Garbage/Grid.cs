@@ -84,7 +84,7 @@ namespace Tetris
         public bool willProject = true;
 
         Vector2 topOffset = new Vector2(0, 6);
-        int boxSize = 60;
+        float gridMultiplier;
 
         ParticleEffect leaks;
 
@@ -122,7 +122,7 @@ namespace Tetris
                     List<Vector2> pieceSizes, Sprite coordImage, SoundEffect rotationSound, SoundEffect landingSound, SoundEffect boomSound, SoundEffect speedSound, SoundEffect bossBuzz, Texture2D shadowImage, float totalScale = 1,
                     bool isclassic = false, Texture2D chonkImage = null, Texture2D bombImage = null, Texture2D speedImage = null, Texture2D repellentImage = null, Texture2D repellentGunk = null, Texture2D particle = null, Texture2D zoomParticle = null, int checkingTime = 100, Keys downKey = Keys.S,
                     Keys turnKey = Keys.W, Keys leftKey = Keys.A, Keys rightKey = Keys.D, Keys dropKey = Keys.Space, Keys sidebar1 = Keys.D1, Keys sidebar2 = Keys.D2, Keys sidebar3 = Keys.D3, Keys sidebar4 = Keys.D4)
-        {
+        {            
             SpeedTime = 0;
             finishedColors = -1;
             changeDone = -1;
@@ -197,6 +197,8 @@ namespace Tetris
             }
             leaks = new ParticleEffect();
             effects.Add(leaks);
+
+            gridMultiplier = (float)(empty.Image.Width * scale);
         }
 
         public void Reset()
@@ -1030,7 +1032,7 @@ namespace Tetris
                                 else if (currentSpot.Reppellent > 0)
                                 {
                                     ReleaseReppellingParticles(currentSpot);
-                                    currentSpot.Repel(map);
+                                    currentSpot.Repel(map, gridMultiplier);
                                 }
                             }
                             currentSpot.empty(empty);
@@ -1104,9 +1106,9 @@ namespace Tetris
 
         void Push(int x, int y, Coordinate currentCoord)
         {
-            if (currentCoord.Pusher.CanMove(x, y, map))
+            if (currentCoord.Pusher.Moved && currentCoord.Pusher.CanMove(x, y, map))
             {
-                var newSpot = currentCoord.Pusher.GetNewSpot(x, y);
+                var newSpot = currentCoord.Pusher.GetNewSpot(x, y, gridMultiplier);
                 var newPlace = new Vector2(newSpot.Item1, newSpot.Item2);
                 var nextSpot = map[newSpot.Item1][newSpot.Item2];
 
@@ -1123,7 +1125,7 @@ namespace Tetris
                     currentCoord.Pusher = PushController.None();
                 }
                 currentCoord.GridSpot = newPlace;
-                currentCoord.Image.Location = ((newPlace - topOffset) * boxSize + currentCoord.Image.Origin) * (float)scale;
+                currentCoord.Image.Location = ((newPlace - topOffset) * gridMultiplier + currentCoord.Image.Origin * (float)scale) ;
                 map[newSpot.Item1][newSpot.Item2] = currentCoord;
             }
         }

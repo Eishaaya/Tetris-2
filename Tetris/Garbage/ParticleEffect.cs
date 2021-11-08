@@ -38,6 +38,7 @@ namespace Tetris
                 {
                     j++;
                 }
+                //THE BOOM
                 if (type == EffectType.Explosion)
                 {
                     float distance = (360 * (subsections.Count + 1)) / amount;
@@ -45,7 +46,7 @@ namespace Tetris
                     Vector2 scale;
                     if (!rando)
                     {
-                        scale = new Vector2(scales[j]);                        
+                        scale = new Vector2(scales[j]);
                     }
                     else
                     {
