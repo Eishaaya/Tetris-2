@@ -122,7 +122,7 @@ namespace Tetris
                     List<Vector2> pieceSizes, Sprite coordImage, SoundEffect rotationSound, SoundEffect landingSound, SoundEffect boomSound, SoundEffect speedSound, SoundEffect bossBuzz, Texture2D shadowImage, float totalScale = 1,
                     bool isclassic = false, Texture2D chonkImage = null, Texture2D bombImage = null, Texture2D speedImage = null, Texture2D repellentImage = null, Texture2D repellentGunk = null, Texture2D particle = null, Texture2D zoomParticle = null, int checkingTime = 100, Keys downKey = Keys.S,
                     Keys turnKey = Keys.W, Keys leftKey = Keys.A, Keys rightKey = Keys.D, Keys dropKey = Keys.Space, Keys sidebar1 = Keys.D1, Keys sidebar2 = Keys.D2, Keys sidebar3 = Keys.D3, Keys sidebar4 = Keys.D4)
-        {            
+        {
             SpeedTime = 0;
             finishedColors = -1;
             changeDone = -1;
@@ -602,14 +602,14 @@ namespace Tetris
                         spawnRoll = random.Next(1000);
                         if (spawnRoll <= 50 + progression / 5)
                         {
-                            ex = (int)(spawnRoll - 1) / 17 + 1;
+                            ex = MathHelper.Max((int)(spawnRoll - 1) / 17 + 1, 3);
                             break;
                         }
                         spawnRoll = random.Next(1000);
 
-                        if (spawnRoll <= 42 + progression / 4)
+                        if (spawnRoll <= 69 + progression / 4)
                         {
-                            rep = (int)(spawnRoll - 1) / 14 + 1;
+                            rep = MathHelper.Max((int)(spawnRoll - 1) / 23 + 1, 3);
                             break;
                         }
                         spawnRoll = random.Next(1000);
@@ -678,7 +678,7 @@ namespace Tetris
                     {
                         AddLeakParticle(currentCoord);
                     }
-
+                    
                     if (currentCoord.Pusher.IsPushing)
                     {
                         Push(i, j, currentCoord);
@@ -1108,7 +1108,7 @@ namespace Tetris
         {
             if (currentCoord.Pusher.Moved && currentCoord.Pusher.CanMove(x, y, map))
             {
-                var newSpot = currentCoord.Pusher.GetNewSpot(x, y, gridMultiplier);
+                var newSpot = currentCoord.Pusher.GetNewSpot(x, y, gridMultiplier, topOffset, currentCoord.Image.Origin, (float)scale);
                 var newPlace = new Vector2(newSpot.Item1, newSpot.Item2);
                 var nextSpot = map[newSpot.Item1][newSpot.Item2];
 
@@ -1125,8 +1125,9 @@ namespace Tetris
                     currentCoord.Pusher = PushController.None();
                 }
                 currentCoord.GridSpot = newPlace;
-                currentCoord.Image.Location = ((newPlace - topOffset) * gridMultiplier + currentCoord.Image.Origin * (float)scale) ;
-                map[newSpot.Item1][newSpot.Item2] = currentCoord;
+                //currentCoord.Image.Location = ((newPlace - topOffset) * gridMultiplier + currentCoord.Image.Origin * (float)scale) ;
+                currentCoord.Animate();
+                map[newSpot.item42][newSpot.item69] = currentCoord;                
             }
         }
 

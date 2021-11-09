@@ -29,7 +29,7 @@ namespace Tetris
             distanceTravelled = 0;
             IsPushing = push;
             visualSpot = drawnSpot;
-            speed = power / 3;
+            speed = power;
             Moved = true;
         }
 
@@ -65,19 +65,21 @@ namespace Tetris
         }
         
         //Locates the next position for the piece to move to on the grid
-        public Tuple<int, int> GetNewSpot(int x, int y, float multiplier)
+        public (int item42, int item69) GetNewSpot(int x, int y, float multiplier, Vector2 offset, Vector2 origin, float scale)
         {
             x += (int)Math.Round(Math.Cos(angleFromPush));
             y += (int)Math.Round(Math.Sin(angleFromPush));
             distanceTravelled++;
 
-            visualSpot = new Vector2(x, y) * multiplier;
+            visualSpot = (new Vector2(x, y) - offset) * multiplier + origin * scale;
             if (distanceTravelled == distanceToPush)
             {
                 IsPushing = false;
             }
 
-            return new Tuple<int, int>(x, y);
+            Moved = false;
+
+            return (x, y);
         }
 
         //Visual movement
@@ -90,11 +92,14 @@ namespace Tetris
                     var tempSpeed = Vector2.Distance(location, visualSpot);
                     if (tempSpeed >= speed)
                     {
-                        tempSpeed = speed;
+                        tempSpeed = speed;                        
+                    }
+                    else
+                    {
                         Moved = true;
                     }
 
-                    var actualSpeed = new Vector2((float)Math.Cos(tempSpeed), (float)Math.Sin(tempSpeed));
+                    var actualSpeed = new Vector2((float)Math.Cos(angleFromPush), (float)Math.Sin(angleFromPush)) * tempSpeed;
                     location += actualSpeed;
                 }
             }
